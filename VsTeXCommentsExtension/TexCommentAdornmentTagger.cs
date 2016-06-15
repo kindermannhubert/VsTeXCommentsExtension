@@ -41,11 +41,12 @@ namespace VsTeXCommentsExtension
                 (view.Background as SolidColorBrush)?.Color ?? Colors.White,
                 span =>
                 {
-                    var blockSpans = texCommentBlocks.GetBlockSpansWithLastLineBreakIntersectedBy(Snapshot, span);
-                    foreach (var blockSpan in blockSpans)
-                    {
-                        RaiseTagsChanged(new SnapshotSpan(Snapshot, blockSpan));
-                    }
+                    //var blockSpans = texCommentBlocks.GetBlockSpansWithLastLineBreakIntersectedBy(Snapshot, span);
+                    //foreach (var blockSpan in blockSpans)
+                    //{
+                    //    RaiseTagsChanged(new SnapshotSpan(Snapshot, blockSpan));
+                    //}
+                    RaiseTagsChanged(new SnapshotSpan(Snapshot, 0, Snapshot.Length));
                 },
                 defaultDisplayMode);
             view.TextBuffer.Changed += adornment.HandleTextBufferChanged;

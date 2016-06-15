@@ -138,7 +138,8 @@ namespace VsTeXCommentsExtension
                     foreach (var keyValuePair in adornmentsCache)
                     {
                         var newKey = new AdornmentCacheKey(keyValuePair.Key.Span.TranslateTo(Snapshot, SpanTrackingMode.EdgeExclusive));
-                        translatedAdornmentCache.Add(newKey, keyValuePair.Value);
+                        if (!translatedAdornmentCache.ContainsKey(newKey))
+                            translatedAdornmentCache.Add(newKey, keyValuePair.Value);
                     }
 
                     adornmentsCache = translatedAdornmentCache;
