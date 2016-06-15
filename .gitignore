@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/VsTeXCommentsExtension/bin
+/VsTeXCommentsExtension/obj
+/VsTeXCommentsExtension/VsTeXCommentsExtension.nuget.targets
+/VsTeXCommentsExtension/VsTeXCommentsExtension.nuget.props
+/.vs
+/VsTeXCommentsExtension/project.lock.json
