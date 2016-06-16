@@ -44,8 +44,7 @@ namespace VsTeXCommentsExtension
         /// <returns>Adornment corresponding to given data. May be null.</returns>
         protected abstract TAdornment CreateAdornment(TDataTag data, Span adornmentSpan, IntraTextAdornmentTaggerDisplayMode defaultDisplayMode);
 
-        /// <returns>True if the adornment was updated and should be kept. False to have the adornment removed from the view.</returns>
-        protected abstract bool UpdateAdornment(TAdornment adornment, TDataTag data);
+        protected abstract void UpdateAdornment(TAdornment adornment, TDataTag data, Span adornmentSpan);
 
         /// <param name="spans">Spans to provide adornment data for. These spans do not necessarily correspond to text lines.</param>
         /// <remarks>
@@ -239,8 +238,8 @@ namespace VsTeXCommentsExtension
                     if (adornmentsCache.TryGetValue(key, out adornment))
                     {
                         adornmentInfo = tagData.GetAdornmentInfo(adornment.DisplayMode);
-                        if (UpdateAdornment(adornment, tagData.Tag))
-                            toRemove.Remove(key);
+                        UpdateAdornment(adornment, tagData.Tag, adornmentInfo.Span.Span);
+                        toRemove.Remove(key);
 
                         //Debug.WriteLine($"updating adornment {adornment.DebugIndex}");
                     }

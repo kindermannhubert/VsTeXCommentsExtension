@@ -29,15 +29,9 @@ namespace VsTeXCommentsExtension
             this.classifier = classifier;
 
             //buffer.Changed += (sender, args) => HandleBufferChanged(args);
-            buffer.Changing += Buffer_Changing;
 
             //TODO
             //buffer.Properties.AddProperty(texCommentBlocks);
-        }
-
-        private void Buffer_Changing(object sender, TextContentChangingEventArgs e)
-        {
-            //e.Cancel();
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;

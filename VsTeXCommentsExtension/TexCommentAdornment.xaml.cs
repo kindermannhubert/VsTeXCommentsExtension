@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.Text;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows;
@@ -13,7 +14,7 @@ namespace VsTeXCommentsExtension
     /// <summary>
     /// Interaction logic for TexCommentAdornment.xaml
     /// </summary>
-    internal partial class TeXCommentAdornment : UserControl, ITagAdornment
+    internal partial class TeXCommentAdornment : UserControl, ITagAdornment, IDisposable
     {
         private static readonly string HtmlTemplate = LoadHtmlTemplate();
 
@@ -21,20 +22,34 @@ namespace VsTeXCommentsExtension
         private readonly Action<Span> refreshTags;
         private readonly Color foreground;
         private readonly Color background;
+        private readonly HtmlRenderer htmlRenderer;
 
         private TeXCommentTag tag;
         private bool changeMadeWhileInEditMode;
 
         private bool isInEditMode;
-        private bool IsInEditMode
+        public bool IsInEditMode
         {
             get { return isInEditMode; }
             set
             {
+                Debug.WriteLine($"Adornment {DebugIndex}: IsInEditMode={value}");
                 isInEditMode = value;
                 if (isInEditMode) spansOfChangesFromEditing.Clear();
                 changeMadeWhileInEditMode = false;
                 SetUpControlsVisibility();
+
+                if (spansOfChangesFromEditing.Count > 0)
+                {
+                    var resultSpan = spansOfChangesFromEditing[0];
+                    for (int i = 1; i < spansOfChangesFromEditing.Count; i++)
+                    {
+                        var span = spansOfChangesFromEditing[i];
+                        resultSpan = new Span(Math.Min(resultSpan.Start, span.Start), Math.Max(resultSpan.End, span.End));
+                    }
+                    refreshTags(resultSpan);
+                }
+                else refreshTags(tag.Span);
             }
         }
 
@@ -43,23 +58,35 @@ namespace VsTeXCommentsExtension
         private static int debugIndexer;
         public int DebugIndex { get; } = debugIndexer++;
 
-        public TeXCommentAdornment(TeXCommentTag tag, Color foreground, Color background, Action<Span> refreshTags, IntraTextAdornmentTaggerDisplayMode defaultDisplayMode)
+        public LineSpan LineSpan { get; private set; }
+
+        public TeXCommentAdornment(
+            TeXCommentTag tag,
+            Color foreground,
+            Color background,
+            LineSpan lineSpan,
+            Action<Span> refreshTags,
+            IntraTextAdornmentTaggerDisplayMode defaultDisplayMode)
         {
             this.tag = tag;
             this.refreshTags = refreshTags;
             this.foreground = foreground;
             this.background = background;
+            this.htmlRenderer = new HtmlRenderer(background);
+            htmlRenderer.WebBrowserImageReady += WebBrowserImageReady;
 
+            LineSpan = lineSpan;
             DisplayMode = defaultDisplayMode;
             DataContext = this;
 
             InitializeComponent();
 
-            IsInEditMode = false;
+            isInEditMode = false;
+            SetUpControlsVisibility();
             UpdateImageAsync();
         }
 
-        public void Update(TeXCommentTag tag)
+        public void Update(TeXCommentTag tag, LineSpan lineSpan)
         {
             bool changed = this.tag.Text != tag.Text;
             if (IsInEditMode)
@@ -69,6 +96,7 @@ namespace VsTeXCommentsExtension
             else if (changed || imageControl.Source == null)
             {
                 this.tag = tag;
+                LineSpan = lineSpan;
                 UpdateImageAsync();
             }
         }
@@ -87,33 +115,18 @@ namespace VsTeXCommentsExtension
         {
             imageControl.Source = null;
 
-            var webBrowser = new HtmlRenderer(background);
-            webBrowser.WebBrowserImageReady += WebBrowserImageReady;
-
             var htmlContent = HtmlTemplate
                     .Replace("$BackgroundColor", $"rgb({background.R},{background.G},{background.B})")
                     .Replace("$ForegroundColor", $"rgb({foreground.R},{foreground.G},{foreground.B})")
                     .Replace("$Source", tag.GetTextWithoutCommentMarks());
 
-            webBrowser.LoadContent(htmlContent);
+            htmlRenderer.LoadContent(htmlContent);
         }
 
         private void ButtonEdit_Click(object sender, RoutedEventArgs e)
         {
             DisplayMode = IntraTextAdornmentTaggerDisplayMode.DoNotHideOriginalText;
             IsInEditMode = true;
-
-            if (spansOfChangesFromEditing.Count > 0)
-            {
-                var resultSpan = spansOfChangesFromEditing[0];
-                for (int i = 1; i < spansOfChangesFromEditing.Count; i++)
-                {
-                    var span = spansOfChangesFromEditing[i];
-                    resultSpan = new Span(Math.Min(resultSpan.Start, span.Start), Math.Max(resultSpan.End, span.End));
-                }
-                refreshTags(resultSpan);
-            }
-            else refreshTags(tag.Span);
         }
 
         private void ButtonShow_Click(object sender, RoutedEventArgs e)
@@ -124,20 +137,6 @@ namespace VsTeXCommentsExtension
                 imageControl.Source = null;
             }
             IsInEditMode = false;
-
-            if (spansOfChangesFromEditing.Count > 0)
-            {
-                var resultSpan = spansOfChangesFromEditing[0];
-                for (int i = 1; i < spansOfChangesFromEditing.Count; i++)
-                {
-                    var span = spansOfChangesFromEditing[i];
-                    var newStart = Math.Min(resultSpan.Start, span.Start);
-                    var newEnd = Math.Max(resultSpan.End, span.End);
-                    resultSpan = new Span(newStart, newEnd - newStart);
-                }
-                refreshTags(resultSpan);
-            }
-            else refreshTags(tag.Span);
         }
 
         private void WebBrowserImageReady(object sender, BitmapSource e)
@@ -167,6 +166,11 @@ namespace VsTeXCommentsExtension
 
             btnEdit.Visibility = !IsInEditMode ? Visibility.Visible : Visibility.Collapsed;
             btnShow.Visibility = IsInEditMode ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public void Dispose()
+        {
+            htmlRenderer?.Dispose();
         }
 
         private static string LoadHtmlTemplate()

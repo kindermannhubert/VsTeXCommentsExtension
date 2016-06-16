@@ -30,6 +30,8 @@ namespace VsTeXCommentsExtension
             webBrowser.Height = 1000;
             webBrowser.ScriptErrorsSuppressed = true;
             webBrowser.ObjectForScripting = objectForScripting;
+            webBrowser.Navigate("about:blank");
+            webBrowser.Document.OpenNew(true);
             objectForScripting.RenderingDone += () => imageReady = true;
         }
 
@@ -85,7 +87,7 @@ namespace VsTeXCommentsExtension
 
                         using (var gr = Graphics.FromImage(bitmap))
                         {
-                            IntPtr hdc = gr.GetHdc();
+                            var hdc = gr.GetHdc();
 
                             try
                             {
@@ -222,16 +224,17 @@ namespace VsTeXCommentsExtension
             WebBrowserImageReady = null;
         }
 
-        [ComVisible(true), ComImport()]
-        [GuidAttribute("0000010d-0000-0000-C000-000000000046")]
-        [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIUnknown)]
+        [ComImport]
+        [ComVisible(true)]
+        [Guid("0000010d-0000-0000-C000-000000000046")]
+        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         private interface IViewObject
         {
             [return: MarshalAs(UnmanagedType.I4)]
             [PreserveSig]
             int Draw(
                 ////tagDVASPECT                
-                [MarshalAs(UnmanagedType.U4)] UInt32 dwDrawAspect,
+                [MarshalAs(UnmanagedType.U4)] uint dwDrawAspect,
                 int lindex,
                 IntPtr pvAspect,
                 [In] IntPtr ptd,
@@ -240,7 +243,7 @@ namespace VsTeXCommentsExtension
                 [MarshalAs(UnmanagedType.Struct)] ref tagRECT lprcBounds,
                 [MarshalAs(UnmanagedType.Struct)] ref tagRECT lprcWBounds,
                 IntPtr pfnContinue,
-                [MarshalAs(UnmanagedType.U4)] UInt32 dwContinue);
+                [MarshalAs(UnmanagedType.U4)] uint dwContinue);
         }
 
         private struct tagRECT
@@ -251,7 +254,7 @@ namespace VsTeXCommentsExtension
             public int bottom;
         }
 
-        [ComVisibleAttribute(true)]
+        [ComVisible(true)]
         public class ObjectForScripting
         {
             public void RaiseRenderingDone()

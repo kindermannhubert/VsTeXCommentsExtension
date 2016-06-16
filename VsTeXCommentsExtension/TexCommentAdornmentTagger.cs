@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
+using System.Collections.Generic;
 using System.Windows.Media;
 
 namespace VsTeXCommentsExtension
@@ -19,6 +20,7 @@ namespace VsTeXCommentsExtension
         : IntraTextAdornmentTagTransformer<TeXCommentTag, TeXCommentAdornment>
     {
         private readonly SolidColorBrush commentsForegroundColor;
+        private readonly List<TeXCommentAdornment> linesWithAdornments = new List<TeXCommentAdornment>();
 
         internal static ITagger<IntraTextAdornmentTag> GetTagger(IWpfTextView view, Lazy<ITagAggregator<TeXCommentTag>> texCommentTagger, IEditorFormatMapService editorFormatMapService)
         {
@@ -33,11 +35,30 @@ namespace VsTeXCommentsExtension
                 () => new TeXCommentAdornmentTagger(view, texCommentTagger.Value, commentsForegroundColor));
         }
 
-        private TeXCommentAdornmentTagger(IWpfTextView view, ITagAggregator<TeXCommentTag> TexCommentTagger, SolidColorBrush commentsForegroundColor)
-            : base(view, TexCommentTagger, IntraTextAdornmentTaggerDisplayMode.HideOriginalText)
+        private TeXCommentAdornmentTagger(IWpfTextView view, ITagAggregator<TeXCommentTag> texCommentTagger, SolidColorBrush commentsForegroundColor)
+            : base(view, texCommentTagger, IntraTextAdornmentTaggerDisplayMode.HideOriginalText)
         {
             this.commentsForegroundColor = commentsForegroundColor;
+
+            //view.TextBuffer.Changing += TextBuffer_Changing;
+            //view.TextBuffer.Changed += TextBuffer_Changed;
         }
+
+        //private void TextBuffer_Changed(object sender, TextContentChangedEventArgs e)
+        //{
+        //    //when we start editing line with adornment we switch to edit mode
+        //    var line = Snapshot.GetLineNumberFromPosition(view.Caret.Position.BufferPosition.Position);
+        //    var adornmentOnLine = GetAdornmentOnLine(line);
+        //    if (adornmentOnLine != null && !adornmentOnLine.IsInEditMode)
+        //    {
+        //        //adornmentOnLine.IsInEditMode = true;
+        //    }
+        //}
+
+        //private void TextBuffer_Changing(object sender, TextContentChangingEventArgs e)
+        //{
+
+        //}
 
         public override void Dispose()
         {
@@ -47,10 +68,15 @@ namespace VsTeXCommentsExtension
 
         protected override TeXCommentAdornment CreateAdornment(TeXCommentTag dataTag, Span adornmentSpan, IntraTextAdornmentTaggerDisplayMode defaultDisplayMode)
         {
+            var firstLine = Snapshot.GetLineNumberFromPosition(dataTag.Span.Start);
+            var lastLine = Snapshot.GetLineNumberFromPosition(dataTag.Span.End);
+            var lineSpan = new LineSpan(firstLine, lastLine);
+
             var adornment = new TeXCommentAdornment(
                 dataTag,
                 commentsForegroundColor.Color,
                 (view.Background as SolidColorBrush)?.Color ?? Colors.White,
+                lineSpan,
                 span =>
                 {
                     //var blockSpans = texCommentBlocks.GetBlockSpansWithLastLineBreakIntersectedBy(Snapshot, span);
@@ -63,13 +89,47 @@ namespace VsTeXCommentsExtension
                 defaultDisplayMode);
             view.TextBuffer.Changed += adornment.HandleTextBufferChanged;
 
+            MarkAdornmentLines(lineSpan, adornment);
+
             return adornment;
         }
 
-        protected override bool UpdateAdornment(TeXCommentAdornment adornment, TeXCommentTag dataTag)
+        protected override void UpdateAdornment(TeXCommentAdornment adornment, TeXCommentTag dataTag, Span adornmentSpan)
         {
-            adornment.Update(dataTag);
-            return true;
+            var firstLine = Snapshot.GetLineNumberFromPosition(dataTag.Span.Start);
+            var lastLine = Snapshot.GetLineNumberFromPosition(dataTag.Span.End);
+            var lineSpan = new LineSpan(firstLine, lastLine);
+
+            MarkAdornmentLines(adornment.LineSpan, null); //remove old
+            MarkAdornmentLines(lineSpan, adornment); //add new
+
+            adornment.Update(dataTag, lineSpan);
+        }
+
+        private void MarkAdornmentLines(LineSpan lineSpan, TeXCommentAdornment adornment)
+        {
+            lock (linesWithAdornments)
+            {
+                if (lineSpan.LastLine >= linesWithAdornments.Count)
+                {
+                    int newItemsCount = lineSpan.LastLine - linesWithAdornments.Count + 1;
+                    for (int i = 0; i < newItemsCount; i++)
+                    {
+                        linesWithAdornments.Add(null);
+                    }
+                }
+
+                for (int i = lineSpan.FirstLine; i <= lineSpan.LastLine; i++)
+                {
+                    linesWithAdornments[i] = adornment;
+                }
+            }
+        }
+
+        private TeXCommentAdornment GetAdornmentOnLine(int line)
+        {
+            if (line >= linesWithAdornments.Count) return null;
+            return linesWithAdornments[line];
         }
     }
 }
