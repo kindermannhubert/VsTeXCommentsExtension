@@ -12,7 +12,7 @@ using System.Windows.Media.Imaging;
 
 namespace VsTeXCommentsExtension
 {
-    public class WebBrowserUtility : IDisposable
+    public class HtmlRenderer : IDisposable
     {
         private readonly WebBrowser webBrowser = new WebBrowser();
         private readonly ObjectForScripting objectForScripting = new ObjectForScripting();
@@ -21,7 +21,7 @@ namespace VsTeXCommentsExtension
 
         public event EventHandler<BitmapSource> WebBrowserImageReady = null;
 
-        public WebBrowserUtility(System.Windows.Media.Color backgroundColor)
+        public HtmlRenderer(System.Windows.Media.Color backgroundColor)
         {
             this.backgroundColor = new BGR { R = backgroundColor.R, G = backgroundColor.G, B = backgroundColor.B };
 
@@ -33,10 +33,10 @@ namespace VsTeXCommentsExtension
             objectForScripting.RenderingDone += () => imageReady = true;
         }
 
-        public void Navigate(Uri url)
+        public void LoadContent(string content)
         {
             imageReady = false;
-            webBrowser.Navigate(url);
+            webBrowser.DocumentText = content;
         }
 
         private void DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
@@ -219,6 +219,7 @@ namespace VsTeXCommentsExtension
         public void Dispose()
         {
             webBrowser?.Dispose();
+            WebBrowserImageReady = null;
         }
 
         [ComVisible(true), ComImport()]

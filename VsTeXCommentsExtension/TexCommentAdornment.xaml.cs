@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -14,6 +15,8 @@ namespace VsTeXCommentsExtension
     /// </summary>
     internal partial class TeXCommentAdornment : UserControl, ITagAdornment
     {
+        private static readonly string HtmlTemplate = LoadHtmlTemplate();
+
         private readonly List<Span> spansOfChangesFromEditing = new List<Span>();
         private readonly Action<Span> refreshTags;
         private readonly Color foreground;
@@ -84,18 +87,15 @@ namespace VsTeXCommentsExtension
         {
             imageControl.Source = null;
 
-            var webBrowser = new WebBrowserUtility(background);
+            var webBrowser = new HtmlRenderer(background);
             webBrowser.WebBrowserImageReady += WebBrowserImageReady;
 
-            var fileContent = File.ReadAllText("Z:\\mathjaxtest.html");
-            File.WriteAllText(
-                "Z:\\temp.html",
-                fileContent
+            var htmlContent = HtmlTemplate
                     .Replace("$BackgroundColor", $"rgb({background.R},{background.G},{background.B})")
                     .Replace("$ForegroundColor", $"rgb({foreground.R},{foreground.G},{foreground.B})")
-                    .Replace("$Source", tag.GetTextWithoutCommentMarks()));
+                    .Replace("$Source", tag.GetTextWithoutCommentMarks());
 
-            webBrowser.Navigate(new Uri("Z:\\temp.html"));
+            webBrowser.LoadContent(htmlContent);
         }
 
         private void ButtonEdit_Click(object sender, RoutedEventArgs e)
@@ -167,6 +167,14 @@ namespace VsTeXCommentsExtension
 
             btnEdit.Visibility = !IsInEditMode ? Visibility.Visible : Visibility.Collapsed;
             btnShow.Visibility = IsInEditMode ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private static string LoadHtmlTemplate()
+        {
+            using (var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("VsTeXCommentsExtension.Resources.TeXCommentTemplate.html")))
+            {
+                return reader.ReadToEnd();
+            }
         }
     }
 }
