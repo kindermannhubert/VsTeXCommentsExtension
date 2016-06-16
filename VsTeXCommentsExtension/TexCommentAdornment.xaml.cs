@@ -16,6 +16,7 @@ namespace VsTeXCommentsExtension
     {
         private readonly List<Span> spansOfChangesFromEditing = new List<Span>();
         private readonly Action<Span> refreshTags;
+        private readonly Color foreground;
         private readonly Color background;
 
         private TeXCommentTag tag;
@@ -39,10 +40,11 @@ namespace VsTeXCommentsExtension
         private static int debugIndexer;
         public int DebugIndex { get; } = debugIndexer++;
 
-        public TeXCommentAdornment(TeXCommentTag tag, Color background, Action<Span> refreshTags, IntraTextAdornmentTaggerDisplayMode defaultDisplayMode)
+        public TeXCommentAdornment(TeXCommentTag tag, Color foreground, Color background, Action<Span> refreshTags, IntraTextAdornmentTaggerDisplayMode defaultDisplayMode)
         {
             this.tag = tag;
             this.refreshTags = refreshTags;
+            this.foreground = foreground;
             this.background = background;
 
             DisplayMode = defaultDisplayMode;
@@ -89,7 +91,8 @@ namespace VsTeXCommentsExtension
             File.WriteAllText(
                 "Z:\\temp.html",
                 fileContent
-                    .Replace("$Color", $"rgb({background.R},{background.G},{background.B})")
+                    .Replace("$BackgroundColor", $"rgb({background.R},{background.G},{background.B})")
+                    .Replace("$ForegroundColor", $"rgb({foreground.R},{foreground.G},{foreground.B})")
                     .Replace("$Source", tag.GetTextWithoutCommentMarks()));
 
             webBrowser.Navigate(new Uri("Z:\\temp.html"));

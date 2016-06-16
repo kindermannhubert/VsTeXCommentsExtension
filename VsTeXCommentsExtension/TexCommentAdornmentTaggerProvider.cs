@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
@@ -16,6 +17,9 @@ namespace VsTeXCommentsExtension
 #pragma warning disable 649 // "field never assigned to" -- field is set by MEF.
         [Import]
         internal IBufferTagAggregatorFactoryService BufferTagAggregatorFactoryService;
+
+        [Import]
+        internal IEditorFormatMapService EditorFormatMapService;
 #pragma warning restore 649
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
@@ -32,7 +36,8 @@ namespace VsTeXCommentsExtension
             return TeXCommentAdornmentTagger.GetTagger(
                 (IWpfTextView)textView,
                 new Lazy<ITagAggregator<TeXCommentTag>>(
-                    () => BufferTagAggregatorFactoryService.CreateTagAggregator<TeXCommentTag>(textView.TextBuffer)))
+                    () => BufferTagAggregatorFactoryService.CreateTagAggregator<TeXCommentTag>(textView.TextBuffer)),
+                EditorFormatMapService)
                 as ITagger<T>;
         }
     }

@@ -8,7 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="24" d:DesignWidth="300">
     <StackPanel Orientation="Horizontal">
-        <Image x:Name="imageControl" />
+        <Image x:Name="imageControl" Margin="0,2,0,0"/>
         <ProgressBar x:Name="progressBar" IsIndeterminate="True" Height="8" Width="128" />
 
         <Button x:Name="btnEdit" Click="ButtonEdit_Click" BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Margin="12,0,0,0" >

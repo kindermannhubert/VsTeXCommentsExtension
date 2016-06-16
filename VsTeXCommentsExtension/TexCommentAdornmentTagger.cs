@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
@@ -17,15 +18,25 @@ namespace VsTeXCommentsExtension
     internal sealed class TeXCommentAdornmentTagger
         : IntraTextAdornmentTagTransformer<TeXCommentTag, TeXCommentAdornment>
     {
-        internal static ITagger<IntraTextAdornmentTag> GetTagger(IWpfTextView view, Lazy<ITagAggregator<TeXCommentTag>> texCommentTagger)
+        private readonly SolidColorBrush commentsForegroundColor;
+
+        internal static ITagger<IntraTextAdornmentTag> GetTagger(IWpfTextView view, Lazy<ITagAggregator<TeXCommentTag>> texCommentTagger, IEditorFormatMapService editorFormatMapService)
         {
+            var commentsForegroundColor = Brushes.Black;
+            try
+            {
+                commentsForegroundColor = (SolidColorBrush)editorFormatMapService.GetEditorFormatMap("Text Editor").GetProperties("Comment")["Foreground"];
+            }
+            catch { }
+
             return view.Properties.GetOrCreateSingletonProperty(
-                () => new TeXCommentAdornmentTagger(view, texCommentTagger.Value));
+                () => new TeXCommentAdornmentTagger(view, texCommentTagger.Value, commentsForegroundColor));
         }
 
-        private TeXCommentAdornmentTagger(IWpfTextView view, ITagAggregator<TeXCommentTag> TexCommentTagger)
+        private TeXCommentAdornmentTagger(IWpfTextView view, ITagAggregator<TeXCommentTag> TexCommentTagger, SolidColorBrush commentsForegroundColor)
             : base(view, TexCommentTagger, IntraTextAdornmentTaggerDisplayMode.HideOriginalText)
         {
+            this.commentsForegroundColor = commentsForegroundColor;
         }
 
         public override void Dispose()
@@ -38,6 +49,7 @@ namespace VsTeXCommentsExtension
         {
             var adornment = new TeXCommentAdornment(
                 dataTag,
+                commentsForegroundColor.Color,
                 (view.Background as SolidColorBrush)?.Color ?? Colors.White,
                 span =>
                 {
