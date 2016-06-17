@@ -35,6 +35,7 @@ namespace VsTeXCommentsExtension
             {
                 Debug.WriteLine($"Adornment {DebugIndex}: IsInEditMode={value}");
                 isInEditMode = value;
+                DisplayMode = isInEditMode ? IntraTextAdornmentTaggerDisplayMode.DoNotHideOriginalText : IntraTextAdornmentTaggerDisplayMode.HideOriginalText;
                 if (isInEditMode) spansOfChangesFromEditing.Clear();
                 changeMadeWhileInEditMode = false;
                 SetUpControlsVisibility();
@@ -125,13 +126,11 @@ namespace VsTeXCommentsExtension
 
         private void ButtonEdit_Click(object sender, RoutedEventArgs e)
         {
-            DisplayMode = IntraTextAdornmentTaggerDisplayMode.DoNotHideOriginalText;
             IsInEditMode = true;
         }
 
         private void ButtonShow_Click(object sender, RoutedEventArgs e)
         {
-            DisplayMode = IntraTextAdornmentTaggerDisplayMode.HideOriginalText;
             if (changeMadeWhileInEditMode)
             {
                 imageControl.Source = null;

@@ -39,26 +39,26 @@ namespace VsTeXCommentsExtension
             : base(view, texCommentTagger, IntraTextAdornmentTaggerDisplayMode.HideOriginalText)
         {
             this.commentsForegroundColor = commentsForegroundColor;
-
-            //view.TextBuffer.Changing += TextBuffer_Changing;
-            //view.TextBuffer.Changed += TextBuffer_Changed;
+            view.TextBuffer.Changed += TextBuffer_Changed;
         }
 
-        //private void TextBuffer_Changed(object sender, TextContentChangedEventArgs e)
-        //{
-        //    //when we start editing line with adornment we switch to edit mode
-        //    var line = Snapshot.GetLineNumberFromPosition(view.Caret.Position.BufferPosition.Position);
-        //    var adornmentOnLine = GetAdornmentOnLine(line);
-        //    if (adornmentOnLine != null && !adornmentOnLine.IsInEditMode)
-        //    {
-        //        //adornmentOnLine.IsInEditMode = true;
-        //    }
-        //}
+        private void TextBuffer_Changed(object sender, TextContentChangedEventArgs e)
+        {
+            //ignoring new lines
+            if (e.Changes.Count == 1)
+            {
+                var change = e.Changes[0];
+                if (change.OldText == Environment.NewLine || change.NewText == Environment.NewLine) return;
+            }
 
-        //private void TextBuffer_Changing(object sender, TextContentChangingEventArgs e)
-        //{
-
-        //}
+            //when we start editing line with adornment we switch to edit mode
+            var line = Snapshot.GetLineNumberFromPosition(view.Caret.Position.BufferPosition.Position);
+            var adornmentOnLine = GetAdornmentOnLine(line);
+            if (adornmentOnLine != null && !adornmentOnLine.IsInEditMode)
+            {
+                adornmentOnLine.IsInEditMode = true;
+            }
+        }
 
         public override void Dispose()
         {
@@ -84,7 +84,10 @@ namespace VsTeXCommentsExtension
                     //{
                     //    RaiseTagsChanged(new SnapshotSpan(Snapshot, blockSpan));
                     //}
-                    RaiseTagsChanged(new SnapshotSpan(Snapshot, 0, Snapshot.Length));
+
+                    //RaiseTagsChanged(new SnapshotSpan(Snapshot, 0, Snapshot.Length));
+
+                    InvalidateSpans(new List<SnapshotSpan>() { new SnapshotSpan(Snapshot, 0, Snapshot.Length) });
                 },
                 defaultDisplayMode);
             view.TextBuffer.Changed += adornment.HandleTextBufferChanged;
