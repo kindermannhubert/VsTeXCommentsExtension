@@ -7,7 +7,10 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
         <script type="text/x-mathjax-config">
-MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+MathJax.Hub.Config({
+            showProcessingMessages: false,
+            tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+            });
         </script>
 
         <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
@@ -17,10 +20,10 @@ MathJax.Hub.Queue(function () {
         </script>
     </head>
 
-    <body bgcolor="$BackgroundColor" style="font-size: 200%; color: $ForegroundColor;">
+    <body style="color:$(ForegroundColor);background:$(BackgroundColor);font-family:$(FontFamily);font-size:$(FontSize)">
         <div id="myDiv">
 $\newcommand{\var}[1]{\mathord{\mathit{#1}}}$
-$Source
+$(Source)
         </div>
     </body>
 </html>

@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Media;
 
 namespace VsTeXCommentsExtension
@@ -20,11 +21,16 @@ namespace VsTeXCommentsExtension
         : IntraTextAdornmentTagTransformer<TeXCommentTag, TeXCommentAdornment>
     {
         private readonly SolidColorBrush commentsForegroundColor;
+        private readonly Font textEditorFont;
         private readonly List<TeXCommentAdornment> linesWithAdornments = new List<TeXCommentAdornment>();
 
-        internal static ITagger<IntraTextAdornmentTag> GetTagger(IWpfTextView view, Lazy<ITagAggregator<TeXCommentTag>> texCommentTagger, IEditorFormatMapService editorFormatMapService)
+        internal static ITagger<IntraTextAdornmentTag> GetTagger(
+            IWpfTextView view,
+            Lazy<ITagAggregator<TeXCommentTag>> texCommentTagger,
+            IEditorFormatMapService editorFormatMapService,
+            Font textEditorFont)
         {
-            var commentsForegroundColor = Brushes.Black;
+            var commentsForegroundColor = System.Windows.Media.Brushes.Black;
             try
             {
                 commentsForegroundColor = (SolidColorBrush)editorFormatMapService.GetEditorFormatMap("Text Editor").GetProperties("Comment")["Foreground"];
@@ -32,13 +38,14 @@ namespace VsTeXCommentsExtension
             catch { }
 
             return view.Properties.GetOrCreateSingletonProperty(
-                () => new TeXCommentAdornmentTagger(view, texCommentTagger.Value, commentsForegroundColor));
+                () => new TeXCommentAdornmentTagger(view, texCommentTagger.Value, commentsForegroundColor, textEditorFont));
         }
 
-        private TeXCommentAdornmentTagger(IWpfTextView view, ITagAggregator<TeXCommentTag> texCommentTagger, SolidColorBrush commentsForegroundColor)
+        private TeXCommentAdornmentTagger(IWpfTextView view, ITagAggregator<TeXCommentTag> texCommentTagger, SolidColorBrush commentsForegroundColor, Font textEditorFont)
             : base(view, texCommentTagger, IntraTextAdornmentTaggerDisplayMode.HideOriginalText)
         {
             this.commentsForegroundColor = commentsForegroundColor;
+            this.textEditorFont = textEditorFont;
             view.TextBuffer.Changed += TextBuffer_Changed;
         }
 
@@ -76,6 +83,7 @@ namespace VsTeXCommentsExtension
                 dataTag,
                 commentsForegroundColor.Color,
                 (view.Background as SolidColorBrush)?.Color ?? Colors.White,
+                textEditorFont,
                 lineSpan,
                 span =>
                 {

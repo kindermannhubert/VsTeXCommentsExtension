@@ -16,12 +16,14 @@ namespace VsTeXCommentsExtension
     /// </summary>
     internal partial class TeXCommentAdornment : UserControl, ITagAdornment, IDisposable
     {
+        private const double RenderScale = 3;
         private static readonly string HtmlTemplate = LoadHtmlTemplate();
 
         private readonly List<Span> spansOfChangesFromEditing = new List<Span>();
         private readonly Action<Span> refreshTags;
         private readonly Color foreground;
         private readonly Color background;
+        private readonly System.Drawing.Font font;
         private readonly HtmlRenderer htmlRenderer;
 
         private TeXCommentTag tag;
@@ -65,6 +67,7 @@ namespace VsTeXCommentsExtension
             TeXCommentTag tag,
             Color foreground,
             Color background,
+            System.Drawing.Font font,
             LineSpan lineSpan,
             Action<Span> refreshTags,
             IntraTextAdornmentTaggerDisplayMode defaultDisplayMode)
@@ -73,6 +76,7 @@ namespace VsTeXCommentsExtension
             this.refreshTags = refreshTags;
             this.foreground = foreground;
             this.background = background;
+            this.font = font;
             this.htmlRenderer = new HtmlRenderer(background);
             htmlRenderer.WebBrowserImageReady += WebBrowserImageReady;
 
@@ -117,9 +121,11 @@ namespace VsTeXCommentsExtension
             imageControl.Source = null;
 
             var htmlContent = HtmlTemplate
-                    .Replace("$BackgroundColor", $"rgb({background.R},{background.G},{background.B})")
-                    .Replace("$ForegroundColor", $"rgb({foreground.R},{foreground.G},{foreground.B})")
-                    .Replace("$Source", tag.GetTextWithoutCommentMarks());
+                    .Replace("$(BackgroundColor)", $"rgb({background.R},{background.G},{background.B})")
+                    .Replace("$(ForegroundColor)", $"rgb({foreground.R},{foreground.G},{foreground.B})")
+                    .Replace("$(FontFamily)", font.FontFamily.Name)
+                    .Replace("$(FontSize)", $"{RenderScale * font.Size}px")
+                    .Replace("$(Source)", tag.GetTextWithoutCommentMarks());
 
             htmlRenderer.LoadContent(htmlContent);
         }
@@ -143,9 +149,8 @@ namespace VsTeXCommentsExtension
             imageControl.Source = e;
             if (e != null)
             {
-                // '0.5*' because of rendering upscaling
-                imageControl.Width = 0.8 * 0.5 * e.Width;
-                imageControl.Height = 0.8 * 0.5 * e.Height;
+                imageControl.Width = e.Width / RenderScale;
+                imageControl.Height = e.Height / RenderScale;
             }
             SetUpControlsVisibility();
         }
