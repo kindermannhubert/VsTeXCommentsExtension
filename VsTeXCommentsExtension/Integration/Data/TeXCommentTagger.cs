@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace VsTeXCommentsExtension
+namespace VsTeXCommentsExtension.Integration.Data
 {
     /// <summary>
     /// Determines which spans of text likely refer to color values.

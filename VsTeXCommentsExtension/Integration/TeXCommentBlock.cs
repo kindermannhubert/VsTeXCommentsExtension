@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.Text;
 
-namespace VsTeXCommentsExtension
+namespace VsTeXCommentsExtension.Integration
 {
     internal struct TeXCommentBlock
     {

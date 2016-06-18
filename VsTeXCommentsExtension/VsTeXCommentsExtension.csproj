@@ -68,26 +68,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LineSpan.cs" />
-    <Compile Include="TeXCommentBlock.cs" />
-    <Compile Include="TeXCommentHtmlTemplate.cs">
+    <Compile Include="Integration\TeXCommentBlock.cs" />
+    <Compile Include="View\TeXCommentHtmlTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>TeXCommentHtmlTemplate.tt</DependentUpon>
     </Compile>
-    <Compile Include="TeXCommentTag.cs" />
-    <Compile Include="TeXCommentAdornmentTaggerProvider.cs" />
-    <Compile Include="TeXCommentTagger.cs" />
-    <Compile Include="TeXCommentTaggerProvider.cs" />
-    <Compile Include="TeXCommentAdornment.xaml.cs">
+    <Compile Include="Integration\Data\TeXCommentTag.cs" />
+    <Compile Include="Integration\View\TeXCommentAdornmentTaggerProvider.cs" />
+    <Compile Include="Integration\Data\TeXCommentTagger.cs" />
+    <Compile Include="Integration\Data\TeXCommentTaggerProvider.cs" />
+    <Compile Include="View\TeXCommentAdornment.xaml.cs">
       <DependentUpon>TeXCommentAdornment.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TextSnapshotTeXCommentBlocks.cs" />
-    <Compile Include="HtmlRenderer.cs" />
+    <Compile Include="Integration\TextSnapshotTeXCommentBlocks.cs" />
+    <Compile Include="View\HtmlRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TeXCommentAdornmentTagger.cs" />
-    <Compile Include="IntraTextAdornmentTagger.cs" />
-    <Compile Include="IntraTextAdornmentTagTransformer.cs" />
-    <Compile Include="ITagAdornment.cs" />
+    <Compile Include="Integration\View\TeXCommentAdornmentTagger.cs" />
+    <Compile Include="Integration\View\IntraTextAdornmentTagger.cs" />
+    <Compile Include="Integration\View\IntraTextAdornmentTagTransformer.cs" />
+    <Compile Include="Integration\View\ITagAdornment.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />
@@ -96,7 +96,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="TeXCommentAdornment.xaml">
+    <Page Include="View\TeXCommentAdornment.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -109,7 +109,7 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TeXCommentHtmlTemplate.tt">
+    <Content Include="View\TeXCommentHtmlTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>TeXCommentHtmlTemplate.cs</LastGenOutput>
     </Content>

@@ -1,4 +1,4 @@
-﻿namespace VsTeXCommentsExtension
+﻿namespace VsTeXCommentsExtension.Integration.View
 {
     internal interface ITagAdornment
     {

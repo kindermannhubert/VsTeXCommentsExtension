@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 
-namespace VsTeXCommentsExtension
+namespace VsTeXCommentsExtension.Integration.View
 {
     /// <summary>
     /// Helper class for interspersing adornments into text.

@@ -7,7 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 // ------------------------------------------------------------------------------
-namespace VsTeXCommentsExtension
+namespace VsTeXCommentsExtension.View
 {
     using System.Linq;
     using System.Text;
@@ -18,7 +18,7 @@ namespace VsTeXCommentsExtension
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\TeXCommentHtmlTemplate.tt"
+    #line 1 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "14.0.0.0")]
     public partial class TeXCommentHtmlTemplate : TeXCommentHtmlTemplateBase
     {
@@ -53,35 +53,35 @@ MathJax.Hub.Queue(function () {
 
     <body style=""color:");
             
-            #line 29 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\TeXCommentHtmlTemplate.tt"
+            #line 29 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(ColorToString(ForegroundColor)));
             
             #line default
             #line hidden
             this.Write(";background:");
             
-            #line 29 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\TeXCommentHtmlTemplate.tt"
+            #line 29 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(ColorToString(BackgroundColor)));
             
             #line default
             #line hidden
             this.Write(";font-family:");
             
-            #line 29 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\TeXCommentHtmlTemplate.tt"
+            #line 29 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FontFamily));
             
             #line default
             #line hidden
             this.Write(";font-size:");
             
-            #line 29 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\TeXCommentHtmlTemplate.tt"
+            #line 29 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FontSize));
             
             #line default
             #line hidden
             this.Write("px\">\r\n        <div id=\"myDiv\">\r\n$\\newcommand{\\var}[1]{\\mathord{\\mathit{#1}}}$\r\n");
             
-            #line 32 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\TeXCommentHtmlTemplate.tt"
+            #line 32 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Source));
             
             #line default
@@ -90,7 +90,7 @@ MathJax.Hub.Queue(function () {
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 36 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\TeXCommentHtmlTemplate.tt"
+        #line 36 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
  
 public Color ForegroundColor { get; set; }
 public Color BackgroundColor { get; set; }

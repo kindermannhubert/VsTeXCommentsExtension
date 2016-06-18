@@ -2,14 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using VsTeXCommentsExtension.Integration.Data;
+using VsTeXCommentsExtension.Integration.View;
 
-namespace VsTeXCommentsExtension
+namespace VsTeXCommentsExtension.View
 {
     /// <summary>
     /// Interaction logic for TexCommentAdornment.xaml
@@ -17,7 +17,6 @@ namespace VsTeXCommentsExtension
     internal partial class TeXCommentAdornment : UserControl, ITagAdornment, IDisposable
     {
         private const double RenderScale = 3;
-        private static readonly string HtmlTemplate = LoadHtmlTemplate();
 
         private readonly List<Span> spansOfChangesFromEditing = new List<Span>();
         private readonly Action<Span> refreshTags;
@@ -178,14 +177,6 @@ namespace VsTeXCommentsExtension
         public void Dispose()
         {
             htmlRenderer?.Dispose();
-        }
-
-        private static string LoadHtmlTemplate()
-        {
-            using (var reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("VsTeXCommentsExtension.Resources.TeXCommentTemplate.html")))
-            {
-                return reader.ReadToEnd();
-            }
         }
     }
 }

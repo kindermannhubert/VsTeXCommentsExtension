@@ -6,8 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Media;
+using VsTeXCommentsExtension.Integration.Data;
+using VsTeXCommentsExtension.View;
 
-namespace VsTeXCommentsExtension
+namespace VsTeXCommentsExtension.Integration.View
 {
     /// <summary>
     /// Provides color swatch adornments in place of color constants.

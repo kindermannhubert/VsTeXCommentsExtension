@@ -4,7 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Text;
 
-namespace VsTeXCommentsExtension
+namespace VsTeXCommentsExtension.Integration.Data
 {
     /// <summary>
     /// Data tag indicating that the tagged text represents a color.

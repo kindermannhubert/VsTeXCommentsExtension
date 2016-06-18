@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 
-namespace VsTeXCommentsExtension
+namespace VsTeXCommentsExtension.Integration.View
 {
     /// <summary>
     /// Helper class for producing intra-text adornments from data tags.

@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.Utilities;
 using System;
 using System.ComponentModel.Composition;
 
-namespace VsTeXCommentsExtension
+namespace VsTeXCommentsExtension.Integration.Data
 {
     [Export(typeof(ITaggerProvider))]
     [ContentType("text")]

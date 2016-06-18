@@ -7,8 +7,9 @@ using Microsoft.VisualStudio.Utilities;
 using System;
 using System.ComponentModel.Composition;
 using System.Drawing;
+using VsTeXCommentsExtension.Integration.Data;
 
-namespace VsTeXCommentsExtension
+namespace VsTeXCommentsExtension.Integration.View
 {
     [Export(typeof(IViewTaggerProvider))]
     [ContentType("text")]
