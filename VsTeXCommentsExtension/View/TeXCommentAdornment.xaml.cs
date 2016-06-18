@@ -97,7 +97,7 @@ namespace VsTeXCommentsExtension.View
             {
                 changeMadeWhileInEditMode |= changed;
             }
-            else if (changed || imageControl.Source == null)
+            else if (changed)
             {
                 this.tag = tag;
                 LineSpan = lineSpan;

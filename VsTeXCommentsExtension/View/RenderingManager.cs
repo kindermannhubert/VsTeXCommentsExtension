@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Windows.Media.Imaging;
 
@@ -32,6 +33,7 @@ namespace VsTeXCommentsExtension.View
         {
             lock (requests)
             {
+                Debug.WriteLine("LoadContentAsync");
                 requests.Enqueue(new Request(content, renderingDoneCallback));
                 manualResetEvent.Set();
             }
