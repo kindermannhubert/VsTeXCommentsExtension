@@ -120,13 +120,16 @@ namespace VsTeXCommentsExtension
         {
             imageControl.Source = null;
 
-            var htmlContent = HtmlTemplate
-                    .Replace("$(BackgroundColor)", $"rgb({background.R},{background.G},{background.B})")
-                    .Replace("$(ForegroundColor)", $"rgb({foreground.R},{foreground.G},{foreground.B})")
-                    .Replace("$(FontFamily)", font.FontFamily.Name)
-                    .Replace("$(FontSize)", $"{RenderScale * font.Size}px")
-                    .Replace("$(Source)", tag.GetTextWithoutCommentMarks());
+            var template = new TeXCommentHtmlTemplate()
+            {
+                BackgroundColor = background,
+                ForegroundColor = foreground,
+                FontFamily = font.FontFamily.Name,
+                FontSize = RenderScale * font.Size,
+                Source = tag.GetTextWithoutCommentMarks()
+            };
 
+            var htmlContent = template.TransformText();
             htmlRenderer.LoadContent(htmlContent);
         }
 

@@ -69,6 +69,11 @@
   <ItemGroup>
     <Compile Include="LineSpan.cs" />
     <Compile Include="TeXCommentBlock.cs" />
+    <Compile Include="TeXCommentHtmlTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TeXCommentHtmlTemplate.tt</DependentUpon>
+    </Compile>
     <Compile Include="TeXCommentTag.cs" />
     <Compile Include="TeXCommentAdornmentTaggerProvider.cs" />
     <Compile Include="TeXCommentTagger.cs" />
@@ -97,11 +102,17 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\TeXCommentTemplate.html" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Edit.png" />
     <Resource Include="Resources\Show.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TeXCommentHtmlTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>TeXCommentHtmlTemplate.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
