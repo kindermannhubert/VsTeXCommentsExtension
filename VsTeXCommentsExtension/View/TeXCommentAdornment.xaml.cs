@@ -85,6 +85,11 @@ namespace VsTeXCommentsExtension.View
 
             InitializeComponent();
 
+            var leftBorderPanelBrush = new SolidColorBrush(foreground);
+            leftBorderPanelBrush.Freeze();
+            leftBorderPanel1.Background = leftBorderPanelBrush;
+            leftBorderPanel2.Background = leftBorderPanelBrush;
+
             isInEditMode = false;
             SetUpControlsVisibility();
             UpdateImageAsync();
@@ -179,6 +184,7 @@ namespace VsTeXCommentsExtension.View
 
             btnEdit.Visibility = !IsInEditMode ? Visibility.Visible : Visibility.Collapsed;
             btnShow.Visibility = IsInEditMode ? Visibility.Visible : Visibility.Collapsed;
+            leftBorderGroupPanel.Visibility = !IsInEditMode ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 }

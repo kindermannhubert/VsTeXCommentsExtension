@@ -8,6 +8,11 @@
              mc:Ignorable="d" 
              d:DesignHeight="24" d:DesignWidth="300">
     <StackPanel Orientation="Horizontal">
+        <StackPanel x:Name="leftBorderGroupPanel" Orientation="Horizontal">
+            <StackPanel x:Name="leftBorderPanel1" Width="1" Margin="0,0,2,0"/>
+            <StackPanel x:Name="leftBorderPanel2" Width="1" Margin="0,0,4,0"/>
+        </StackPanel>
+
         <Image x:Name="imageControl" Margin="0,2,0,0"/>
         <ProgressBar x:Name="progressBar" IsIndeterminate="True" Height="8" Width="128" />
 
