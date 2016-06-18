@@ -69,7 +69,8 @@ namespace VsTeXCommentsExtension.Integration.View
             }
 
             //when we start editing line with adornment we switch to edit mode
-            var line = Snapshot.GetLineNumberFromPosition(view.Caret.Position.BufferPosition.Position);
+            var caretBufferPosition = view.Caret.Position.BufferPosition;
+            var line = caretBufferPosition.Snapshot.GetLineNumberFromPosition(caretBufferPosition.Position);
             var adornmentOnLine = GetAdornmentOnLine(line);
             if (adornmentOnLine != null && !adornmentOnLine.IsInEditMode)
             {
