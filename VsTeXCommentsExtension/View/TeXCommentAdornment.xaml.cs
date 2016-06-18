@@ -100,7 +100,7 @@ namespace VsTeXCommentsExtension.View
             bool changed = this.tag.Text != tag.Text;
             if (IsInEditMode)
             {
-                changeMadeWhileInEditMode |= changed;
+                changeMadeWhileInEditMode = changed;
             }
             else if (changed)
             {
