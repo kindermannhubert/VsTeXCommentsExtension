@@ -7,7 +7,9 @@ using Microsoft.VisualStudio.Utilities;
 using System;
 using System.ComponentModel.Composition;
 using System.Drawing;
+using System.Windows.Media;
 using VsTeXCommentsExtension.Integration.Data;
+using VsTeXCommentsExtension.View;
 
 namespace VsTeXCommentsExtension.Integration.View
 {
@@ -19,6 +21,7 @@ namespace VsTeXCommentsExtension.Integration.View
     {
         private static readonly object sync = new object();
         private static Font textEditorFont;
+        private static IRenderingManager renderingManager;
 
 #pragma warning disable 649 // "field never assigned to" -- field is set by MEF.
         [Import]
@@ -33,6 +36,8 @@ namespace VsTeXCommentsExtension.Integration.View
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
+            var wpfTextView = (IWpfTextView)textView;
+
             if (textEditorFont == null)
             {
                 lock (sync)
@@ -40,6 +45,9 @@ namespace VsTeXCommentsExtension.Integration.View
                     if (textEditorFont == null)
                     {
                         textEditorFont = LoadTextEditorFont(VsFontsAndColorsInformationService);
+
+                        var backgroundColor = (wpfTextView.Background as SolidColorBrush)?.Color ?? Colors.White;
+                        renderingManager = new RenderingManager(new HtmlRenderer(backgroundColor));
                     }
                 }
             }
@@ -54,24 +62,32 @@ namespace VsTeXCommentsExtension.Integration.View
                 return null;
 
             return TeXCommentAdornmentTagger.GetTagger(
-                (IWpfTextView)textView,
+                wpfTextView,
                 new Lazy<ITagAggregator<TeXCommentTag>>(
                     () => BufferTagAggregatorFactoryService.CreateTagAggregator<TeXCommentTag>(textView.TextBuffer)),
                 EditorFormatMapService,
+                renderingManager,
                 textEditorFont)
                 as ITagger<T>;
         }
 
         private static Font LoadTextEditorFont(IVsFontsAndColorsInformationService vsFontsAndColorsInformationService)
         {
-            //OMG!
-            var guidDefaultFileType = new Guid(2184822468u, 61063, 4560, 140, 152, 0, 192, 79, 194, 171, 34); //from Microsoft.VisualStudio.Editor.Implementation.ImplGuidList
-            var info = vsFontsAndColorsInformationService.GetFontAndColorInformation(new FontsAndColorsCategory(
-                guidDefaultFileType,
-                DefGuidList.guidTextEditorFontCategory,
-                DefGuidList.guidTextEditorFontCategory));
-            var preferences = info.GetFontAndColorPreferences();
-            return Font.FromHfont(preferences.hRegularViewFont);
+            try
+            {
+                //OMG!
+                var guidDefaultFileType = new Guid(2184822468u, 61063, 4560, 140, 152, 0, 192, 79, 194, 171, 34); //from Microsoft.VisualStudio.Editor.Implementation.ImplGuidList
+                var info = vsFontsAndColorsInformationService.GetFontAndColorInformation(new FontsAndColorsCategory(
+                    guidDefaultFileType,
+                    DefGuidList.guidTextEditorFontCategory,
+                    DefGuidList.guidTextEditorFontCategory));
+                var preferences = info.GetFontAndColorPreferences();
+                return Font.FromHfont(preferences.hRegularViewFont);
+            }
+            catch
+            {
+                return SystemFonts.DefaultFont;
+            }
         }
     }
 }

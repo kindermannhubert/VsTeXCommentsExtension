@@ -14,7 +14,7 @@ namespace VsTeXCommentsExtension.View
     /// <summary>
     /// Interaction logic for TexCommentAdornment.xaml
     /// </summary>
-    internal partial class TeXCommentAdornment : UserControl, ITagAdornment, IDisposable
+    internal partial class TeXCommentAdornment : UserControl, ITagAdornment
     {
         private const double RenderScale = 3;
 
@@ -23,7 +23,7 @@ namespace VsTeXCommentsExtension.View
         private readonly Color foreground;
         private readonly Color background;
         private readonly System.Drawing.Font font;
-        private readonly HtmlRenderer htmlRenderer;
+        private readonly IRenderingManager renderingManager;
 
         private TeXCommentTag tag;
         private bool changeMadeWhileInEditMode;
@@ -67,6 +67,7 @@ namespace VsTeXCommentsExtension.View
             Color foreground,
             Color background,
             System.Drawing.Font font,
+            IRenderingManager renderingManager,
             LineSpan lineSpan,
             Action<Span> refreshTags,
             IntraTextAdornmentTaggerDisplayMode defaultDisplayMode)
@@ -76,8 +77,7 @@ namespace VsTeXCommentsExtension.View
             this.foreground = foreground;
             this.background = background;
             this.font = font;
-            this.htmlRenderer = new HtmlRenderer(background);
-            htmlRenderer.WebBrowserImageReady += WebBrowserImageReady;
+            this.renderingManager = renderingManager;
 
             LineSpan = lineSpan;
             DisplayMode = defaultDisplayMode;
@@ -129,7 +129,7 @@ namespace VsTeXCommentsExtension.View
             };
 
             var htmlContent = template.TransformText();
-            htmlRenderer.LoadContent(htmlContent);
+            renderingManager.LoadContentAsync(htmlContent, ImageIsReady);
         }
 
         private void ButtonEdit_Click(object sender, RoutedEventArgs e)
@@ -146,15 +146,22 @@ namespace VsTeXCommentsExtension.View
             IsInEditMode = false;
         }
 
-        private void WebBrowserImageReady(object sender, BitmapSource e)
+        private void ImageIsReady(BitmapSource e)
         {
-            imageControl.Source = e;
-            if (e != null)
+            if (!Dispatcher.CheckAccess())
             {
-                imageControl.Width = e.Width / RenderScale;
-                imageControl.Height = e.Height / RenderScale;
+                Dispatcher.Invoke(new Action<BitmapSource>(ImageIsReady), e);
             }
-            SetUpControlsVisibility();
+            else
+            {
+                imageControl.Source = e;
+                if (e != null)
+                {
+                    imageControl.Width = e.Width / RenderScale;
+                    imageControl.Height = e.Height / RenderScale;
+                }
+                SetUpControlsVisibility();
+            }
         }
 
         private void SetUpControlsVisibility()
@@ -172,11 +179,6 @@ namespace VsTeXCommentsExtension.View
 
             btnEdit.Visibility = !IsInEditMode ? Visibility.Visible : Visibility.Collapsed;
             btnShow.Visibility = IsInEditMode ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        public void Dispose()
-        {
-            htmlRenderer?.Dispose();
         }
     }
 }

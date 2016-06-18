@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Interop;
@@ -12,49 +11,73 @@ using System.Windows.Media.Imaging;
 
 namespace VsTeXCommentsExtension.View
 {
-    public class HtmlRenderer : IDisposable
+    public class HtmlRenderer : IRenderer<BitmapSource>, IDisposable
     {
+        private const int WaitingIntervalMs = 50;
+
         private readonly WebBrowser webBrowser = new WebBrowser();
         private readonly ObjectForScripting objectForScripting = new ObjectForScripting();
         private readonly BGR backgroundColor;
-        private bool imageReady;
 
-        public event EventHandler<BitmapSource> WebBrowserImageReady = null;
+        private volatile BitmapSource resultImage;
+        private volatile bool documentCompleted;
+        private volatile bool mathJaxRenderingDone;
 
         public HtmlRenderer(System.Windows.Media.Color backgroundColor)
         {
             this.backgroundColor = new BGR { R = backgroundColor.R, G = backgroundColor.G, B = backgroundColor.B };
 
-            webBrowser.DocumentCompleted += DocumentCompleted;
+            webBrowser.DocumentCompleted += WebBrowser_DocumentCompleted;
             webBrowser.Width = 1000;
             webBrowser.Height = 1000;
             webBrowser.ScriptErrorsSuppressed = true;
             webBrowser.ObjectForScripting = objectForScripting;
             webBrowser.Navigate("about:blank");
             webBrowser.Document.OpenNew(true);
-            objectForScripting.RenderingDone += () => imageReady = true;
+            objectForScripting.RenderingDone += () => mathJaxRenderingDone = true;
         }
 
-        public void LoadContent(string content)
+        private void WebBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
-            imageReady = false;
+            documentCompleted = true;
+        }
+
+        public BitmapSource Render(string content)
+        {
+            Debug.Assert(content != null);
+
+            documentCompleted = false;
+            mathJaxRenderingDone = false;
+            resultImage = null;
             webBrowser.DocumentText = content;
+
+            //wait until document is loaded
+            while (!documentCompleted)
+            {
+                Thread.Sleep(WaitingIntervalMs);
+            }
+
+            RenderInternal();
+
+            //wait until result image is ready
+            while (resultImage == null)
+            {
+                Thread.Sleep(WaitingIntervalMs);
+            }
+
+            return resultImage;
         }
 
-        private void DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
-        {
-            Task.Run(new Action(Render));
-        }
-
-        private unsafe void Render()
+        private unsafe void RenderInternal()
         {
             if (webBrowser.InvokeRequired)
             {
-                while (!imageReady)
+                //wait until MathJax is done with rendering
+                while (!mathJaxRenderingDone)
                 {
-                    Thread.Sleep(50);
+                    Thread.Sleep(WaitingIntervalMs);
                 }
-                webBrowser.Invoke(new Action(Render));
+                webBrowser.Invoke(new Action(RenderInternal));
             }
             else
             {
@@ -108,19 +131,6 @@ namespace VsTeXCommentsExtension.View
                             }
                         }
 
-                        //var data = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite, pixelFormat);
-                        //for (int y = 0; y < height; y++)
-                        //{
-                        //    var pData = (BGRA*)((byte*)data.Scan0 + y * data.Stride);
-                        //    for (int x = 0; x < width; x++)
-                        //    {
-                        //        var col = pData[x];
-                        //        var gray = (byte)((col.B + col.G + col.R) / 3);
-                        //        pData[x] = new BGRA { A = (byte)(255 - gray), B = gray, G = gray, R = gray };
-                        //    }
-                        //}
-                        //bitmap.UnlockBits(data);
-
                         using (var croppedBitmap = CropToContent(bitmap, backgroundColor))
                         {
                             var bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(
@@ -129,7 +139,7 @@ namespace VsTeXCommentsExtension.View
                                                                     Int32Rect.Empty,
                                                                     BitmapSizeOptions.FromEmptyOptions());
 
-                            WebBrowserImageReady?.Invoke(this, bitmapSource);
+                            resultImage = bitmapSource;
                         }
                     }
                 }
@@ -221,7 +231,6 @@ namespace VsTeXCommentsExtension.View
         public void Dispose()
         {
             webBrowser?.Dispose();
-            WebBrowserImageReady = null;
         }
 
         [ComImport]
