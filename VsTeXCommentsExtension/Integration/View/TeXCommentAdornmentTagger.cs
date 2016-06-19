@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Media;
 using VsTeXCommentsExtension.Integration.Data;
@@ -61,20 +62,34 @@ namespace VsTeXCommentsExtension.Integration.View
 
         private void TextBuffer_Changed(object sender, TextContentChangedEventArgs e)
         {
-            //ignoring new lines
-            if (e.Changes.Count == 1)
-            {
-                var change = e.Changes[0];
-                if (change.OldText == Environment.NewLine || change.NewText == Environment.NewLine) return;
-            }
-
             //when we start editing line with adornment we switch to edit mode
-            var caretBufferPosition = view.Caret.Position.BufferPosition;
-            var line = caretBufferPosition.Snapshot.GetLineNumberFromPosition(caretBufferPosition.Position);
-            var adornmentOnLine = GetAdornmentOnLine(line);
-            if (adornmentOnLine != null && !adornmentOnLine.IsInEditMode)
+            foreach (var change in e.Changes)
             {
-                adornmentOnLine.IsInEditMode = true;
+                //white space changes are treated specialy (they don't have to trigger switch to edit mode)
+
+                //
+                var firstLineOld = e.Before.GetLineFromPosition(change.OldPosition);
+                if (change.OldPosition == firstLineOld.End)
+                {
+                    var firstLineNew = e.After.GetLineFromPosition(change.NewPosition);
+                    Debug.Assert(firstLineOld.LineNumber == firstLineNew.LineNumber);
+
+                    var firstLineOldText = firstLineOld.GetTextIncludingLineBreak();
+                    var firstLineNewText = firstLineNew.GetTextIncludingLineBreak();
+
+                    var firstLineOldChangeStart = change.OldPosition - firstLineOld.Start;
+                    var firstLineNewChangeStart = change.NewPosition - firstLineNew.Start;
+
+                    if (!firstLineOldText.ConsistOnlyFromLineBreaks(firstLineOldChangeStart, Math.Min(firstLineOldText.Length - firstLineOldChangeStart, change.OldLength)) ||
+                        !firstLineNewText.ConsistOnlyFromLineBreaks(firstLineNewChangeStart, Math.Min(firstLineNewText.Length - firstLineNewChangeStart, change.NewLength)))
+                    {
+                        var adornmentOnLine = GetAdornmentOnLine(firstLineOld.LineNumber);
+                        if (adornmentOnLine != null && !adornmentOnLine.IsInEditMode)
+                        {
+                            adornmentOnLine.IsInEditMode = true;
+                        }
+                    }
+                }
             }
         }
 

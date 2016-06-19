@@ -97,6 +97,8 @@ namespace VsTeXCommentsExtension.View
 
         public void Update(TeXCommentTag tag, LineSpan lineSpan)
         {
+            LineSpan = lineSpan;
+
             bool changed = this.tag.Text != tag.Text;
             if (IsInEditMode)
             {
@@ -105,7 +107,6 @@ namespace VsTeXCommentsExtension.View
             else if (changed)
             {
                 this.tag = tag;
-                LineSpan = lineSpan;
                 UpdateImageAsync();
             }
         }
