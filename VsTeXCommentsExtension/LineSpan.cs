@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace VsTeXCommentsExtension
 {
+    [DebuggerDisplay("FirstLine: {FirstLine}, LastLine: {LastLine}")]
     public struct LineSpan : IEquatable<LineSpan>
     {
         public readonly int FirstLine;
