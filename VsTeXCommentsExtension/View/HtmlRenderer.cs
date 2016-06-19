@@ -14,8 +14,10 @@ namespace VsTeXCommentsExtension.View
     public class HtmlRenderer : IRenderer<BitmapSource>, IDisposable
     {
         private const int WaitingIntervalMs = 50;
+        private const int DefaultBrowserWidth = 2048;
+        private const int DefaultBrowserHeight = 128;
 
-        private readonly WebBrowser webBrowser = new WebBrowser();
+        private readonly WebBrowser webBrowser;
         private readonly ObjectForScripting objectForScripting = new ObjectForScripting();
         private readonly BGR backgroundColor;
 
@@ -27,13 +29,19 @@ namespace VsTeXCommentsExtension.View
         {
             this.backgroundColor = new BGR { R = backgroundColor.R, G = backgroundColor.G, B = backgroundColor.B };
 
+            webBrowser = new WebBrowser()
+            {
+                Width = DefaultBrowserWidth,
+                Height = DefaultBrowserHeight,
+                Margin = new Padding(0, 0, 0, 0),
+                ScrollBarsEnabled = false,
+                ScriptErrorsSuppressed = true,
+                ObjectForScripting = objectForScripting
+            };
             webBrowser.DocumentCompleted += WebBrowser_DocumentCompleted;
-            webBrowser.Width = 1000;
-            webBrowser.Height = 1000;
-            webBrowser.ScriptErrorsSuppressed = true;
-            webBrowser.ObjectForScripting = objectForScripting;
             webBrowser.Navigate("about:blank");
             webBrowser.Document.OpenNew(true);
+
             objectForScripting.RenderingDone += () => mathJaxRenderingDone = true;
         }
 
@@ -81,32 +89,39 @@ namespace VsTeXCommentsExtension.View
             }
             else
             {
-                const int Margin = 8;
+                webBrowser.Width = DefaultBrowserWidth;
+                webBrowser.Height = DefaultBrowserHeight;
 
+                const int ExtraMargin = 4;
                 var myDiv = webBrowser.Document.GetElementById("myDiv");
-                var width = myDiv.ClientRectangle.Width + 2 * Margin;
-                var height = myDiv.ClientRectangle.Height + 2 * Margin;
+                var width = myDiv.OffsetRectangle.X + myDiv.ScrollRectangle.Width + ExtraMargin;
+                var height = myDiv.OffsetRectangle.Y + myDiv.ScrollRectangle.Height + ExtraMargin;
 
-                var text = webBrowser.DocumentText ?? string.Empty;
+                webBrowser.Width = width;
+                webBrowser.Height = height;
+
                 var pixelFormat = PixelFormat.Format24bppRgb;
-
                 using (var bitmap = new Bitmap(width, height, pixelFormat))
                 {
                     var viewObject = webBrowser.Document.DomDocument as IViewObject;
 
                     if (viewObject != null)
                     {
-                        var sourceRect = new tagRECT();
-                        sourceRect.left = 0;
-                        sourceRect.top = 0;
-                        sourceRect.right = width;
-                        sourceRect.bottom = height;
+                        var webBrowserRectangle = new tagRECT
+                        {
+                            left = myDiv.OffsetRectangle.Left,
+                            top = myDiv.OffsetRectangle.Top,
+                            right = myDiv.OffsetRectangle.Right,
+                            bottom = myDiv.OffsetRectangle.Bottom
+                        };
 
-                        var targetRect = new tagRECT();
-                        targetRect.left = 0;
-                        targetRect.top = 0;
-                        targetRect.right = webBrowser.Width;
-                        targetRect.bottom = webBrowser.Height;
+                        var bitmapRectangle = new tagRECT
+                        {
+                            left = 0,
+                            top = 0,
+                            right = width,
+                            bottom = height
+                        };
 
                         using (var gr = Graphics.FromImage(bitmap))
                         {
@@ -115,15 +130,11 @@ namespace VsTeXCommentsExtension.View
                             try
                             {
                                 int hr = viewObject.Draw(1 /*DVASPECT_CONTENT*/,
-                                                (int)-1,
-                                                IntPtr.Zero,
-                                                IntPtr.Zero,
-                                                IntPtr.Zero,
+                                                -1, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero,
                                                 hdc,
-                                                ref targetRect,
-                                                ref sourceRect,
-                                                IntPtr.Zero,
-                                                (uint)0);
+                                                ref bitmapRectangle,
+                                                ref webBrowserRectangle,
+                                                IntPtr.Zero, 0);
                             }
                             finally
                             {
@@ -242,12 +253,10 @@ namespace VsTeXCommentsExtension.View
             [return: MarshalAs(UnmanagedType.I4)]
             [PreserveSig]
             int Draw(
-                ////tagDVASPECT                
                 [MarshalAs(UnmanagedType.U4)] uint dwDrawAspect,
                 int lindex,
                 IntPtr pvAspect,
                 [In] IntPtr ptd,
-                //// [MarshalAs(UnmanagedType.Struct)] ref DVTARGETDEVICE ptd,
                 IntPtr hdcTargetDev, IntPtr hdcDraw,
                 [MarshalAs(UnmanagedType.Struct)] ref tagRECT lprcBounds,
                 [MarshalAs(UnmanagedType.Struct)] ref tagRECT lprcWBounds,

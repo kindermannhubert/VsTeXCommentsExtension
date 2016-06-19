@@ -31,66 +31,67 @@ namespace VsTeXCommentsExtension.View
             this.Write(@"<!-- saved from url=(0016)http://localhost -->
 <!DOCTYPE html>
 <html>
-    <head>
-        <title></title>
-        <meta http-equiv=""Content-Type"" content=""text/html; charset=UTF-8"" />
-        <meta http-equiv=""X-UA-Compatible"" content=""IE=edge"" />
+	<head>
+		<title></title>
+		<meta http-equiv=""Content-Type"" content=""text/html; charset=UTF-8"" />
+		<meta http-equiv=""X-UA-Compatible"" content=""IE=edge"" />
 
-        <script type=""text/x-mathjax-config"">
+		<script type=""text/x-mathjax-config"">
 MathJax.Hub.Config({
-            showProcessingMessages: false,
-            messageStyle: ""none"",
-            tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
-            });
-        </script>
+			showProcessingMessages: false,
+			messageStyle: ""none"",
+			""HTML-CSS"": { linebreaks: { automatic: true }, width: 'container' },
+			tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+			});
+		</script>
 
-        <script type=""text/javascript"" async src=""https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML"">
+		<script type=""text/javascript"" async src=""https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML"">
 MathJax.Hub.Queue(function () {
-    window.external.RaiseRenderingDone();
+	window.external.RaiseRenderingDone();
 });
-        </script>
-    </head>
+		</script>
+	</head>
 
-    <body style=""color:");
+	<body style=""color:");
             
-            #line 29 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
+            #line 30 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(ColorToString(ForegroundColor)));
             
             #line default
             #line hidden
             this.Write(";background:");
             
-            #line 29 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
+            #line 30 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(ColorToString(BackgroundColor)));
             
             #line default
             #line hidden
             this.Write(";font-family:");
             
-            #line 29 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
+            #line 30 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FontFamily));
             
             #line default
             #line hidden
             this.Write(";font-size:");
             
-            #line 29 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
+            #line 30 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FontSize));
             
             #line default
             #line hidden
-            this.Write("px\">\r\n        <div id=\"myDiv\">\r\n$\\newcommand{\\var}[1]{\\mathord{\\mathit{#1}}}$\r\n");
+            this.Write("px\">\r\n\t\t<div id=\"myDiv\">\r\n$\\newcommand{\\var}[1]{\\mathord{\\mathit{#1}}}$\r\n");
             
-            #line 32 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
+            #line 33 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Source));
             
             #line default
             #line hidden
-            this.Write("\r\n        </div>\r\n    </body>\r\n</html>\r\n");
+            this.Write("\r\n\t\t</div>\r\n\t</body>\r\n</html>\r\n");
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 36 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
+        #line 37 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
  
 public Color ForegroundColor { get; set; }
 public Color BackgroundColor { get; set; }

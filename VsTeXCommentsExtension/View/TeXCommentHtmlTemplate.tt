@@ -6,32 +6,33 @@
 <!-- saved from url=(0016)http://localhost -->
 <!DOCTYPE html>
 <html>
-    <head>
-        <title></title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<head>
+		<title></title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-        <script type="text/x-mathjax-config">
+		<script type="text/x-mathjax-config">
 MathJax.Hub.Config({
-            showProcessingMessages: false,
-            messageStyle: "none",
-            tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
-            });
-        </script>
+			showProcessingMessages: false,
+			messageStyle: "none",
+			"HTML-CSS": { linebreaks: { automatic: true }, width: 'container' },
+			tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+			});
+		</script>
 
-        <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+		<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
 MathJax.Hub.Queue(function () {
-    window.external.RaiseRenderingDone();
+	window.external.RaiseRenderingDone();
 });
-        </script>
-    </head>
+		</script>
+	</head>
 
-    <body style="color:<#= ColorToString(ForegroundColor) #>;background:<#= ColorToString(BackgroundColor) #>;font-family:<#= FontFamily #>;font-size:<#= FontSize #>px">
-        <div id="myDiv">
+	<body style="color:<#= ColorToString(ForegroundColor) #>;background:<#= ColorToString(BackgroundColor) #>;font-family:<#= FontFamily #>;font-size:<#= FontSize #>px">
+		<div id="myDiv">
 $\newcommand{\var}[1]{\mathord{\mathit{#1}}}$
 <#= Source #>
-        </div>
-    </body>
+		</div>
+	</body>
 </html>
 <#+ 
 public Color ForegroundColor { get; set; }
