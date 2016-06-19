@@ -29,7 +29,7 @@ namespace VsTeXCommentsExtension.Integration.Data
 
             this.lineBreakText = lineBreakText;
             textTrimmed = null;
-            Text = text;
+            Text = text.TrimStart(TextSnapshotTeXCommentBlocks.WhiteSpaces);
             Span = span;
         }
 
