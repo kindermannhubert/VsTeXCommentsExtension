@@ -22,8 +22,10 @@ namespace VsTeXCommentsExtension.Integration.View
     internal abstract class IntraTextAdornmentTagger<TDataTag, TAdornment> : ITagger<IntraTextAdornmentTag>
         where TAdornment : UIElement, ITagAdornment
     {
+        private const int MaxAdornmentPoolSize = 128;
+
         private readonly List<SnapshotSpan> invalidatedSpans = new List<SnapshotSpan>();
-        //private readonly List<TAdornment> adornmentsPool = new List<TAdornment>();
+        private readonly List<TAdornment> adornmentsPool = new List<TAdornment>(MaxAdornmentPoolSize);
         private Dictionary<AdornmentCacheKey, TAdornment> adornmentsCache = new Dictionary<AdornmentCacheKey, TAdornment>();
 
         protected readonly TextSnapshotTeXCommentBlocks texCommentBlocks = new TextSnapshotTeXCommentBlocks();
@@ -241,16 +243,27 @@ namespace VsTeXCommentsExtension.Integration.View
                         UpdateAdornment(adornment, tagData.Tag, adornmentInfo.Span.Span);
                         toRemove.Remove(key);
 
-                        //Debug.WriteLine($"updating adornment {adornment.DebugIndex}");
+                        Debug.WriteLine($"Updating adornment {adornment.DebugIndex}");
                     }
                     else
                     {
                         adornmentInfo = tagData.GetAdornmentInfo(Mode);
-                        adornment = CreateAdornment(tagData.Tag, adornmentInfo.Span, Mode);
+
+                        if (adornmentsPool.Count > 0)
+                        {
+                            adornment = adornmentsPool[adornmentsPool.Count - 1];
+                            adornmentsPool.RemoveAt(adornmentsPool.Count - 1);
+                            UpdateAdornment(adornment, tagData.Tag, adornmentInfo.Span.Span);
+                            adornment.IsInEditMode = false;
+                            Debug.WriteLine($"Reusing adornment {adornment.DebugIndex} from pool");
+                        }
+                        else
+                        {
+                            adornment = CreateAdornment(tagData.Tag, adornmentInfo.Span, Mode);
+                            Debug.WriteLine($"Creating adornment {adornment.DebugIndex}");
+                        }
 
                         if (adornment == null) continue;
-
-                        //Debug.WriteLine($"creating adornment {adornment.DebugIndex}");
 
                         // Get the adornment to measure itself. Its DesiredSize property is used to determine
                         // how much space to leave between text for this adornment.
@@ -265,18 +278,24 @@ namespace VsTeXCommentsExtension.Integration.View
                         adornmentsCache.Add(key, adornment);
                     }
 
-                    AdornmentRemovedCallback adornmentRemovedCallback =
-                        (object tag, UIElement element) =>
-                        {
-                            //Debug.WriteLine($"removing adornment {adornment.DebugIndex}");
-                        };
+                    //AdornmentRemovedCallback adornmentRemovedCallback =
+                    //    (object tag, UIElement element) =>
+                    //    {
+                    //        Debug.WriteLine($"Removing adornment {adornment.DebugIndex}");
+                    //    };
 
                     Debug.WriteLine($"Yielding adornment {adornment.DebugIndex} with span {adornmentInfo.Span}");
-                    yield return new TagSpan<IntraTextAdornmentTag>(adornmentInfo.Span, new IntraTextAdornmentTag(adornment, adornmentRemovedCallback, adornmentInfo.Affinity));
+                    yield return new TagSpan<IntraTextAdornmentTag>(adornmentInfo.Span, new IntraTextAdornmentTag(adornment, null, adornmentInfo.Affinity));
                 }
 
-                foreach (var snapshotSpan in toRemove)
-                    adornmentsCache.Remove(snapshotSpan);
+                foreach (var adornmentKey in toRemove)
+                {
+                    if (adornmentsPool.Count < MaxAdornmentPoolSize)
+                    {
+                        adornmentsPool.Add(adornmentsCache[adornmentKey]);
+                    }
+                    adornmentsCache.Remove(adornmentKey);
+                }
             }
         }
 
