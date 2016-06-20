@@ -167,5 +167,17 @@ namespace VsTeXCommentsExtension.View
             btnShow.Visibility = IsInEditMode ? Visibility.Visible : Visibility.Collapsed;
             leftBorderGroupPanel.Visibility = !IsInEditMode ? Visibility.Visible : Visibility.Collapsed;
         }
+
+        private void MenuItem_Refresh_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void MenuItem_SaveAsImage_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void MenuItem_ClearGlobalCache_Click(object sender, RoutedEventArgs e)
+        {
+        }
     }
 }

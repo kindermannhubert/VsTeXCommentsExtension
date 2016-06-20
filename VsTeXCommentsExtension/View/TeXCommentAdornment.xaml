@@ -5,9 +5,17 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:VsTeXCommentsExtension.View"
              x:ClassModifier="internal"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="24" d:DesignWidth="300">
     <StackPanel Orientation="Horizontal">
+        <StackPanel.Resources>
+            <ContextMenu x:Key="ctx" >
+                <MenuItem Header="Refresh (not implemented yet)" Click="MenuItem_Refresh_Click" />
+                <MenuItem Header="Save As Image... (not implemented yet)" Click="MenuItem_SaveAsImage_Click" />
+                <MenuItem Header="Clear Global Cache (not implemented yet)" Click="MenuItem_ClearGlobalCache_Click" />
+            </ContextMenu>
+        </StackPanel.Resources>
+        
         <StackPanel x:Name="leftBorderGroupPanel" Orientation="Horizontal">
             <StackPanel x:Name="leftBorderPanel1" Width="1" Margin="0,0,2,0"/>
             <StackPanel x:Name="leftBorderPanel2" Width="1" Margin="0,0,4,0"/>
@@ -16,12 +24,7 @@
         <Image x:Name="imageControl" Margin="0,2,0,0"/>
         <ProgressBar x:Name="progressBar" IsIndeterminate="True" Height="8" Width="128" />
 
-        <Button x:Name="btnEdit" Click="ButtonEdit_Click" BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Margin="12,0,0,0" >
-            <Image Source="../Resources/Edit.png" Width="12" Height="12" />
-        </Button>
-
-        <Button x:Name="btnShow" Click="ButtonShow_Click" BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Margin="12,0,0,0" >
-            <Image Source="../Resources/Show.png" Width="12" Height="12"/>
-        </Button>
+        <local:DropDownImageButton x:Name="btnEdit" ImageSource="../Resources/Edit.png" Click="ButtonEdit_Click" Margin="12,0,0,0" ContextMenu="{StaticResource ctx}" />
+        <local:DropDownImageButton x:Name="btnShow" ImageSource="../Resources/Show.png" Click="ButtonShow_Click" Margin="12,0,0,0" ContextMenu="{StaticResource ctx}" />
     </StackPanel>
 </UserControl>

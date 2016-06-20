@@ -70,6 +70,9 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="LineSpan.cs" />
     <Compile Include="Integration\TeXCommentBlock.cs" />
+    <Compile Include="View\DropDownImageButton.xaml.cs">
+      <DependentUpon>DropDownImageButton.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\HtmlRendererCache.cs" />
     <Compile Include="View\IRenderingManager.cs" />
     <Compile Include="View\IRenderer.cs" />
@@ -101,6 +104,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="View\DropDownImageButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\TeXCommentAdornment.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -114,6 +121,7 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\DropDown.png" />
     <Content Include="View\TeXCommentHtmlTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>TeXCommentHtmlTemplate.cs</LastGenOutput>
