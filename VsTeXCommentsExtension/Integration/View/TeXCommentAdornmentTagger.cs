@@ -4,7 +4,6 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Media;
 using VsTeXCommentsExtension.Integration.Data;
@@ -67,26 +66,28 @@ namespace VsTeXCommentsExtension.Integration.View
             {
                 //white space changes are treated specialy (they don't have to trigger switch to edit mode)
 
-                //
+                //switch to edit mode can happen only for adornment on first change line and change must be on the end of line (next lines will be over or before other adornment thus we are not interested in them)
                 var firstLineOld = e.Before.GetLineFromPosition(change.OldPosition);
                 if (change.OldPosition == firstLineOld.End)
                 {
                     var firstLineNew = e.After.GetLineFromPosition(change.NewPosition);
-                    Debug.Assert(firstLineOld.LineNumber == firstLineNew.LineNumber);
-
-                    var firstLineOldText = firstLineOld.GetTextIncludingLineBreak();
-                    var firstLineNewText = firstLineNew.GetTextIncludingLineBreak();
-
-                    var firstLineOldChangeStart = change.OldPosition - firstLineOld.Start;
-                    var firstLineNewChangeStart = change.NewPosition - firstLineNew.Start;
-
-                    if (!firstLineOldText.ConsistOnlyFromLineBreaks(firstLineOldChangeStart, Math.Min(firstLineOldText.Length - firstLineOldChangeStart, change.OldLength)) ||
-                        !firstLineNewText.ConsistOnlyFromLineBreaks(firstLineNewChangeStart, Math.Min(firstLineNewText.Length - firstLineNewChangeStart, change.NewLength)))
+                    if (firstLineOld.LineNumber == firstLineNew.LineNumber) //should be most of the cases
                     {
-                        var adornmentOnLine = GetAdornmentOnLine(firstLineOld.LineNumber);
-                        if (adornmentOnLine != null && !adornmentOnLine.IsInEditMode)
+                        var firstLineOldText = firstLineOld.GetTextIncludingLineBreak();
+                        var firstLineNewText = firstLineNew.GetTextIncludingLineBreak();
+
+                        var firstLineOldChangeStart = change.OldPosition - firstLineOld.Start;
+                        var firstLineNewChangeStart = change.NewPosition - firstLineNew.Start;
+
+                        //when we insert or delete new line after adornment, we do not want to switch to edit mode
+                        if (!firstLineOldText.ConsistOnlyFromLineBreaks(firstLineOldChangeStart, Math.Min(firstLineOldText.Length - firstLineOldChangeStart, change.OldLength)) ||
+                            !firstLineNewText.ConsistOnlyFromLineBreaks(firstLineNewChangeStart, Math.Min(firstLineNewText.Length - firstLineNewChangeStart, change.NewLength)))
                         {
-                            adornmentOnLine.IsInEditMode = true;
+                            var adornmentOnLine = GetAdornmentOnLine(firstLineOld.LineNumber);
+                            if (adornmentOnLine != null && !adornmentOnLine.IsInEditMode)
+                            {
+                                adornmentOnLine.IsInEditMode = true;
+                            }
                         }
                     }
                 }
