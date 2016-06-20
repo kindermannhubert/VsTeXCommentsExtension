@@ -1,10 +1,8 @@
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Media;
 using VsTeXCommentsExtension.Integration.Data;
 using VsTeXCommentsExtension.View;
@@ -23,39 +21,28 @@ namespace VsTeXCommentsExtension.Integration.View
         : IntraTextAdornmentTagTransformer<TeXCommentTag, TeXCommentAdornment>
     {
         private readonly IRenderingManager renderingManager;
-        private readonly SolidColorBrush commentsForegroundColor;
-        private readonly Font textEditorFont;
+        private readonly SolidColorBrush commentsForegroundBrush;
         private readonly List<TeXCommentAdornment> linesWithAdornments = new List<TeXCommentAdornment>();
 
         internal static ITagger<IntraTextAdornmentTag> GetTagger(
             IWpfTextView view,
             Lazy<ITagAggregator<TeXCommentTag>> texCommentTagger,
-            IEditorFormatMapService editorFormatMapService,
             IRenderingManager renderingManager,
-            Font textEditorFont)
+            SolidColorBrush commentsForegroundBrush)
         {
-            var commentsForegroundColor = System.Windows.Media.Brushes.Black;
-            try
-            {
-                commentsForegroundColor = (SolidColorBrush)editorFormatMapService.GetEditorFormatMap("Text Editor").GetProperties("Comment")["Foreground"];
-            }
-            catch { }
-
             return view.Properties.GetOrCreateSingletonProperty(
-                () => new TeXCommentAdornmentTagger(view, renderingManager, texCommentTagger.Value, commentsForegroundColor, textEditorFont));
+                () => new TeXCommentAdornmentTagger(view, renderingManager, texCommentTagger.Value, commentsForegroundBrush));
         }
 
         private TeXCommentAdornmentTagger(
             IWpfTextView view,
             IRenderingManager renderingManager,
             ITagAggregator<TeXCommentTag> texCommentTagger,
-            SolidColorBrush commentsForegroundColor,
-            Font textEditorFont)
+            SolidColorBrush commentsForegroundBrush)
             : base(view, texCommentTagger, IntraTextAdornmentTaggerDisplayMode.HideOriginalText)
         {
             this.renderingManager = renderingManager;
-            this.commentsForegroundColor = commentsForegroundColor;
-            this.textEditorFont = textEditorFont;
+            this.commentsForegroundBrush = commentsForegroundBrush;
             view.TextBuffer.Changed += TextBuffer_Changed;
         }
 
@@ -108,9 +95,7 @@ namespace VsTeXCommentsExtension.Integration.View
 
             var adornment = new TeXCommentAdornment(
                 dataTag,
-                commentsForegroundColor.Color,
-                (view.Background as SolidColorBrush)?.Color ?? Colors.White,
-                textEditorFont,
+                commentsForegroundBrush,
                 renderingManager,
                 lineSpan,
                 span =>

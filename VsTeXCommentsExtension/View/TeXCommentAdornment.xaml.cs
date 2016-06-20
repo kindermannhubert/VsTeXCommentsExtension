@@ -16,13 +16,10 @@ namespace VsTeXCommentsExtension.View
     /// </summary>
     internal partial class TeXCommentAdornment : UserControl, ITagAdornment
     {
-        private const double RenderScale = 3;
+        public const double RenderScale = 3;
 
         private readonly List<Span> spansOfChangesFromEditing = new List<Span>();
         private readonly Action<Span> refreshTags;
-        private readonly Color foreground;
-        private readonly Color background;
-        private readonly System.Drawing.Font font;
         private readonly IRenderingManager renderingManager;
 
         private TeXCommentTag tag;
@@ -64,9 +61,7 @@ namespace VsTeXCommentsExtension.View
 
         public TeXCommentAdornment(
             TeXCommentTag tag,
-            Color foreground,
-            Color background,
-            System.Drawing.Font font,
+            SolidColorBrush commentsForegroundBrush,
             IRenderingManager renderingManager,
             LineSpan lineSpan,
             Action<Span> refreshTags,
@@ -74,9 +69,6 @@ namespace VsTeXCommentsExtension.View
         {
             this.tag = tag;
             this.refreshTags = refreshTags;
-            this.foreground = foreground;
-            this.background = background;
-            this.font = font;
             this.renderingManager = renderingManager;
 
             LineSpan = lineSpan;
@@ -85,10 +77,8 @@ namespace VsTeXCommentsExtension.View
 
             InitializeComponent();
 
-            var leftBorderPanelBrush = new SolidColorBrush(foreground);
-            leftBorderPanelBrush.Freeze();
-            leftBorderPanel1.Background = leftBorderPanelBrush;
-            leftBorderPanel2.Background = leftBorderPanelBrush;
+            leftBorderPanel1.Background = commentsForegroundBrush;
+            leftBorderPanel2.Background = commentsForegroundBrush;
 
             isInEditMode = false;
             SetUpControlsVisibility();
@@ -125,17 +115,7 @@ namespace VsTeXCommentsExtension.View
         {
             imageControl.Source = null;
 
-            var template = new TeXCommentHtmlTemplate()
-            {
-                BackgroundColor = background,
-                ForegroundColor = foreground,
-                FontFamily = font.FontFamily.Name,
-                FontSize = RenderScale * font.Size,
-                Source = tag.GetTextWithoutCommentMarks()
-            };
-
-            var htmlContent = template.TransformText();
-            renderingManager.LoadContentAsync(htmlContent, ImageIsReady);
+            renderingManager.LoadContentAsync(tag.GetTextWithoutCommentMarks(), ImageIsReady);
         }
 
         private void ButtonEdit_Click(object sender, RoutedEventArgs e)

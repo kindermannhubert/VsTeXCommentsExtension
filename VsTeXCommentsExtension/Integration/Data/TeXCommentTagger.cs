@@ -34,7 +34,9 @@ namespace VsTeXCommentsExtension.Integration.Data
             //buffer.Properties.AddProperty(texCommentBlocks);
         }
 
+#pragma warning disable CS0067 // The event is never used
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
+#pragma warning restore CS0067 // The event is never used
 
         //TODO perf/allocations/caching per buffer version
         public IEnumerable<ITagSpan<TeXCommentTag>> GetTags(NormalizedSnapshotSpanCollection spans)

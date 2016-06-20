@@ -9,25 +9,38 @@ using System.Windows.Forms;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 
+using wpf = System.Windows.Media;
+
 namespace VsTeXCommentsExtension.View
 {
     public class HtmlRenderer : IRenderer<BitmapSource>, IDisposable
     {
+        private const int CacheVersion = 1; //increase when we want to invalidate cached results
         private const int WaitingIntervalMs = 50;
         private const int DefaultBrowserWidth = 2048;
         private const int DefaultBrowserHeight = 128;
 
+        private readonly HtmlRendererCache cache = new HtmlRendererCache();
         private readonly WebBrowser webBrowser;
         private readonly ObjectForScripting objectForScripting = new ObjectForScripting();
-        private readonly BGR backgroundColor;
+        private readonly wpf.Color backgroundColor;
+        private readonly wpf.Color foregroundColor;
+        private readonly Font font;
+        private readonly BGR backgroundColorBgr;
+        private readonly double renderScale;
 
         private volatile BitmapSource resultImage;
         private volatile bool documentCompleted;
         private volatile bool mathJaxRenderingDone;
+        private volatile string currentContent;
 
-        public HtmlRenderer(System.Windows.Media.Color backgroundColor)
+        public HtmlRenderer(double renderScale, wpf.Color backgroundColor, wpf.Color foregroundColor, Font font)
         {
-            this.backgroundColor = new BGR { R = backgroundColor.R, G = backgroundColor.G, B = backgroundColor.B };
+            this.renderScale = renderScale;
+            this.backgroundColor = backgroundColor;
+            this.foregroundColor = foregroundColor;
+            this.font = font;
+            this.backgroundColorBgr = new BGR { R = backgroundColor.R, G = backgroundColor.G, B = backgroundColor.B };
 
             webBrowser = new WebBrowser()
             {
@@ -54,10 +67,18 @@ namespace VsTeXCommentsExtension.View
         {
             Debug.Assert(content != null);
 
+#pragma warning disable CS0420 // A reference to a volatile field will not be treated as volatile
+            if (cache.TryGetImage(content, CacheVersion, out resultImage))
+            {
+                return resultImage;
+            }
+#pragma warning restore CS0420 // A reference to a volatile field will not be treated as volatile
+
             documentCompleted = false;
             mathJaxRenderingDone = false;
             resultImage = null;
-            webBrowser.DocumentText = content;
+            webBrowser.DocumentText = GetHtmlSource(content);
+            currentContent = content;
 
             //wait until document is loaded
             while (!documentCompleted)
@@ -142,7 +163,7 @@ namespace VsTeXCommentsExtension.View
                             }
                         }
 
-                        using (var croppedBitmap = CropToContent(bitmap, backgroundColor))
+                        using (var croppedBitmap = CropToContent(bitmap, backgroundColorBgr))
                         {
                             var bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(
                                                                     croppedBitmap.GetHbitmap(),
@@ -150,6 +171,7 @@ namespace VsTeXCommentsExtension.View
                                                                     Int32Rect.Empty,
                                                                     BitmapSizeOptions.FromEmptyOptions());
 
+                            cache.Add(currentContent, CacheVersion, croppedBitmap);
                             resultImage = bitmapSource;
                         }
                     }
@@ -237,6 +259,20 @@ namespace VsTeXCommentsExtension.View
             }
 
             public override int GetHashCode() => B ^ G ^ R;
+        }
+
+        private string GetHtmlSource(string content)
+        {
+            var template = new TeXCommentHtmlTemplate()
+            {
+                BackgroundColor = backgroundColor,
+                ForegroundColor = foregroundColor,
+                FontFamily = font.FontFamily.Name,
+                FontSize = renderScale * font.Size,
+                Source = content
+            };
+
+            return template.TransformText();
         }
 
         public void Dispose()

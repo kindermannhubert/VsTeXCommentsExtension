@@ -20,8 +20,8 @@ namespace VsTeXCommentsExtension.Integration.View
     internal sealed class TeXCommentAdornmentTaggerProvider : IViewTaggerProvider
     {
         private static readonly object sync = new object();
-        private static Font textEditorFont;
         private static IRenderingManager renderingManager;
+        private static SolidColorBrush foregroundColorBrush;
 
 #pragma warning disable 649 // "field never assigned to" -- field is set by MEF.
         [Import]
@@ -38,16 +38,24 @@ namespace VsTeXCommentsExtension.Integration.View
         {
             var wpfTextView = (IWpfTextView)textView;
 
-            if (textEditorFont == null)
+            if (renderingManager == null)
             {
                 lock (sync)
                 {
-                    if (textEditorFont == null)
+                    if (renderingManager == null)
                     {
-                        textEditorFont = LoadTextEditorFont(VsFontsAndColorsInformationService);
-
+                        var textEditorFont = LoadTextEditorFont(VsFontsAndColorsInformationService);
                         var backgroundColor = (wpfTextView.Background as SolidColorBrush)?.Color ?? Colors.White;
-                        renderingManager = new RenderingManager(new HtmlRenderer(backgroundColor));
+
+                        foregroundColorBrush = System.Windows.Media.Brushes.Black;
+                        try
+                        {
+                            foregroundColorBrush = (SolidColorBrush)EditorFormatMapService.GetEditorFormatMap("Text Editor").GetProperties("Comment")["Foreground"];
+                        }
+                        catch { }
+
+                        var renderer = new HtmlRenderer(TeXCommentAdornment.RenderScale, backgroundColor, foregroundColorBrush.Color, textEditorFont);
+                        renderingManager = new RenderingManager(renderer);
                     }
                 }
             }
@@ -65,9 +73,8 @@ namespace VsTeXCommentsExtension.Integration.View
                 wpfTextView,
                 new Lazy<ITagAggregator<TeXCommentTag>>(
                     () => BufferTagAggregatorFactoryService.CreateTagAggregator<TeXCommentTag>(textView.TextBuffer)),
-                EditorFormatMapService,
-                renderingManager,
-                textEditorFont)
+                    renderingManager,
+                    foregroundColorBrush)
                 as ITagger<T>;
         }
 
