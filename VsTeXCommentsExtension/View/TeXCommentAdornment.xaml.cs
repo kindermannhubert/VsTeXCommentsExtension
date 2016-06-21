@@ -59,6 +59,21 @@ namespace VsTeXCommentsExtension.View
 
         public LineSpan LineSpan { get; private set; }
 
+        private SolidColorBrush commentsForegroundBrush;
+        public SolidColorBrush CommentsForegroundBrush
+        {
+            get { return commentsForegroundBrush; }
+            set
+            {
+                if (commentsForegroundBrush != value)
+                {
+                    commentsForegroundBrush = value;
+                    leftBorderPanel1.Background = value;
+                    leftBorderPanel2.Background = value;
+                }
+            }
+        }
+
         public TeXCommentAdornment(
             TeXCommentTag tag,
             SolidColorBrush commentsForegroundBrush,
@@ -77,8 +92,7 @@ namespace VsTeXCommentsExtension.View
 
             InitializeComponent();
 
-            leftBorderPanel1.Background = commentsForegroundBrush;
-            leftBorderPanel2.Background = commentsForegroundBrush;
+            CommentsForegroundBrush = commentsForegroundBrush;
 
             isInEditMode = false;
             SetUpControlsVisibility();

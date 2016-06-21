@@ -17,14 +17,14 @@ namespace VsTeXCommentsExtension.Integration.View
     /// This is a sample usage of the <see cref="IntraTextAdornmentTagTransformer"/> utility class.
     /// </para>
     /// </remarks>
-    internal sealed class TeXCommentAdornmentTagger
-        : IntraTextAdornmentTagTransformer<TeXCommentTag, TeXCommentAdornment>
+    internal sealed class TeXCommentAdornmentTagger : IntraTextAdornmentTagTransformer<TeXCommentTag, TeXCommentAdornment>
     {
         private readonly IRenderingManager renderingManager;
-        private readonly SolidColorBrush commentsForegroundBrush;
         private readonly List<TeXCommentAdornment> linesWithAdornments = new List<TeXCommentAdornment>();
 
-        internal static ITagger<IntraTextAdornmentTag> GetTagger(
+        public SolidColorBrush CommentsForegroundBrush { get; set; }
+
+        internal static TeXCommentAdornmentTagger GetTagger(
             IWpfTextView view,
             Lazy<ITagAggregator<TeXCommentTag>> texCommentTagger,
             IRenderingManager renderingManager,
@@ -42,7 +42,7 @@ namespace VsTeXCommentsExtension.Integration.View
             : base(view, texCommentTagger, IntraTextAdornmentTaggerDisplayMode.HideOriginalText)
         {
             this.renderingManager = renderingManager;
-            this.commentsForegroundBrush = commentsForegroundBrush;
+            CommentsForegroundBrush = commentsForegroundBrush;
             view.TextBuffer.Changed += TextBuffer_Changed;
         }
 
@@ -81,6 +81,11 @@ namespace VsTeXCommentsExtension.Integration.View
             }
         }
 
+        public void InvalidateAll()
+        {
+            InvalidateSpans(new List<SnapshotSpan>() { new SnapshotSpan(Snapshot, new Span(0, Snapshot.Length)) });
+        }
+
         public override void Dispose()
         {
             base.Dispose();
@@ -95,7 +100,7 @@ namespace VsTeXCommentsExtension.Integration.View
 
             var adornment = new TeXCommentAdornment(
                 dataTag,
-                commentsForegroundBrush,
+                CommentsForegroundBrush,
                 renderingManager,
                 lineSpan,
                 span =>
@@ -127,6 +132,7 @@ namespace VsTeXCommentsExtension.Integration.View
             MarkAdornmentLines(adornment.LineSpan, null); //remove old
             MarkAdornmentLines(lineSpan, adornment); //add new
 
+            adornment.CommentsForegroundBrush = CommentsForegroundBrush;
             adornment.Update(dataTag, lineSpan);
         }
 

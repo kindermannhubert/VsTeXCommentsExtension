@@ -23,10 +23,7 @@ namespace VsTeXCommentsExtension.View
         private readonly HtmlRendererCache cache = new HtmlRendererCache();
         private readonly WebBrowser webBrowser;
         private readonly ObjectForScripting objectForScripting = new ObjectForScripting();
-        private readonly wpf.Color backgroundColor;
-        private readonly wpf.Color foregroundColor;
         private readonly Font font;
-        private readonly BGR backgroundColorBgr;
         private readonly double renderScale;
 
         private volatile BitmapSource resultImage;
@@ -34,13 +31,27 @@ namespace VsTeXCommentsExtension.View
         private volatile bool mathJaxRenderingDone;
         private volatile string currentContent;
 
-        public HtmlRenderer(double renderScale, wpf.Color backgroundColor, wpf.Color foregroundColor, Font font)
+        public wpf.Color Foreground { get; set; }
+
+        private BGR backgroundBgr;
+        private wpf.Color background;
+        public wpf.Color Background
+        {
+            get { return background; }
+            set
+            {
+                background = value;
+                backgroundBgr = new BGR { R = value.R, G = value.G, B = value.B };
+            }
+        }
+
+
+        public HtmlRenderer(double renderScale, wpf.Color background, wpf.Color foreground, Font font)
         {
             this.renderScale = renderScale;
-            this.backgroundColor = backgroundColor;
-            this.foregroundColor = foregroundColor;
+            this.Background = background;
+            this.Foreground = foreground;
             this.font = font;
-            this.backgroundColorBgr = new BGR { R = backgroundColor.R, G = backgroundColor.G, B = backgroundColor.B };
 
             webBrowser = new WebBrowser()
             {
@@ -68,7 +79,7 @@ namespace VsTeXCommentsExtension.View
             Debug.Assert(content != null);
 
 #pragma warning disable CS0420 // A reference to a volatile field will not be treated as volatile
-            if (cache.TryGetImage(content, CacheVersion, out resultImage))
+            if (cache.TryGetImage(content, GetCacheVersion(), out resultImage))
             {
                 return resultImage;
             }
@@ -163,7 +174,7 @@ namespace VsTeXCommentsExtension.View
                             }
                         }
 
-                        using (var croppedBitmap = CropToContent(bitmap, backgroundColorBgr))
+                        using (var croppedBitmap = CropToContent(bitmap, backgroundBgr))
                         {
                             var bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(
                                                                     croppedBitmap.GetHbitmap(),
@@ -171,13 +182,21 @@ namespace VsTeXCommentsExtension.View
                                                                     Int32Rect.Empty,
                                                                     BitmapSizeOptions.FromEmptyOptions());
 
-                            cache.Add(currentContent, CacheVersion, croppedBitmap);
+                            cache.Add(currentContent, GetCacheVersion(), croppedBitmap);
                             resultImage = bitmapSource;
                         }
                     }
                 }
             }
         }
+
+        private int GetCacheVersion() =>
+            unchecked(
+                (977 * CacheVersion) ^
+                (757 * Foreground.GetHashCode()) ^
+                (563 * Background.GetHashCode()) ^
+                (563 * font.FontFamily.Name.GetHashCode()) ^
+                (467 * (int)font.Size));
 
         private static unsafe Bitmap CropToContent(Bitmap source, BGR background)
         {
@@ -265,8 +284,8 @@ namespace VsTeXCommentsExtension.View
         {
             var template = new TeXCommentHtmlTemplate()
             {
-                BackgroundColor = backgroundColor,
-                ForegroundColor = foregroundColor,
+                BackgroundColor = background,
+                ForegroundColor = Foreground,
                 FontFamily = font.FontFamily.Name,
                 FontSize = renderScale * font.Size,
                 Source = content
