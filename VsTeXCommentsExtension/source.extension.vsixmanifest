@@ -2,7 +2,7 @@
 
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="D7EC21C7-846F-4E42-BFE8-E74CD47605F9" Version="0.2" Language="en-US" Publisher="Hubert Kindermann" />
+    <Identity Id="D7EC21C7-846F-4E42-BFE8-E74CD47605F9" Version="0.2.0.1" Language="en-US" Publisher="Hubert Kindermann" />
     <DisplayName>VsTeXCommentsExtension</DisplayName>
     <Description xml:space="preserve">Intra-text adornment extension to the Visual Studio Editor for rendering TeX math comments inside the editor.</Description>
     <MoreInfo>https://github.com/kindermannhubert/VsTeXCommentsExtension</MoreInfo>
@@ -11,7 +11,8 @@
     <Tags>TeX Comments</Tags>
   </Metadata>
   <Installation>
-    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="14.0" />
+    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[14.0,15.0)" />
+    <InstallationTarget Version="[14.0,15.0)" Id="Microsoft.VisualStudio.Community" />
   </Installation>
   <Dependencies>
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="4.5" />
