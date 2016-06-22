@@ -3,6 +3,8 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using VsTeXCommentsExtension.Integration.Data;
 using VsTeXCommentsExtension.View;
@@ -76,9 +78,28 @@ namespace VsTeXCommentsExtension.Integration.View
             }
         }
 
+        private DateTime lastTimeZoomChanged;
         private void ZoomChanged(IWpfTextView textView, double zoomPercentage)
         {
-            InvalidateAndRerenderAll();
+            //Zoom is changing continuously (while changing by mouse wheel).
+            //Do we want to wait a moment before triggring invalidation (we hope that after moment changing is done).
+            const int delayMs = 1000;
+            var now = DateTime.Now;
+            if ((now - lastTimeZoomChanged).TotalMilliseconds > delayMs)
+            {
+                Task.Run(
+                    () =>
+                    {
+                        while ((DateTime.Now - lastTimeZoomChanged).TotalMilliseconds < delayMs)
+                        {
+                            Thread.Sleep(delayMs / 10);
+                        }
+                        lastTimeZoomChanged = DateTime.Now;
+                        textView.VisualElement.Dispatcher.BeginInvoke(new Action(InvalidateAndRerenderAll));
+                    });
+            }
+
+            lastTimeZoomChanged = now;
         }
 
         private void ColorsChanged(IWpfTextView textView, SolidColorBrush foreground, SolidColorBrush background)
