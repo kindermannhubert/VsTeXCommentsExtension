@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,14 +17,16 @@ namespace VsTeXCommentsExtension.View
     /// </summary>
     internal partial class TeXCommentAdornment : UserControl, ITagAdornment
     {
-        public const double RenderScale = 3;
+        public const double RenderScale = 1;
 
         private readonly List<Span> spansOfChangesFromEditing = new List<Span>();
         private readonly Action<Span> refreshTags;
         private readonly IRenderingManager renderingManager;
+        private readonly IWpfTextView textView;
 
         private TeXCommentTag tag;
         private bool changeMadeWhileInEditMode;
+        private bool isInvalidated;
 
         private bool isInEditMode;
         public bool IsInEditMode
@@ -77,6 +80,7 @@ namespace VsTeXCommentsExtension.View
         public TeXCommentAdornment(
             TeXCommentTag tag,
             SolidColorBrush commentsForegroundBrush,
+            IWpfTextView textView,
             IRenderingManager renderingManager,
             LineSpan lineSpan,
             Action<Span> refreshTags,
@@ -84,6 +88,7 @@ namespace VsTeXCommentsExtension.View
         {
             this.tag = tag;
             this.refreshTags = refreshTags;
+            this.textView = textView;
             this.renderingManager = renderingManager;
 
             LineSpan = lineSpan;
@@ -108,11 +113,17 @@ namespace VsTeXCommentsExtension.View
             {
                 changeMadeWhileInEditMode = changed;
             }
-            else if (changed)
+            else if (changed || isInvalidated)
             {
                 this.tag = tag;
+                isInvalidated = false;
                 UpdateImageAsync();
             }
+        }
+
+        public void Invalidate()
+        {
+            isInvalidated = true;
         }
 
         public void HandleTextBufferChanged(object sender, TextContentChangedEventArgs args)
@@ -157,8 +168,8 @@ namespace VsTeXCommentsExtension.View
                 imageControl.Source = e;
                 if (e != null)
                 {
-                    imageControl.Width = e.Width / RenderScale;
-                    imageControl.Height = e.Height / RenderScale;
+                    imageControl.Width = e.Width / (RenderScale * textView.ZoomLevel * 0.01);
+                    imageControl.Height = e.Height / (RenderScale * textView.ZoomLevel * 0.01);
                 }
                 SetUpControlsVisibility();
             }

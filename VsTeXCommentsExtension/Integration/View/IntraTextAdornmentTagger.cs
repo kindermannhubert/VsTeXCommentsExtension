@@ -29,17 +29,17 @@ namespace VsTeXCommentsExtension.Integration.View
         private Dictionary<AdornmentCacheKey, TAdornment> adornmentsCache = new Dictionary<AdornmentCacheKey, TAdornment>();
 
         protected readonly TextSnapshotTeXCommentBlocks texCommentBlocks = new TextSnapshotTeXCommentBlocks();
-        protected readonly IWpfTextView view;
+        protected readonly IWpfTextView textView;
         protected ITextSnapshot Snapshot { get; private set; }
 
         public IntraTextAdornmentTaggerDisplayMode Mode { get; set; }
 
-        protected IntraTextAdornmentTagger(IWpfTextView view)
+        protected IntraTextAdornmentTagger(IWpfTextView textView)
         {
-            this.view = view;
-            Snapshot = view.TextBuffer.CurrentSnapshot;
+            this.textView = textView;
+            Snapshot = textView.TextBuffer.CurrentSnapshot;
             //this.view.LayoutChanged += HandleLayoutChanged;
-            this.view.TextBuffer.Changed += HandleBufferChanged;
+            this.textView.TextBuffer.Changed += HandleBufferChanged;
         }
 
         /// <param name="span">The span of text that this adornment will elide.</param>
@@ -65,7 +65,7 @@ namespace VsTeXCommentsExtension.Integration.View
         private void HandleBufferChanged(object sender, TextContentChangedEventArgs args)
         {
             if (args.Changes.Count == 0) return;
-            Debug.Assert(sender == view.TextBuffer);
+            Debug.Assert(sender == textView.TextBuffer);
 
             var editedBlockSpans = new List<SnapshotSpan>();
             foreach (var change in args.Changes)
@@ -106,6 +106,18 @@ namespace VsTeXCommentsExtension.Integration.View
             InvalidateSpans(editedBlockSpans);
         }
 
+        protected void InvalidateAndRerenderAll()
+        {
+            lock (adornmentsCache)
+            {
+                foreach (var adornment in adornmentsCache.Values)
+                {
+                    adornment.Invalidate();
+                }
+                InvalidateSpans(new List<SnapshotSpan>() { new SnapshotSpan(Snapshot, new Span(0, Snapshot.Length)) });
+            }
+        }
+
         /// <summary>
         /// Causes intra-text adornments to be updated asynchronously.
         /// </summary>
@@ -121,16 +133,16 @@ namespace VsTeXCommentsExtension.Integration.View
             }
 
             if (wasEmpty)
-                view.VisualElement.Dispatcher.BeginInvoke(new Action(AsyncUpdate));
+                textView.VisualElement.Dispatcher.BeginInvoke(new Action(AsyncUpdate));
         }
 
         private void AsyncUpdate()
         {
             // Store the snapshot that we're now current with and send an event
             // for the text that has changed.
-            if (Snapshot != view.TextBuffer.CurrentSnapshot)
+            if (Snapshot != textView.TextBuffer.CurrentSnapshot)
             {
-                Snapshot = view.TextBuffer.CurrentSnapshot;
+                Snapshot = textView.TextBuffer.CurrentSnapshot;
 
                 var translatedAdornmentCache = new Dictionary<AdornmentCacheKey, TAdornment>();
 

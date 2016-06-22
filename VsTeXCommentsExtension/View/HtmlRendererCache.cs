@@ -87,5 +87,28 @@ namespace VsTeXCommentsExtension.View
         {
             mutex?.Dispose();
         }
+
+        public struct Info
+        {
+            public readonly int CacheVersion;
+            public readonly Color Foreground;
+            public readonly Color Background;
+            public readonly Font Font;
+            public readonly int ZoomPercentage;
+
+            public Info(
+                int cacheVersion,
+                Color foreground,
+                Color background,
+                Font font,
+                int zoomPercentage)
+            {
+                CacheVersion = cacheVersion;
+                Foreground = foreground;
+                Background = background;
+                Font = font;
+                ZoomPercentage = zoomPercentage;
+            }
+        }
     }
 }

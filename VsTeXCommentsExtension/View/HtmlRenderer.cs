@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.Text.Editor;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 
 using wpf = System.Windows.Media;
@@ -17,14 +16,14 @@ namespace VsTeXCommentsExtension.View
     {
         private const int CacheVersion = 1; //increase when we want to invalidate cached results
         private const int WaitingIntervalMs = 50;
-        private const int DefaultBrowserWidth = 2048;
+        private const int DefaultBrowserWidth = 512;
         private const int DefaultBrowserHeight = 128;
 
         private readonly HtmlRendererCache cache = new HtmlRendererCache();
         private readonly WebBrowser webBrowser;
         private readonly ObjectForScripting objectForScripting = new ObjectForScripting();
-        private readonly Font font;
         private readonly double renderScale;
+        private readonly Font font;
 
         private volatile BitmapSource resultImage;
         private volatile bool documentCompleted;
@@ -45,9 +44,11 @@ namespace VsTeXCommentsExtension.View
             }
         }
 
+        private double zoomScale;
 
-        public HtmlRenderer(double renderScale, wpf.Color background, wpf.Color foreground, Font font)
+        public HtmlRenderer(double zoomPercentage, double renderScale, wpf.Color background, wpf.Color foreground, Font font)
         {
+            this.zoomScale = 0.01 * zoomPercentage;
             this.renderScale = renderScale;
             this.Background = background;
             this.Foreground = foreground;
@@ -67,6 +68,13 @@ namespace VsTeXCommentsExtension.View
             webBrowser.Document.OpenNew(true);
 
             objectForScripting.RenderingDone += () => mathJaxRenderingDone = true;
+
+            VisualStudioSettings.Instance.ZoomChanged += Instance_ZoomChanged;
+        }
+
+        private void Instance_ZoomChanged(IWpfTextView textView, double zoomPercentage)
+        {
+            zoomScale = 0.01 * zoomPercentage;
         }
 
         private void WebBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
@@ -121,13 +129,13 @@ namespace VsTeXCommentsExtension.View
             }
             else
             {
-                webBrowser.Width = DefaultBrowserWidth;
-                webBrowser.Height = DefaultBrowserHeight;
+                webBrowser.Width = (int)(zoomScale * DefaultBrowserWidth);
+                webBrowser.Height = (int)(zoomScale * DefaultBrowserHeight);
 
                 const int ExtraMargin = 4;
                 var myDiv = webBrowser.Document.GetElementById("myDiv");
-                var width = myDiv.OffsetRectangle.X + myDiv.ScrollRectangle.Width + ExtraMargin;
-                var height = myDiv.OffsetRectangle.Y + myDiv.ScrollRectangle.Height + ExtraMargin;
+                var width = (myDiv.OffsetRectangle.X + myDiv.ScrollRectangle.Width) + ExtraMargin;
+                var height = (myDiv.OffsetRectangle.Y + myDiv.ScrollRectangle.Height) + ExtraMargin;
 
                 webBrowser.Width = width;
                 webBrowser.Height = height;
@@ -135,6 +143,7 @@ namespace VsTeXCommentsExtension.View
                 var pixelFormat = PixelFormat.Format24bppRgb;
                 using (var bitmap = new Bitmap(width, height, pixelFormat))
                 {
+                    bitmap.SetResolution(Native.CurrentDpiX, Native.CurrentDpiY);
                     var viewObject = webBrowser.Document.DomDocument as IViewObject;
 
                     if (viewObject != null)
@@ -176,14 +185,24 @@ namespace VsTeXCommentsExtension.View
 
                         using (var croppedBitmap = CropToContent(bitmap, backgroundBgr))
                         {
-                            var bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(
-                                                                    croppedBitmap.GetHbitmap(),
-                                                                    IntPtr.Zero,
-                                                                    Int32Rect.Empty,
-                                                                    BitmapSizeOptions.FromEmptyOptions());
+                            var croppedBitmapData = croppedBitmap.LockBits(new Rectangle(0, 0, croppedBitmap.Width, croppedBitmap.Height), ImageLockMode.ReadOnly, croppedBitmap.PixelFormat);
+                            try
+                            {
+                                var bitmapSource = BitmapSource.Create(
+                                    croppedBitmapData.Width, croppedBitmapData.Height,
+                                    Native.CurrentDpiX, Native.CurrentDpiY,
+                                    wpf.PixelFormats.Rgb24, null,
+                                    croppedBitmapData.Scan0,
+                                    croppedBitmapData.Height * croppedBitmapData.Stride,
+                                    croppedBitmapData.Stride);
 
-                            cache.Add(currentContent, GetCacheVersion(), croppedBitmap);
-                            resultImage = bitmapSource;
+                                cache.Add(currentContent, GetCacheVersion(), croppedBitmap);
+                                resultImage = bitmapSource;
+                            }
+                            finally
+                            {
+                                croppedBitmap.UnlockBits(croppedBitmapData);
+                            }
                         }
                     }
                 }
@@ -196,7 +215,8 @@ namespace VsTeXCommentsExtension.View
                 (757 * Foreground.GetHashCode()) ^
                 (563 * Background.GetHashCode()) ^
                 (563 * font.FontFamily.Name.GetHashCode()) ^
-                (467 * (int)font.Size));
+                (int)(467 * font.Size) ^
+                (int)(359 * zoomScale));
 
         private static unsafe Bitmap CropToContent(Bitmap source, BGR background)
         {
@@ -287,7 +307,7 @@ namespace VsTeXCommentsExtension.View
                 BackgroundColor = background,
                 ForegroundColor = Foreground,
                 FontFamily = font.FontFamily.Name,
-                FontSize = renderScale * font.Size,
+                FontSize = renderScale * zoomScale * font.Size,
                 Source = content
             };
 
@@ -297,6 +317,7 @@ namespace VsTeXCommentsExtension.View
         public void Dispose()
         {
             webBrowser?.Dispose();
+            VisualStudioSettings.Instance.ZoomChanged -= Instance_ZoomChanged;
         }
 
         [ComImport]
@@ -336,6 +357,53 @@ namespace VsTeXCommentsExtension.View
             }
 
             public event Action RenderingDone;
+        }
+
+        private class Native
+        {
+            private static int dpiX = -1;
+            private static int dpiY = -1;
+
+            [DllImport("gdi32.dll", CharSet = CharSet.Auto, SetLastError = true, ExactSpelling = true)]
+            private static extern int GetDeviceCaps(IntPtr hDC, int nIndex);
+
+            private enum DeviceCap
+            {
+                LOGPIXELSX = 88,
+                LOGPIXELSY = 90
+            }
+
+            private static void Init()
+            {
+                if (dpiX == -1)
+                {
+                    using (var g = Graphics.FromHwnd(IntPtr.Zero))
+                    {
+                        var desktop = g.GetHdc();
+                        dpiX = GetDeviceCaps(desktop, (int)DeviceCap.LOGPIXELSX);
+                        dpiY = GetDeviceCaps(desktop, (int)DeviceCap.LOGPIXELSY);
+                        g.ReleaseHdc();
+                    }
+                }
+            }
+
+            public static int CurrentDpiX
+            {
+                get
+                {
+                    Init();
+                    return dpiX;
+                }
+            }
+
+            public static int CurrentDpiY
+            {
+                get
+                {
+                    Init();
+                    return dpiY;
+                }
+            }
         }
     }
 }

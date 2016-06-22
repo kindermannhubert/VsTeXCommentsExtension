@@ -66,7 +66,7 @@ namespace VsTeXCommentsExtension.Integration.View
                 {
                     if (renderingManager == null)
                     {
-                        renderer = new HtmlRenderer(TeXCommentAdornment.RenderScale, background.Color, foreground.Color, font);
+                        renderer = new HtmlRenderer(wpfTextView.ZoomLevel, TeXCommentAdornment.RenderScale, background.Color, foreground.Color, font);
                         renderingManager = new RenderingManager(renderer);
                     }
                 }

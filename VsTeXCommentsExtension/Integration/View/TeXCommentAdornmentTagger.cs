@@ -38,6 +38,7 @@ namespace VsTeXCommentsExtension.Integration.View
             view.TextBuffer.Changed += TextBuffer_Changed;
 
             VisualStudioSettings.Instance.CommentsColorChanged += ColorsChanged;
+            VisualStudioSettings.Instance.ZoomChanged += ZoomChanged;
         }
 
         private void TextBuffer_Changed(object sender, TextContentChangedEventArgs e)
@@ -75,18 +76,24 @@ namespace VsTeXCommentsExtension.Integration.View
             }
         }
 
+        private void ZoomChanged(IWpfTextView textView, double zoomPercentage)
+        {
+            InvalidateAndRerenderAll();
+        }
+
         private void ColorsChanged(IWpfTextView textView, SolidColorBrush foreground, SolidColorBrush background)
         {
             CommentsForegroundBrush = foreground;
-            InvalidateSpans(new List<SnapshotSpan>() { new SnapshotSpan(Snapshot, new Span(0, Snapshot.Length)) });
+            InvalidateAndRerenderAll();
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            view.TextBuffer.Changed -= TextBuffer_Changed;
+            textView.TextBuffer.Changed -= TextBuffer_Changed;
+            VisualStudioSettings.Instance.ZoomChanged -= ZoomChanged;
             VisualStudioSettings.Instance.CommentsColorChanged -= ColorsChanged;
-            view.Properties.RemoveProperty(typeof(TeXCommentAdornmentTagger));
+            textView.Properties.RemoveProperty(typeof(TeXCommentAdornmentTagger));
         }
 
         protected override TeXCommentAdornment CreateAdornment(TeXCommentTag dataTag, Span adornmentSpan, IntraTextAdornmentTaggerDisplayMode defaultDisplayMode)
@@ -98,6 +105,7 @@ namespace VsTeXCommentsExtension.Integration.View
             var adornment = new TeXCommentAdornment(
                 dataTag,
                 CommentsForegroundBrush,
+                textView,
                 renderingManager,
                 lineSpan,
                 span =>
@@ -113,7 +121,7 @@ namespace VsTeXCommentsExtension.Integration.View
                     InvalidateSpans(new List<SnapshotSpan>() { new SnapshotSpan(Snapshot, 0, Snapshot.Length) });
                 },
                 defaultDisplayMode);
-            view.TextBuffer.Changed += adornment.HandleTextBufferChanged;
+            textView.TextBuffer.Changed += adornment.HandleTextBufferChanged;
 
             MarkAdornmentLines(lineSpan, adornment);
 

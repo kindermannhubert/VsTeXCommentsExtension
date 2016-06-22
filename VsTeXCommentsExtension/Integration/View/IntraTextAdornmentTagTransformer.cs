@@ -25,10 +25,10 @@ namespace VsTeXCommentsExtension.Integration.View
         /// <param name="adornmentAffinity">Determines whether adornments based on data tags with zero-length spans
         /// will stick with preceding or succeeding text characters.</param>
         protected IntraTextAdornmentTagTransformer(
-            IWpfTextView view, ITagAggregator<TDataTag> dataTagger,
+            IWpfTextView textView, ITagAggregator<TDataTag> dataTagger,
             IntraTextAdornmentTaggerDisplayMode mode,
             PositionAffinity adornmentAffinity = PositionAffinity.Successor)
-            : base(view)
+            : base(textView)
         {
             this.adornmentAffinity = adornmentAffinity;
             this.dataTagger = dataTagger;
@@ -55,7 +55,7 @@ namespace VsTeXCommentsExtension.Integration.View
 
         private void HandleDataTagsChanged(object sender, TagsChangedEventArgs args)
         {
-            var changedSpans = args.Span.GetSpans(view.TextBuffer.CurrentSnapshot);
+            var changedSpans = args.Span.GetSpans(textView.TextBuffer.CurrentSnapshot);
             InvalidateSpans(changedSpans);
         }
 

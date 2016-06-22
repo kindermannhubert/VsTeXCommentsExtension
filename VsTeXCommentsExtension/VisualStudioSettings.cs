@@ -50,6 +50,7 @@ namespace VsTeXCommentsExtension
 
         public SolidColorBrush GetCommentsForeground(IWpfTextView textView) => GetBrush(editorFormatMapService.GetEditorFormatMap(textView), BrushType.Foreground, textView);
         public SolidColorBrush GetCommentsBackground(IWpfTextView textView) => GetBrush(editorFormatMapService.GetEditorFormatMap(textView), BrushType.Background, textView);
+        public double GetZoomPercentage(IWpfTextView textView) => textView.ZoomLevel;
 
         public void RegisterForEventsListening(IWpfTextView textView)
         {
@@ -159,7 +160,7 @@ namespace VsTeXCommentsExtension
         }
 
         public delegate void CommentsColorChangedHandler(IWpfTextView textView, SolidColorBrush foreground, SolidColorBrush background);
-        public delegate void ZoomChangedHandler(IWpfTextView textView, double zoom);
+        public delegate void ZoomChangedHandler(IWpfTextView textView, double zoomPercentage);
 
         private enum BrushType
         {
