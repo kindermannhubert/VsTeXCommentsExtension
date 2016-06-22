@@ -124,6 +124,8 @@ namespace VsTeXCommentsExtension.View
         public void Invalidate()
         {
             isInvalidated = true;
+            imageControl.Source = null;
+            SetUpControlsVisibility();
         }
 
         public void HandleTextBufferChanged(object sender, TextContentChangedEventArgs args)
