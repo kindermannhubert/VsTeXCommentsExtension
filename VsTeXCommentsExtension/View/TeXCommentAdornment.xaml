@@ -24,7 +24,7 @@
         <Image x:Name="imageControl" Margin="0,2,0,0"/>
         <ProgressBar x:Name="progressBar" IsIndeterminate="True" Height="8" Width="128" />
 
-        <local:DropDownImageButton x:Name="btnEdit" ImageSource="../Resources/Edit.png" Click="ButtonEdit_Click" Margin="12,0,0,0" ContextMenu="{StaticResource ctx}" />
-        <local:DropDownImageButton x:Name="btnShow" ImageSource="../Resources/Show.png" Click="ButtonShow_Click" Margin="12,0,0,0" ContextMenu="{StaticResource ctx}" />
+        <local:DropDownImageButton x:Name="btnEdit" ImageSource="{Binding Source={x:Static local:ResourcesManager.Instance}, Path=Edit}" Click="ButtonEdit_Click" Margin="12,0,0,0" ContextMenu="{StaticResource ctx}" />
+        <local:DropDownImageButton x:Name="btnShow" ImageSource="{Binding Source={x:Static local:ResourcesManager.Instance}, Path=Show}" Click="ButtonShow_Click" Margin="12,0,0,0" ContextMenu="{StaticResource ctx}" />
     </StackPanel>
 </UserControl>

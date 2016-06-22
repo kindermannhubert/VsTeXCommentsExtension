@@ -8,7 +8,7 @@
              d:DesignHeight="32" d:DesignWidth="200">
     <StackPanel Orientation="Horizontal">
         <Button BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="MainButton_Click" >
-            <Image Source="{Binding ImageSource, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:DropDownImageButton}}}" Width="12" Height="12" />
+            <Image Source="{Binding ImageSource, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:DropDownImageButton}}}" Width="12" Height="12" RenderOptions.BitmapScalingMode="HighQuality"/>
         </Button>
         <Button x:Name="arrowButton"
                 BorderThickness="0"
@@ -17,7 +17,7 @@
                 ContextMenuService.IsEnabled="False" 
                 ContextMenu="{Binding ContextMenu, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:DropDownImageButton}}}">
             <Button.Content>
-                <Image Source="../Resources/DropDown.png" Width="6" Height="12" />
+                <Image Source="{Binding Source={x:Static local:ResourcesManager.Instance}, Path=DropDown}" Width="6" Height="12" />
             </Button.Content>
         </Button>
     </StackPanel>

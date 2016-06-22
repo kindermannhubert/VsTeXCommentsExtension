@@ -106,6 +106,8 @@ namespace VsTeXCommentsExtension.Integration.View
                 tagger.CommentsForegroundBrush = foregroundColorBrush;
                 tagger.InvalidateAll();
             }
+
+            ResourcesManager.Instance.EditorBackgroundColor = backgroundColorBrush.Color;
         }
 
         private static SolidColorBrush GetBrush(IEditorFormatMap editorFormatMap, BrushType type, IWpfTextView textView, SolidColorBrush defaultBrush)

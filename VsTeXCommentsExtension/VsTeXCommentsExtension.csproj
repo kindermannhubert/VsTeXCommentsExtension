@@ -78,6 +78,7 @@
     <Compile Include="View\IRenderingManager.cs" />
     <Compile Include="View\IRenderer.cs" />
     <Compile Include="View\RenderingManager.cs" />
+    <Compile Include="View\ResourcesManager.cs" />
     <Compile Include="View\TeXCommentHtmlTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -115,22 +116,25 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Edit.png" />
-    <Resource Include="Resources\Show.png" />
+    <Resource Include="Resources\Edit_Dark.png" />
+    <Resource Include="Resources\Show_Dark.png" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\DropDown.png" />
+    <Resource Include="Resources\DropDown_Dark.png" />
     <Content Include="LICENSE.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Resource Include="Resources\DropDown_Light.png" />
+    <Resource Include="Resources\Edit_Light.png" />
     <Content Include="Resources\Preview.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Resource Include="Resources\Show_Light.png" />
     <Content Include="View\TeXCommentHtmlTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>TeXCommentHtmlTemplate.cs</LastGenOutput>
