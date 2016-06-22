@@ -9,14 +9,6 @@ using VsTeXCommentsExtension.View;
 
 namespace VsTeXCommentsExtension.Integration.View
 {
-    /// <summary>
-    /// Provides color swatch adornments in place of color constants.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This is a sample usage of the <see cref="IntraTextAdornmentTagTransformer"/> utility class.
-    /// </para>
-    /// </remarks>
     internal sealed class TeXCommentAdornmentTagger : IntraTextAdornmentTagTransformer<TeXCommentTag, TeXCommentAdornment>
     {
         private readonly IRenderingManager renderingManager;
@@ -44,6 +36,8 @@ namespace VsTeXCommentsExtension.Integration.View
             this.renderingManager = renderingManager;
             CommentsForegroundBrush = commentsForegroundBrush;
             view.TextBuffer.Changed += TextBuffer_Changed;
+
+            VisualStudioSettings.Instance.CommentsColorChanged += ColorsChanged;
         }
 
         private void TextBuffer_Changed(object sender, TextContentChangedEventArgs e)
@@ -81,14 +75,17 @@ namespace VsTeXCommentsExtension.Integration.View
             }
         }
 
-        public void InvalidateAll()
+        private void ColorsChanged(IWpfTextView textView, SolidColorBrush foreground, SolidColorBrush background)
         {
+            CommentsForegroundBrush = foreground;
             InvalidateSpans(new List<SnapshotSpan>() { new SnapshotSpan(Snapshot, new Span(0, Snapshot.Length)) });
         }
 
         public override void Dispose()
         {
             base.Dispose();
+            view.TextBuffer.Changed -= TextBuffer_Changed;
+            VisualStudioSettings.Instance.CommentsColorChanged -= ColorsChanged;
             view.Properties.RemoveProperty(typeof(TeXCommentAdornmentTagger));
         }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.Text.Editor;
+using System;
 using System.ComponentModel;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -24,26 +25,29 @@ namespace VsTeXCommentsExtension.View
 
             show_Light = new BitmapImage(new Uri("pack://application:,,,/VsTeXCommentsExtension;component/Resources/Show_Light.png"));
             show_Dark = new BitmapImage(new Uri("pack://application:,,,/VsTeXCommentsExtension;component/Resources/Show_Dark.png"));
+
+            VisualStudioSettings.Instance.CommentsColorChanged += Instance_CommentsColorChanged;
+        }
+
+        private void Instance_CommentsColorChanged(IWpfTextView textView, SolidColorBrush foreground, SolidColorBrush background)
+        {
+            ChangeEditorBackgroundColor(background.Color);
         }
 
         private Color editorBackgroundColor;
-        public Color EditorBackgroundColor
+        private void ChangeEditorBackgroundColor(Color color)
         {
-            get { return editorBackgroundColor; }
-            set
+            if (editorBackgroundColor != color)
             {
-                if (editorBackgroundColor != value)
+                editorBackgroundColor = color;
+                var useDarkNew = color.R + color.G + color.B > 3 * 127.5;
+                if (useDark != useDarkNew)
                 {
-                    editorBackgroundColor = value;
-                    var useDarkNew = value.R + value.G + value.B > 3 * 127.5;
-                    if (useDark != useDarkNew)
-                    {
-                        useDark = useDarkNew;
+                    useDark = useDarkNew;
 
-                        OnPropertyChanged(nameof(DropDown));
-                        OnPropertyChanged(nameof(Edit));
-                        OnPropertyChanged(nameof(Show));
-                    }
+                    OnPropertyChanged(nameof(DropDown));
+                    OnPropertyChanged(nameof(Edit));
+                    OnPropertyChanged(nameof(Show));
                 }
             }
         }

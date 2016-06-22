@@ -21,7 +21,7 @@
             <StackPanel x:Name="leftBorderPanel2" Width="1" Margin="0,0,4,0"/>
         </StackPanel>
 
-        <Image x:Name="imageControl" Margin="0,2,0,0"/>
+        <Image x:Name="imageControl" Margin="0,2,0,0" RenderOptions.BitmapScalingMode="HighQuality" />
         <ProgressBar x:Name="progressBar" IsIndeterminate="True" Height="8" Width="128" />
 
         <local:DropDownImageButton x:Name="btnEdit" ImageSource="{Binding Source={x:Static local:ResourcesManager.Instance}, Path=Edit}" Click="ButtonEdit_Click" Margin="12,0,0,0" ContextMenu="{StaticResource ctx}" />
