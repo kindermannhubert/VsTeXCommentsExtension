@@ -5,6 +5,8 @@ using System.IO;
 using System.Threading;
 using System.Windows.Media.Imaging;
 
+using wpf = System.Windows.Media;
+
 namespace VsTeXCommentsExtension.View
 {
     public class HtmlRendererCache : IDisposable
@@ -21,11 +23,11 @@ namespace VsTeXCommentsExtension.View
             }
         }
 
-        public bool TryGetImage(string content, int version, out BitmapSource bitmapSource)
+        public bool TryGetImage(Info info, out BitmapSource bitmapSource)
         {
             bitmapSource = null;
 
-            var filePath = Path.Combine(directory, unchecked((uint)content.GetHashCode()).ToString());
+            var filePath = Path.Combine(directory, info.GetFileName());
             try
             {
                 mutex.WaitOne();
@@ -35,7 +37,7 @@ namespace VsTeXCommentsExtension.View
 
                 if (!File.Exists(filePathTxt) || !File.Exists(filePathPng)) return false;
 
-                if (content + version != File.ReadAllText(filePathTxt)) return false; //hash conflict
+                if (info.ToString() != File.ReadAllText(filePathTxt)) return false; //hash conflict
 
                 using (var fs = new FileStream(filePathPng, FileMode.Open))
                 {
@@ -56,10 +58,10 @@ namespace VsTeXCommentsExtension.View
             }
         }
 
-        public void Add(string content, int version, Bitmap bitmap)
+        public void Add(Info info, Bitmap bitmap)
         {
 
-            var filePath = Path.Combine(directory, unchecked((uint)content.GetHashCode()).ToString());
+            var filePath = Path.Combine(directory, info.GetFileName());
 
             try
             {
@@ -68,8 +70,7 @@ namespace VsTeXCommentsExtension.View
                 using (var fs = new FileStream(filePath + ".txt", FileMode.Create))
                 using (var writer = new StreamWriter(fs))
                 {
-                    writer.Write(content);
-                    writer.Write(version);
+                    writer.Write(info.ToString());
                 }
 
                 using (var fs = new FileStream(filePath + ".png", FileMode.Create))
@@ -90,24 +91,50 @@ namespace VsTeXCommentsExtension.View
 
         public struct Info
         {
-            public readonly int CacheVersion;
-            public readonly Color Foreground;
-            public readonly Color Background;
+            public readonly string Content;
+            public readonly wpf.Color Foreground;
+            public readonly wpf.Color Background;
             public readonly Font Font;
-            public readonly int ZoomPercentage;
+            public readonly double ZoomScale;
+            public readonly int CacheVersion;
 
             public Info(
-                int cacheVersion,
-                Color foreground,
-                Color background,
+                string content,
+                wpf.Color foreground,
+                wpf.Color background,
                 Font font,
-                int zoomPercentage)
+                double zoomScale,
+                int cacheVersion)
             {
+                Content = content;
                 CacheVersion = cacheVersion;
                 Foreground = foreground;
                 Background = background;
                 Font = font;
-                ZoomPercentage = zoomPercentage;
+                ZoomScale = zoomScale;
+            }
+
+            public string GetFileName()
+            {
+                var hash = unchecked(
+                (1783 * (ulong)Content.GetHashCode()) ^
+                (1777 * (ulong)Foreground.GetHashCode()) ^
+                (1759 * (ulong)Background.GetHashCode()) ^
+                (1753 * (ulong)Font.FontFamily.Name.GetHashCode()) ^
+                (ulong)(1747 * Font.Size) ^
+                (ulong)(1741 * ZoomScale));
+
+                return hash.ToString();
+            }
+
+            public override string ToString()
+            {
+                return $@"{Content}
+{nameof(Foreground)}: rgb({Foreground.R}, {Foreground.G}, {Foreground.B})
+{nameof(Background)}: rgb({Background.R}, {Background.G}, {Background.B})
+{nameof(Font)}: {Font.FontFamily.Name} (size: {Font.Size})
+{nameof(ZoomScale)}: {ZoomScale}
+{nameof(CacheVersion)}: {CacheVersion}";
             }
         }
     }

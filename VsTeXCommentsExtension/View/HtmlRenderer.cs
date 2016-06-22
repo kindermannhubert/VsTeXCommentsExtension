@@ -14,7 +14,7 @@ namespace VsTeXCommentsExtension.View
 {
     public class HtmlRenderer : IRenderer<BitmapSource>, IDisposable
     {
-        private const int CacheVersion = 1; //increase when we want to invalidate cached results
+        private const int CacheVersion = 2; //increase when we want to invalidate all cached results
         private const int WaitingIntervalMs = 50;
         private const int DefaultBrowserWidth = 512;
         private const int DefaultBrowserHeight = 128;
@@ -22,7 +22,6 @@ namespace VsTeXCommentsExtension.View
         private readonly HtmlRendererCache cache = new HtmlRendererCache();
         private readonly WebBrowser webBrowser;
         private readonly ObjectForScripting objectForScripting = new ObjectForScripting();
-        private readonly double renderScale;
         private readonly Font font;
 
         private volatile BitmapSource resultImage;
@@ -46,10 +45,9 @@ namespace VsTeXCommentsExtension.View
 
         private double zoomScale;
 
-        public HtmlRenderer(double zoomPercentage, double renderScale, wpf.Color background, wpf.Color foreground, Font font)
+        public HtmlRenderer(double zoomPercentage, wpf.Color background, wpf.Color foreground, Font font)
         {
             this.zoomScale = 0.01 * zoomPercentage;
-            this.renderScale = renderScale;
             this.Background = background;
             this.Foreground = foreground;
             this.font = font;
@@ -87,7 +85,14 @@ namespace VsTeXCommentsExtension.View
             Debug.Assert(content != null);
 
 #pragma warning disable CS0420 // A reference to a volatile field will not be treated as volatile
-            if (cache.TryGetImage(content, GetCacheVersion(), out resultImage))
+            var cacheInfo = new HtmlRendererCache.Info(
+                                   content,
+                Foreground,
+                Background,
+                font,
+                zoomScale,
+                CacheVersion);
+            if (cache.TryGetImage(cacheInfo, out resultImage))
             {
                 return resultImage;
             }
@@ -196,7 +201,14 @@ namespace VsTeXCommentsExtension.View
                                     croppedBitmapData.Height * croppedBitmapData.Stride,
                                     croppedBitmapData.Stride);
 
-                                cache.Add(currentContent, GetCacheVersion(), croppedBitmap);
+                                var cacheInfo = new HtmlRendererCache.Info(
+                                    currentContent,
+                                    Foreground,
+                                    Background,
+                                    font,
+                                    zoomScale,
+                                    CacheVersion);
+                                cache.Add(cacheInfo, croppedBitmap);
                                 resultImage = bitmapSource;
                             }
                             finally
@@ -208,15 +220,6 @@ namespace VsTeXCommentsExtension.View
                 }
             }
         }
-
-        private int GetCacheVersion() =>
-            unchecked(
-                (977 * CacheVersion) ^
-                (757 * Foreground.GetHashCode()) ^
-                (563 * Background.GetHashCode()) ^
-                (563 * font.FontFamily.Name.GetHashCode()) ^
-                (int)(467 * font.Size) ^
-                (int)(359 * zoomScale));
 
         private static unsafe Bitmap CropToContent(Bitmap source, BGR background)
         {
@@ -307,7 +310,7 @@ namespace VsTeXCommentsExtension.View
                 BackgroundColor = background,
                 ForegroundColor = Foreground,
                 FontFamily = font.FontFamily.Name,
-                FontSize = renderScale * zoomScale * font.Size,
+                FontSize = zoomScale * font.Size,
                 Source = content
             };
 

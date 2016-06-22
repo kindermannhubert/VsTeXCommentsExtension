@@ -17,8 +17,6 @@ namespace VsTeXCommentsExtension.View
     /// </summary>
     internal partial class TeXCommentAdornment : UserControl, ITagAdornment
     {
-        public const double RenderScale = 1;
-
         private readonly List<Span> spansOfChangesFromEditing = new List<Span>();
         private readonly Action<Span> refreshTags;
         private readonly IRenderingManager renderingManager;
@@ -170,8 +168,8 @@ namespace VsTeXCommentsExtension.View
                 imageControl.Source = e;
                 if (e != null)
                 {
-                    imageControl.Width = e.Width / (RenderScale * textView.ZoomLevel * 0.01);
-                    imageControl.Height = e.Height / (RenderScale * textView.ZoomLevel * 0.01);
+                    imageControl.Width = e.Width / (textView.ZoomLevel * 0.01);
+                    imageControl.Height = e.Height / (textView.ZoomLevel * 0.01);
                 }
                 SetUpControlsVisibility();
             }
