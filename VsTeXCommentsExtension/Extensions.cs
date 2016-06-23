@@ -1,4 +1,7 @@
-﻿namespace VsTeXCommentsExtension
+﻿using System.Collections;
+using System.Collections.Generic;
+
+namespace VsTeXCommentsExtension
 {
     internal static class Extensions
     {
@@ -58,6 +61,14 @@
         {
             if (length < 2) return false;
             return text[text.Length - 2] == '\r' && text[text.Length - 1] == '\n';
+        }
+
+        public static IEnumerable<T> Cast<T>(this IEnumerable items)
+        {
+            foreach (T item in items)
+            {
+                yield return item;
+            }
         }
     }
 }

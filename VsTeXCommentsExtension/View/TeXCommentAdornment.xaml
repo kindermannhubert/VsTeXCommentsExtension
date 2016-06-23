@@ -8,14 +8,6 @@
              mc:Ignorable="d"
              d:DesignHeight="24" d:DesignWidth="300">
     <StackPanel Orientation="Horizontal">
-        <StackPanel.Resources>
-            <ContextMenu x:Key="ctx" >
-                <MenuItem Header="Refresh (not implemented yet)" Click="MenuItem_Refresh_Click" />
-                <MenuItem Header="Save As Image... (not implemented yet)" Click="MenuItem_SaveAsImage_Click" />
-                <MenuItem Header="Clear Global Cache (not implemented yet)" Click="MenuItem_ClearGlobalCache_Click" />
-            </ContextMenu>
-        </StackPanel.Resources>
-        
         <StackPanel x:Name="leftBorderGroupPanel" Orientation="Horizontal">
             <StackPanel x:Name="leftBorderPanel1" Width="1" Margin="0,0,2,0"/>
             <StackPanel x:Name="leftBorderPanel2" Width="1" Margin="0,0,4,0"/>
@@ -24,7 +16,31 @@
         <Image x:Name="imageControl" Margin="0,2,0,0" RenderOptions.BitmapScalingMode="HighQuality" />
         <ProgressBar x:Name="progressBar" IsIndeterminate="True" Height="8" Width="128" />
 
-        <local:DropDownImageButton x:Name="btnEdit" ImageSource="{Binding Source={x:Static local:ResourcesManager.Instance}, Path=Edit}" Click="ButtonEdit_Click" Margin="12,0,0,0" ContextMenu="{StaticResource ctx}" />
-        <local:DropDownImageButton x:Name="btnShow" ImageSource="{Binding Source={x:Static local:ResourcesManager.Instance}, Path=Show}" Click="ButtonShow_Click" Margin="12,0,0,0" ContextMenu="{StaticResource ctx}" />
+        <local:DropDownImageButton x:Name="btnEdit" ImageSource="{Binding Source={x:Static local:ResourcesManager.Instance}, Path=Edit}" Click="ButtonEdit_Click" Margin="12,0,0,0">
+            <local:DropDownImageButton.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Edit All (not implemented yet)" Click="MenuItem_EditAll_Click" />
+                    <MenuItem Header="Open Image Cache... (not implemented yet)" Click="MenuItem_OpenImageCache_Click" />
+                    
+                    <!--Name 'Zoom' is used also in code-behind.-->
+                    <MenuItem Header="Zoom">
+                        <MenuItem Header="50%" IsCheckable="True" Click="MenuItem_ChangeZoom_Click" />
+                        <MenuItem Header="75%" IsCheckable="True" Click="MenuItem_ChangeZoom_Click" />
+                        <MenuItem Header="100%" IsCheckable="True" Click="MenuItem_ChangeZoom_Click" IsChecked="True" />
+                        <MenuItem Header="125%" IsCheckable="True" Click="MenuItem_ChangeZoom_Click" />
+                        <MenuItem Header="150%" IsCheckable="True" Click="MenuItem_ChangeZoom_Click" />
+                        <MenuItem Header="200%" IsCheckable="True" Click="MenuItem_ChangeZoom_Click" />
+                    </MenuItem>
+                </ContextMenu>
+            </local:DropDownImageButton.ContextMenu>
+        </local:DropDownImageButton>
+
+        <local:DropDownImageButton x:Name="btnShow" ImageSource="{Binding Source={x:Static local:ResourcesManager.Instance}, Path=Show}" Click="ButtonShow_Click" Margin="12,0,0,0">
+            <local:DropDownImageButton.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Show All (not implemented yet)" Click="MenuItem_ShowAll_Click" />
+                </ContextMenu>
+            </local:DropDownImageButton.ContextMenu>
+        </local:DropDownImageButton>
     </StackPanel>
 </UserControl>

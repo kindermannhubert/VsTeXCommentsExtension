@@ -41,6 +41,7 @@ namespace VsTeXCommentsExtension.Integration.View
 
             VisualStudioSettings.Instance.CommentsColorChanged += ColorsChanged;
             VisualStudioSettings.Instance.ZoomChanged += ZoomChanged;
+            ExtensionSettings.Instance.CustomZoomChanged += CustomZoomChanged;
         }
 
         private void TextBuffer_Changed(object sender, TextContentChangedEventArgs e)
@@ -102,6 +103,11 @@ namespace VsTeXCommentsExtension.Integration.View
             lastTimeZoomChanged = now;
         }
 
+        private void CustomZoomChanged(double zoomScale)
+        {
+            InvalidateAndRerenderAll();
+        }
+
         private void ColorsChanged(IWpfTextView textView, SolidColorBrush foreground, SolidColorBrush background)
         {
             CommentsForegroundBrush = foreground;
@@ -114,6 +120,7 @@ namespace VsTeXCommentsExtension.Integration.View
             textView.TextBuffer.Changed -= TextBuffer_Changed;
             VisualStudioSettings.Instance.ZoomChanged -= ZoomChanged;
             VisualStudioSettings.Instance.CommentsColorChanged -= ColorsChanged;
+            ExtensionSettings.Instance.CustomZoomChanged -= CustomZoomChanged;
             textView.Properties.RemoveProperty(typeof(TeXCommentAdornmentTagger));
         }
 

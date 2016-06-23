@@ -67,10 +67,10 @@ namespace VsTeXCommentsExtension.View
 
             objectForScripting.RenderingDone += () => mathJaxRenderingDone = true;
 
-            VisualStudioSettings.Instance.ZoomChanged += Instance_ZoomChanged;
+            VisualStudioSettings.Instance.ZoomChanged += OnZoomChanged;
         }
 
-        private void Instance_ZoomChanged(IWpfTextView textView, double zoomPercentage)
+        private void OnZoomChanged(IWpfTextView textView, double zoomPercentage)
         {
             zoomScale = 0.01 * zoomPercentage;
         }
@@ -90,7 +90,7 @@ namespace VsTeXCommentsExtension.View
                 Foreground,
                 Background,
                 font,
-                zoomScale,
+                zoomScale * ExtensionSettings.Instance.CustomZoomScale,
                 CacheVersion);
             if (cache.TryGetImage(cacheInfo, out resultImage))
             {
@@ -134,8 +134,8 @@ namespace VsTeXCommentsExtension.View
             }
             else
             {
-                webBrowser.Width = (int)(zoomScale * DefaultBrowserWidth);
-                webBrowser.Height = (int)(zoomScale * DefaultBrowserHeight);
+                webBrowser.Width = (int)(zoomScale * ExtensionSettings.Instance.CustomZoomScale * DefaultBrowserWidth);
+                webBrowser.Height = (int)(zoomScale * ExtensionSettings.Instance.CustomZoomScale * DefaultBrowserHeight);
 
                 const int ExtraMargin = 4;
                 var myDiv = webBrowser.Document.GetElementById("myDiv");
@@ -206,7 +206,7 @@ namespace VsTeXCommentsExtension.View
                                     Foreground,
                                     Background,
                                     font,
-                                    zoomScale,
+                                    zoomScale * ExtensionSettings.Instance.CustomZoomScale,
                                     CacheVersion);
                                 cache.Add(cacheInfo, croppedBitmap);
                                 resultImage = bitmapSource;
@@ -310,7 +310,7 @@ namespace VsTeXCommentsExtension.View
                 BackgroundColor = background,
                 ForegroundColor = Foreground,
                 FontFamily = font.FontFamily.Name,
-                FontSize = zoomScale * font.Size,
+                FontSize = zoomScale * ExtensionSettings.Instance.CustomZoomScale * font.Size,
                 Source = content
             };
 
@@ -320,7 +320,7 @@ namespace VsTeXCommentsExtension.View
         public void Dispose()
         {
             webBrowser?.Dispose();
-            VisualStudioSettings.Instance.ZoomChanged -= Instance_ZoomChanged;
+            VisualStudioSettings.Instance.ZoomChanged -= OnZoomChanged;
         }
 
         [ComImport]

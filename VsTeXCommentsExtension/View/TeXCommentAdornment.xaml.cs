@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -15,7 +16,7 @@ namespace VsTeXCommentsExtension.View
     /// <summary>
     /// Interaction logic for TexCommentAdornment.xaml
     /// </summary>
-    internal partial class TeXCommentAdornment : UserControl, ITagAdornment
+    internal partial class TeXCommentAdornment : UserControl, ITagAdornment, IDisposable
     {
         private readonly List<Span> spansOfChangesFromEditing = new List<Span>();
         private readonly Action<Span> refreshTags;
@@ -84,6 +85,8 @@ namespace VsTeXCommentsExtension.View
             Action<Span> refreshTags,
             IntraTextAdornmentTaggerDisplayMode defaultDisplayMode)
         {
+            ExtensionSettings.Instance.CustomZoomChanged += CustomZoomChanged;
+
             this.tag = tag;
             this.refreshTags = refreshTags;
             this.textView = textView;
@@ -134,6 +137,11 @@ namespace VsTeXCommentsExtension.View
             var end = args.Changes[args.Changes.Count - 1].NewEnd;
 
             spansOfChangesFromEditing.Add(new Span(start, end - start));
+        }
+
+        public void Dispose()
+        {
+            ExtensionSettings.Instance.CustomZoomChanged -= CustomZoomChanged;
         }
 
         private void UpdateImageAsync()
@@ -193,16 +201,35 @@ namespace VsTeXCommentsExtension.View
             leftBorderGroupPanel.Visibility = !IsInEditMode ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        private void MenuItem_Refresh_Click(object sender, RoutedEventArgs e)
+        private void CustomZoomChanged(double zoomScale)
+        {
+            var zoomHeader = $"{(int)(100 * zoomScale)}%";
+            var zoomMainMenuItem = btnEdit.ContextMenu.Items.Cast<MenuItem>().Single(i => i.Header.ToString() == "Zoom");
+            foreach (MenuItem item in zoomMainMenuItem.Items)
+            {
+                item.IsChecked = item.Header.ToString() == zoomHeader;
+            }
+        }
+
+        private void MenuItem_EditAll_Click(object sender, RoutedEventArgs e)
         {
         }
 
-        private void MenuItem_SaveAsImage_Click(object sender, RoutedEventArgs e)
+        private void MenuItem_ShowAll_Click(object sender, RoutedEventArgs e)
         {
         }
 
-        private void MenuItem_ClearGlobalCache_Click(object sender, RoutedEventArgs e)
+        private void MenuItem_OpenImageCache_Click(object sender, RoutedEventArgs e)
         {
+        }
+
+        private void MenuItem_ChangeZoom_Click(object sender, RoutedEventArgs e)
+        {
+            var item = (MenuItem)sender;
+            var itemHeader = item.Header.ToString();
+            var customZoomScale = 0.01 * int.Parse(itemHeader.Substring(0, itemHeader.Length - 1));
+
+            ExtensionSettings.Instance.CustomZoomScale = customZoomScale; //will trigger zoom changed event
         }
     }
 }

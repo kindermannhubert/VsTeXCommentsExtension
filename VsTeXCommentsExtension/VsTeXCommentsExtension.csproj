@@ -100,6 +100,7 @@
     <Compile Include="Integration\View\IntraTextAdornmentTagger.cs" />
     <Compile Include="Integration\View\IntraTextAdornmentTagTransformer.cs" />
     <Compile Include="Integration\View\ITagAdornment.cs" />
+    <Compile Include="ExtensionSettings.cs" />
     <Compile Include="VisualStudioSettings.cs" />
   </ItemGroup>
   <ItemGroup>
