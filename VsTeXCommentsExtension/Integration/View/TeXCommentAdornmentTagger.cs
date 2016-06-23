@@ -82,7 +82,7 @@ namespace VsTeXCommentsExtension.Integration.View
         private void ZoomChanged(IWpfTextView textView, double zoomPercentage)
         {
             //Zoom is changing continuously (while changing by mouse wheel).
-            //Do we want to wait a moment before triggring invalidation (we hope that after moment changing is done).
+            //We want to wait a moment before triggering invalidation (we hope that after moment changing is done).
             const int delayMs = 1000;
             var now = DateTime.Now;
             if ((now - lastTimeZoomChanged).TotalMilliseconds > delayMs)

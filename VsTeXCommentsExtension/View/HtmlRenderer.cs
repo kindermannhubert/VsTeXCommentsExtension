@@ -196,7 +196,7 @@ namespace VsTeXCommentsExtension.View
                                 var bitmapSource = BitmapSource.Create(
                                     croppedBitmapData.Width, croppedBitmapData.Height,
                                     Native.CurrentDpiX, Native.CurrentDpiY,
-                                    wpf.PixelFormats.Rgb24, null,
+                                    wpf.PixelFormats.Bgr24, null,
                                     croppedBitmapData.Scan0,
                                     croppedBitmapData.Height * croppedBitmapData.Stride,
                                     croppedBitmapData.Stride);

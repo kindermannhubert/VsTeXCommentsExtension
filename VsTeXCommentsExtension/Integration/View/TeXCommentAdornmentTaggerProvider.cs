@@ -23,7 +23,7 @@ namespace VsTeXCommentsExtension.Integration.View
         private static IRenderingManager renderingManager;
         private static HtmlRenderer renderer;
 
-        private readonly List<IWpfTextView> textViews = new List<IWpfTextView>();
+        private readonly HashSet<IWpfTextView> textViews = new HashSet<IWpfTextView>();
 
         [Import]
         internal IBufferTagAggregatorFactoryService BufferTagAggregatorFactoryService = null; //MEF
@@ -50,9 +50,16 @@ namespace VsTeXCommentsExtension.Integration.View
                     if (!VisualStudioSettings.Instance.IsInitialized)
                     {
                         VisualStudioSettings.Instance.Initialize(EditorFormatMapService, VsFontsAndColorsInformationService);
-                        VisualStudioSettings.Instance.RegisterForEventsListening(wpfTextView);
                         VisualStudioSettings.Instance.CommentsColorChanged += ColorsChanged;
                     }
+                }
+            }
+
+            lock (sync)
+            {
+                if (textViews.Add(wpfTextView))
+                {
+                    VisualStudioSettings.Instance.RegisterForEventsListening(wpfTextView);
                 }
             }
 
