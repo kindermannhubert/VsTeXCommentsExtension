@@ -46,6 +46,31 @@ namespace VsTeXCommentsExtension.Integration.View
 
         private void TextBuffer_Changed(object sender, TextContentChangedEventArgs e)
         {
+            HandleAutoCommentPrefixInsertionAfterEdit(e);
+            HandleSwitchingToEditModeAfterEdit(e);
+        }
+
+        private void HandleAutoCommentPrefixInsertionAfterEdit(TextContentChangedEventArgs e)
+        {
+            //if we put new line inside tex-block we want to automaticaly insert '//'
+            if (e.Changes.Count != 1) return;
+
+            var change = e.Changes[0];
+            if (change.NewText != "\r\n") return;
+
+            var block = texCommentBlocks.GetBlockForPosition(e.Before, change.OldPosition);
+            if (!block.HasValue) return;
+
+            if (!block.Value.IsPositionAfterTeXPrefix(e.Before, change.OldPosition)) return;
+
+            var line = e.Before.GetLineFromPosition(change.OldPosition);
+            var whitespaceCount = block.Value.GetMinNumberOfWhitespacesBeforeCommentPrefixes(e.Before);
+
+            textView.TextBuffer.Insert(e.Changes[0].NewEnd, new string(' ', whitespaceCount) + "//");
+        }
+
+        private void HandleSwitchingToEditModeAfterEdit(TextContentChangedEventArgs e)
+        {
             //when we start editing line with adornment we switch to edit mode
             foreach (var change in e.Changes)
             {

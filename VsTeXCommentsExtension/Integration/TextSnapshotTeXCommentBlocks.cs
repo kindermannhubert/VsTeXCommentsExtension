@@ -10,17 +10,17 @@ namespace VsTeXCommentsExtension.Integration
         private const int CachedVersionToRemoveOnCleanUp = 4;
 
         public const string CommentPrefix = "//";
-        public const string TexCommentPrefix = "//tex:";
+        public const string TeXCommentPrefix = "//tex:";
         public static readonly char[] WhiteSpaces = new char[] { ' ', '\t' };
 
-        private readonly Dictionary<int, List<TeXCommentBlock>> blocksPerVersion = new Dictionary<int, List<TeXCommentBlock>>();
+        private readonly Dictionary<int, List<TeXCommentBlockSpan>> blocksPerVersion = new Dictionary<int, List<TeXCommentBlockSpan>>();
         private readonly List<int> versions = new List<int>();
 
-        public IReadOnlyList<TeXCommentBlock> GetTexCommentBlocks(ITextSnapshot snapshot)
+        public IReadOnlyList<TeXCommentBlockSpan> GetTexCommentBlocks(ITextSnapshot snapshot)
         {
             var version = snapshot.Version.VersionNumber;
 
-            List<TeXCommentBlock> blocks;
+            List<TeXCommentBlockSpan> blocks;
             if (!blocksPerVersion.TryGetValue(version, out blocks))
             {
                 blocks = GenerateTexCommentBlocks(snapshot);
@@ -42,11 +42,11 @@ namespace VsTeXCommentsExtension.Integration
         }
 
         //TODO perf/allocations/List<>pooling
-        private static List<TeXCommentBlock> GenerateTexCommentBlocks(ITextSnapshot snapshot)
+        private static List<TeXCommentBlockSpan> GenerateTexCommentBlocks(ITextSnapshot snapshot)
         {
-            var texCommentBlocks = new List<TeXCommentBlock>();
+            var texCommentBlocks = new List<TeXCommentBlockSpan>();
             var atTexBlock = false;
-            var texBlockSpan = default(TeXCommentBlock);
+            var texBlockSpan = default(TeXCommentBlockSpan);
             int lastBlockLineBreakLength = 0;
             foreach (var line in snapshot.Lines)
             {
@@ -54,12 +54,12 @@ namespace VsTeXCommentsExtension.Integration
                 var lineTextTrimmed = lineText.TrimStart(WhiteSpaces);
                 if (atTexBlock)
                 {
-                    if (lineTextTrimmed.StartsWith(TexCommentPrefix))
+                    if (lineTextTrimmed.StartsWith(TeXCommentPrefix))
                     {
                         texBlockSpan.RemoveLastLineBreak(lastBlockLineBreakLength);
                         texCommentBlocks.Add(texBlockSpan); //end of current block
 
-                        texBlockSpan = new TeXCommentBlock(line.ExtentIncludingLineBreak, lineText.Length - lineTextTrimmed.Length, line.GetLineBreakText()); //start of new block
+                        texBlockSpan = new TeXCommentBlockSpan(line.ExtentIncludingLineBreak, lineText.Length - lineTextTrimmed.Length, line.GetLineBreakText()); //start of new block
                         lastBlockLineBreakLength = line.LineBreakLength;
                     }
                     else if (lineTextTrimmed.StartsWith(CommentPrefix))
@@ -76,11 +76,11 @@ namespace VsTeXCommentsExtension.Integration
                         atTexBlock = false;
                     }
                 }
-                else if (lineTextTrimmed.StartsWith(TexCommentPrefix))
+                else if (lineTextTrimmed.StartsWith(TeXCommentPrefix))
                 {
                     //start of new block
                     atTexBlock = true;
-                    texBlockSpan = new TeXCommentBlock(line.ExtentIncludingLineBreak, lineText.Length - lineTextTrimmed.Length, line.GetLineBreakText());
+                    texBlockSpan = new TeXCommentBlockSpan(line.ExtentIncludingLineBreak, lineText.Length - lineTextTrimmed.Length, line.GetLineBreakText());
                     lastBlockLineBreakLength = line.LineBreakLength;
                 }
             }
@@ -119,6 +119,18 @@ namespace VsTeXCommentsExtension.Integration
             }
 
             return results;
+        }
+
+        public TeXCommentBlockSpan? GetBlockForPosition(ITextSnapshot snapshot, int position)
+        {
+            var blocks = GetTexCommentBlocks(snapshot);
+
+            foreach (var block in blocks)
+            {
+                if (block.Span.Contains(position)) return block;
+            }
+
+            return null;
         }
     }
 }

@@ -71,7 +71,7 @@
   <ItemGroup>
     <Compile Include="Extensions.cs" />
     <Compile Include="LineSpan.cs" />
-    <Compile Include="Integration\TeXCommentBlock.cs" />
+    <Compile Include="Integration\TeXCommentBlockSpan.cs" />
     <Compile Include="ObjectEventHandlerTuple.cs" />
     <Compile Include="View\DropDownImageButton.xaml.cs">
       <DependentUpon>DropDownImageButton.xaml</DependentUpon>
