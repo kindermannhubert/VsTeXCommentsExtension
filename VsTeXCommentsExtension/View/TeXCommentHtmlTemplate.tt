@@ -16,7 +16,9 @@ MathJax.Hub.Config({
 			showProcessingMessages: false,
 			messageStyle: "none",
 			"HTML-CSS": { linebreaks: { automatic: true }, width: 'container' },
-			tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+			tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+			displayAlign: "left",
+			displayIndent: "2em"
 			});
 		</script>
 
