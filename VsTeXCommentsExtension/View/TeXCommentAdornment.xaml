@@ -20,7 +20,7 @@
             <local:DropDownImageButton.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Edit All" Click="MenuItem_EditAll_Click" />
-                    <MenuItem Header="Open Image Cache... (not implemented yet)" Click="MenuItem_OpenImageCache_Click" />
+                    <MenuItem Header="Open Image Cache..." Click="MenuItem_OpenImageCache_Click" />
                     
                     <!--Name 'Zoom' is used also in code-behind.-->
                     <MenuItem Header="Zoom">

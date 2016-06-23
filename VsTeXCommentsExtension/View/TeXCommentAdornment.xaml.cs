@@ -7,7 +7,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using VsTeXCommentsExtension.Integration.Data;
 using VsTeXCommentsExtension.Integration.View;
 
@@ -168,20 +167,19 @@ namespace VsTeXCommentsExtension.View
             IsInEditMode = false;
         }
 
-        private void ImageIsReady(BitmapSource e)
+        private void ImageIsReady(RendererResult result)
         {
             if (!Dispatcher.CheckAccess())
             {
-                Dispatcher.Invoke(new Action<BitmapSource>(ImageIsReady), e);
+                Dispatcher.Invoke(new Action<RendererResult>(ImageIsReady), result);
             }
             else
             {
-                imageControl.Source = e;
-                if (e != null)
-                {
-                    imageControl.Width = e.Width / (textView.ZoomLevel * 0.01);
-                    imageControl.Height = e.Height / (textView.ZoomLevel * 0.01);
-                }
+                var img = result.Image;
+                imageControl.Source = img;
+                imageControl.Width = img.Width / (textView.ZoomLevel * 0.01);
+                imageControl.Height = img.Height / (textView.ZoomLevel * 0.01);
+                imageControl.Tag = result.CachePath;
                 SetUpControlsVisibility();
             }
         }
@@ -226,6 +224,15 @@ namespace VsTeXCommentsExtension.View
 
         private void MenuItem_OpenImageCache_Click(object sender, RoutedEventArgs e)
         {
+            if (imageControl.Source == null || imageControl.Tag == null) return;
+
+            try
+            {
+                var path = (string)imageControl.Tag;
+                var processArgs = $"/e, /select,\"{path}\"";
+                Process.Start(new ProcessStartInfo("explorer", processArgs));
+            }
+            catch { }
         }
 
         private void MenuItem_ChangeZoom_Click(object sender, RoutedEventArgs e)

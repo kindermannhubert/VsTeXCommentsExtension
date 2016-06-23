@@ -12,7 +12,7 @@ using wpf = System.Windows.Media;
 
 namespace VsTeXCommentsExtension.View
 {
-    public class HtmlRenderer : IRenderer<BitmapSource>, IDisposable
+    public class HtmlRenderer : IRenderer<RendererResult>, IDisposable
     {
         private const int CacheVersion = 2; //increase when we want to invalidate all cached results
         private const int WaitingIntervalMs = 50;
@@ -24,7 +24,7 @@ namespace VsTeXCommentsExtension.View
         private readonly ObjectForScripting objectForScripting = new ObjectForScripting();
         private readonly Font font;
 
-        private volatile BitmapSource resultImage;
+        private RendererResult? resultImage;
         private volatile bool documentCompleted;
         private volatile bool mathJaxRenderingDone;
         private volatile string currentContent;
@@ -80,7 +80,7 @@ namespace VsTeXCommentsExtension.View
             documentCompleted = true;
         }
 
-        public BitmapSource Render(string content)
+        public RendererResult Render(string content)
         {
             Debug.Assert(content != null);
 
@@ -94,7 +94,7 @@ namespace VsTeXCommentsExtension.View
                 CacheVersion);
             if (cache.TryGetImage(cacheInfo, out resultImage))
             {
-                return resultImage;
+                return resultImage.Value;
             }
 #pragma warning restore CS0420 // A reference to a volatile field will not be treated as volatile
 
@@ -113,12 +113,12 @@ namespace VsTeXCommentsExtension.View
             RenderInternal();
 
             //wait until result image is ready
-            while (resultImage == null)
+            while (!resultImage.HasValue)
             {
                 Thread.Sleep(WaitingIntervalMs);
             }
 
-            return resultImage;
+            return resultImage.Value;
         }
 
         private unsafe void RenderInternal()
@@ -208,8 +208,9 @@ namespace VsTeXCommentsExtension.View
                                     font,
                                     zoomScale * ExtensionSettings.Instance.CustomZoomScale,
                                     CacheVersion);
-                                cache.Add(cacheInfo, croppedBitmap);
-                                resultImage = bitmapSource;
+
+                                var cachedImagePath = cache.Add(cacheInfo, croppedBitmap);
+                                resultImage = new RendererResult(bitmapSource, cachedImagePath);
                             }
                             finally
                             {

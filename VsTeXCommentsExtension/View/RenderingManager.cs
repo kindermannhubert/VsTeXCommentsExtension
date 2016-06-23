@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using System.Windows.Media.Imaging;
 
 namespace VsTeXCommentsExtension.View
 {
-    public class RenderingManager : RenderingManager<BitmapSource>, IRenderingManager
+    public class RenderingManager : RenderingManager<RendererResult>, IRenderingManager
     {
-        public RenderingManager(IRenderer<BitmapSource> renderer)
+        public RenderingManager(IRenderer<RendererResult> renderer)
             : base(renderer)
         {
         }

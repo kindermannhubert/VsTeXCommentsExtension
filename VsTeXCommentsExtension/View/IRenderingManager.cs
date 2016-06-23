@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Windows.Media.Imaging;
 
 namespace VsTeXCommentsExtension.View
 {
-    public interface IRenderingManager : IRenderingManager<BitmapSource>
+    public interface IRenderingManager : IRenderingManager<RendererResult>
     {
     }
 

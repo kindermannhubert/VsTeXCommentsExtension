@@ -23,9 +23,9 @@ namespace VsTeXCommentsExtension.View
             }
         }
 
-        public bool TryGetImage(Info info, out BitmapSource bitmapSource)
+        public bool TryGetImage(Info info, out RendererResult? result)
         {
-            bitmapSource = null;
+            result = null;
 
             var filePath = Path.Combine(directory, info.GetFileName());
             try
@@ -48,7 +48,7 @@ namespace VsTeXCommentsExtension.View
                     bmp.EndInit();
                     bmp.Freeze();
 
-                    bitmapSource = bmp;
+                    result = new RendererResult(bmp, filePathPng);
                     return true;
                 }
             }
@@ -58,7 +58,7 @@ namespace VsTeXCommentsExtension.View
             }
         }
 
-        public void Add(Info info, Bitmap bitmap)
+        public string Add(Info info, Bitmap bitmap)
         {
 
             var filePath = Path.Combine(directory, info.GetFileName());
@@ -73,10 +73,13 @@ namespace VsTeXCommentsExtension.View
                     writer.Write(info.ToString());
                 }
 
-                using (var fs = new FileStream(filePath + ".png", FileMode.Create))
+                var filePathPng = filePath + ".png";
+                using (var fs = new FileStream(filePathPng, FileMode.Create))
                 {
                     bitmap.Save(fs, ImageFormat.Png);
                 }
+
+                return filePathPng;
             }
             finally
             {
