@@ -52,7 +52,7 @@ namespace VsTeXCommentsExtension.Integration.View
 
         private void HandleAutoCommentPrefixInsertionAfterEdit(TextContentChangedEventArgs e)
         {
-            //if we put new line inside tex-block we want to automaticaly insert '//'
+            //if we put new line inside TeX-block we want to automaticaly insert '//'
             if (e.Changes.Count != 1) return;
 
             var change = e.Changes[0];

@@ -92,6 +92,7 @@ namespace VsTeXCommentsExtension.Integration.View
 
                 if (changed)
                 {
+                    editedBlockSpans.AddRange(blockSpansBefore);
                     editedBlockSpans.AddRange(blockSpansAfter);
                 }
             }
