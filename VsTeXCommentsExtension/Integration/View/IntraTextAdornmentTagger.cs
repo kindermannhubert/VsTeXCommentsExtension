@@ -106,15 +106,19 @@ namespace VsTeXCommentsExtension.Integration.View
             InvalidateSpans(editedBlockSpans);
         }
 
-        protected void InvalidateAndRerenderAll()
+        protected void ForAllCurrentlyUsedAdornments(Action<TAdornment> action, bool invalidateAdornmentsAfterAction)
         {
             lock (adornmentsCache)
             {
                 foreach (var adornment in adornmentsCache.Values)
                 {
-                    adornment.Invalidate();
+                    action(adornment);
                 }
-                InvalidateSpans(new List<SnapshotSpan>() { new SnapshotSpan(Snapshot, new Span(0, Snapshot.Length)) });
+
+                if (invalidateAdornmentsAfterAction)
+                {
+                    InvalidateSpans(new List<SnapshotSpan>() { new SnapshotSpan(Snapshot, new Span(0, Snapshot.Length)) });
+                }
             }
         }
 

@@ -96,7 +96,7 @@ namespace VsTeXCommentsExtension.Integration.View
                             Thread.Sleep(delayMs / 10);
                         }
                         lastTimeZoomChanged = DateTime.Now;
-                        textView.VisualElement.Dispatcher.BeginInvoke(new Action(InvalidateAndRerenderAll));
+                        textView.VisualElement.Dispatcher.BeginInvoke(new Action(() => ForAllCurrentlyUsedAdornments(a => a.Invalidate(), true)));
                     });
             }
 
@@ -105,13 +105,13 @@ namespace VsTeXCommentsExtension.Integration.View
 
         private void CustomZoomChanged(double zoomScale)
         {
-            InvalidateAndRerenderAll();
+            ForAllCurrentlyUsedAdornments(a => a.Invalidate(), true);
         }
 
         private void ColorsChanged(IWpfTextView textView, SolidColorBrush foreground, SolidColorBrush background)
         {
             CommentsForegroundBrush = foreground;
-            InvalidateAndRerenderAll();
+            ForAllCurrentlyUsedAdornments(a => a.Invalidate(), true);
         }
 
         public override void Dispose()
@@ -132,10 +132,9 @@ namespace VsTeXCommentsExtension.Integration.View
 
             var adornment = new TeXCommentAdornment(
                 dataTag,
-                CommentsForegroundBrush,
-                textView,
-                renderingManager,
                 lineSpan,
+                CommentsForegroundBrush,
+                defaultDisplayMode,
                 span =>
                 {
                     //var blockSpans = texCommentBlocks.GetBlockSpansWithLastLineBreakIntersectedBy(Snapshot, span);
@@ -148,7 +147,12 @@ namespace VsTeXCommentsExtension.Integration.View
 
                     InvalidateSpans(new List<SnapshotSpan>() { new SnapshotSpan(Snapshot, 0, Snapshot.Length) });
                 },
-                defaultDisplayMode);
+                isInEditMode =>
+                {
+                    ForAllCurrentlyUsedAdornments(a => a.IsInEditMode = isInEditMode, false);
+                },
+                renderingManager,
+                textView);
             textView.TextBuffer.Changed += adornment.HandleTextBufferChanged;
 
             MarkAdornmentLines(lineSpan, adornment);

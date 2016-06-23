@@ -20,6 +20,7 @@ namespace VsTeXCommentsExtension.View
     {
         private readonly List<Span> spansOfChangesFromEditing = new List<Span>();
         private readonly Action<Span> refreshTags;
+        private readonly Action<bool> setIsInEditModeForAllAornmentsInDocument;
         private readonly IRenderingManager renderingManager;
         private readonly IWpfTextView textView;
 
@@ -34,10 +35,14 @@ namespace VsTeXCommentsExtension.View
             set
             {
                 Debug.WriteLine($"Adornment {DebugIndex}: IsInEditMode={value}");
+
+                if (changeMadeWhileInEditMode) imageControl.Source = null;
+
                 isInEditMode = value;
                 DisplayMode = isInEditMode ? IntraTextAdornmentTaggerDisplayMode.DoNotHideOriginalText : IntraTextAdornmentTaggerDisplayMode.HideOriginalText;
                 if (isInEditMode) spansOfChangesFromEditing.Clear();
                 changeMadeWhileInEditMode = false;
+
                 SetUpControlsVisibility();
 
                 if (spansOfChangesFromEditing.Count > 0)
@@ -78,17 +83,19 @@ namespace VsTeXCommentsExtension.View
 
         public TeXCommentAdornment(
             TeXCommentTag tag,
-            SolidColorBrush commentsForegroundBrush,
-            IWpfTextView textView,
-            IRenderingManager renderingManager,
             LineSpan lineSpan,
+            SolidColorBrush commentsForegroundBrush,
+            IntraTextAdornmentTaggerDisplayMode defaultDisplayMode,
             Action<Span> refreshTags,
-            IntraTextAdornmentTaggerDisplayMode defaultDisplayMode)
+            Action<bool> setIsInEditModeForAllAornmentsInDocument,
+            IRenderingManager renderingManager,
+            IWpfTextView textView)
         {
             ExtensionSettings.Instance.CustomZoomChanged += CustomZoomChanged;
 
             this.tag = tag;
             this.refreshTags = refreshTags;
+            this.setIsInEditModeForAllAornmentsInDocument = setIsInEditModeForAllAornmentsInDocument;
             this.textView = textView;
             this.renderingManager = renderingManager;
 
@@ -158,10 +165,6 @@ namespace VsTeXCommentsExtension.View
 
         private void ButtonShow_Click(object sender, RoutedEventArgs e)
         {
-            if (changeMadeWhileInEditMode)
-            {
-                imageControl.Source = null;
-            }
             IsInEditMode = false;
         }
 
@@ -213,10 +216,12 @@ namespace VsTeXCommentsExtension.View
 
         private void MenuItem_EditAll_Click(object sender, RoutedEventArgs e)
         {
+            setIsInEditModeForAllAornmentsInDocument(true);
         }
 
         private void MenuItem_ShowAll_Click(object sender, RoutedEventArgs e)
         {
+            setIsInEditModeForAllAornmentsInDocument(false);
         }
 
         private void MenuItem_OpenImageCache_Click(object sender, RoutedEventArgs e)

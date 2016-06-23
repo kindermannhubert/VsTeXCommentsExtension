@@ -19,7 +19,7 @@
         <local:DropDownImageButton x:Name="btnEdit" ImageSource="{Binding Source={x:Static local:ResourcesManager.Instance}, Path=Edit}" Click="ButtonEdit_Click" Margin="12,0,0,0">
             <local:DropDownImageButton.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Edit All (not implemented yet)" Click="MenuItem_EditAll_Click" />
+                    <MenuItem Header="Edit All" Click="MenuItem_EditAll_Click" />
                     <MenuItem Header="Open Image Cache... (not implemented yet)" Click="MenuItem_OpenImageCache_Click" />
                     
                     <!--Name 'Zoom' is used also in code-behind.-->
@@ -38,7 +38,7 @@
         <local:DropDownImageButton x:Name="btnShow" ImageSource="{Binding Source={x:Static local:ResourcesManager.Instance}, Path=Show}" Click="ButtonShow_Click" Margin="12,0,0,0">
             <local:DropDownImageButton.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Show All (not implemented yet)" Click="MenuItem_ShowAll_Click" />
+                    <MenuItem Header="Show All" Click="MenuItem_ShowAll_Click" />
                 </ContextMenu>
             </local:DropDownImageButton.ContextMenu>
         </local:DropDownImageButton>
