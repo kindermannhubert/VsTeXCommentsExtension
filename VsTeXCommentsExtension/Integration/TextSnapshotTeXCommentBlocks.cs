@@ -13,11 +13,18 @@ namespace VsTeXCommentsExtension.Integration
         public const string TeXCommentPrefix = "//tex:";
         public static readonly char[] WhiteSpaces = new char[] { ' ', '\t' };
 
-        private readonly Dictionary<int, List<TeXCommentBlockSpan>> blocksPerVersion = new Dictionary<int, List<TeXCommentBlockSpan>>();
+        private readonly Dictionary<ITextBuffer, Dictionary<int, List<TeXCommentBlockSpan>>> blocksPerTextBuffer = new Dictionary<ITextBuffer, Dictionary<int, List<TeXCommentBlockSpan>>>();
         private readonly List<int> versions = new List<int>();
 
         public IReadOnlyList<TeXCommentBlockSpan> GetTexCommentBlocks(ITextSnapshot snapshot)
         {
+            Dictionary<int, List<TeXCommentBlockSpan>> blocksPerVersion;
+            if (!blocksPerTextBuffer.TryGetValue(snapshot.TextBuffer, out blocksPerVersion))
+            {
+                blocksPerVersion = new Dictionary<int, List<TeXCommentBlockSpan>>();
+                blocksPerTextBuffer.Add(snapshot.TextBuffer, blocksPerVersion);
+            }
+
             var version = snapshot.Version.VersionNumber;
 
             List<TeXCommentBlockSpan> blocks;

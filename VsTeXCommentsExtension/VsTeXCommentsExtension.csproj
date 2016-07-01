@@ -73,6 +73,11 @@
     <Compile Include="LineSpan.cs" />
     <Compile Include="Integration\TeXCommentBlockSpan.cs" />
     <Compile Include="ObjectEventHandlerTuple.cs" />
+    <Compile Include="SyntaxHighlighting\ClassificationDefinitions.cs" />
+    <Compile Include="SyntaxHighlighting\MatchingBracesTagger.cs" />
+    <Compile Include="SyntaxHighlighting\MatchingBracesTaggerProvider.cs" />
+    <Compile Include="SyntaxHighlighting\TeXSyntaxClassifier.cs" />
+    <Compile Include="SyntaxHighlighting\TeXSyntaxClassifierProvider.cs" />
     <Compile Include="View\DropDownImageButton.xaml.cs">
       <DependentUpon>DropDownImageButton.xaml</DependentUpon>
     </Compile>
