@@ -25,9 +25,9 @@
                     </TransformGroup>
                 </Ellipse.RenderTransform>
                 <Ellipse.Stroke>
-                    <LinearGradientBrush EndPoint="0.445,0.997" StartPoint="0.555,0.003">
-                        <GradientStop Color="White" Offset="0"/>
-                        <GradientStop Color="Black" Offset="1"/>
+                    <LinearGradientBrush StartPoint="0.2,0.2" EndPoint="0.5,0.5">
+                        <GradientStop Color="{Binding Source={x:Static local:ResourcesManager.Instance}, Path=BackgroundUIColor}" Offset="0"/>
+                        <GradientStop Color="{Binding Source={x:Static local:ResourcesManager.Instance}, Path=ForegroundUIColor}" Offset="1"/>
                     </LinearGradientBrush>
                 </Ellipse.Stroke>
             </Ellipse>
