@@ -4,7 +4,7 @@
     {
         public static ExtensionSettings Instance { get; } = new ExtensionSettings();
 
-        private double customZoomScale;
+        private double customZoomScale = 1;
         public double CustomZoomScale
         {
             get { return customZoomScale; }
@@ -22,7 +22,6 @@
 
         private ExtensionSettings()
         {
-            customZoomScale = 1;
         }
 
         public delegate void ZoomChangedHandler(double zoomScale);

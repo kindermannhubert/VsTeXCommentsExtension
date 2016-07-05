@@ -28,18 +28,18 @@ namespace VsTeXCommentsExtension.Integration.View
         private readonly List<TAdornment> adornmentsPool = new List<TAdornment>(MaxAdornmentPoolSize);
         private Dictionary<AdornmentCacheKey, TAdornment> adornmentsCache = new Dictionary<AdornmentCacheKey, TAdornment>();
 
-        protected readonly TextSnapshotTeXCommentBlocks texCommentBlocks = new TextSnapshotTeXCommentBlocks();
-        protected readonly IWpfTextView textView;
+        protected readonly TextSnapshotTeXCommentBlocks TexCommentBlocks = new TextSnapshotTeXCommentBlocks();
+        protected readonly IWpfTextView TextView;
         protected ITextSnapshot Snapshot { get; private set; }
 
         public IntraTextAdornmentTaggerDisplayMode Mode { get; set; }
 
         protected IntraTextAdornmentTagger(IWpfTextView textView)
         {
-            this.textView = textView;
+            this.TextView = textView;
             Snapshot = textView.TextBuffer.CurrentSnapshot;
             //this.view.LayoutChanged += HandleLayoutChanged;
-            this.textView.TextBuffer.Changed += HandleBufferChanged;
+            this.TextView.TextBuffer.Changed += HandleBufferChanged;
         }
 
         /// <param name="span">The span of text that this adornment will elide.</param>
@@ -65,13 +65,13 @@ namespace VsTeXCommentsExtension.Integration.View
         private void HandleBufferChanged(object sender, TextContentChangedEventArgs args)
         {
             if (args.Changes.Count == 0) return;
-            Debug.Assert(sender == textView.TextBuffer);
+            Debug.Assert(sender == TextView.TextBuffer);
 
             var editedBlockSpans = new List<SnapshotSpan>();
             foreach (var change in args.Changes)
             {
-                var blockSpansBefore = texCommentBlocks.GetBlockSpansIntersectedBy(args.Before, change.OldSpan);
-                var blockSpansAfter = texCommentBlocks.GetBlockSpansIntersectedBy(args.After, change.NewSpan);
+                var blockSpansBefore = TexCommentBlocks.GetBlockSpansIntersectedBy(args.Before, change.OldSpan);
+                var blockSpansAfter = TexCommentBlocks.GetBlockSpansIntersectedBy(args.After, change.NewSpan);
 
                 bool changed = false;
                 if (blockSpansBefore.Count == blockSpansAfter.Count)
@@ -138,16 +138,16 @@ namespace VsTeXCommentsExtension.Integration.View
             }
 
             if (wasEmpty)
-                textView.VisualElement.Dispatcher.BeginInvoke(new Action(AsyncUpdate));
+                TextView.VisualElement.Dispatcher.BeginInvoke(new Action(AsyncUpdate));
         }
 
         private void AsyncUpdate()
         {
             // Store the snapshot that we're now current with and send an event
             // for the text that has changed.
-            if (Snapshot != textView.TextBuffer.CurrentSnapshot)
+            if (Snapshot != TextView.TextBuffer.CurrentSnapshot)
             {
-                Snapshot = textView.TextBuffer.CurrentSnapshot;
+                Snapshot = TextView.TextBuffer.CurrentSnapshot;
 
                 var translatedAdornmentCache = new Dictionary<AdornmentCacheKey, TAdornment>();
 
@@ -318,7 +318,7 @@ namespace VsTeXCommentsExtension.Integration.View
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
-        struct AdornmentCacheKey : IEquatable<AdornmentCacheKey>
+        private struct AdornmentCacheKey : IEquatable<AdornmentCacheKey>
         {
             private readonly int SnapshotVersion;
             private readonly int SpanStart;

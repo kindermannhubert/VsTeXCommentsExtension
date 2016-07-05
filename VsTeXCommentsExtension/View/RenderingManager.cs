@@ -32,7 +32,7 @@ namespace VsTeXCommentsExtension.View
         {
             lock (requests)
             {
-                Debug.WriteLine("LoadContentAsync");
+                Debug.WriteLine(nameof(LoadContentAsync));
                 requests.Enqueue(new Request(content, renderingDoneCallback));
                 manualResetEvent.Set();
             }

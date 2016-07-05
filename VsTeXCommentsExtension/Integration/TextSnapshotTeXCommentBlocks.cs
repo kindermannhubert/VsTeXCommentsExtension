@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace VsTeXCommentsExtension.Integration
 {
-    class TextSnapshotTeXCommentBlocks
+    internal class TextSnapshotTeXCommentBlocks
     {
         private const int VersionsToCache = 8;
         private const int CachedVersionToRemoveOnCleanUp = 4;

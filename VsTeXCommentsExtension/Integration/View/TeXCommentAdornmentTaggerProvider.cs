@@ -34,10 +34,11 @@ namespace VsTeXCommentsExtension.Integration.View
         [Import]
         internal IVsFontsAndColorsInformationService VsFontsAndColorsInformationService = null; //MEF
 
-        public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
+        public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer)
+            where T : ITag
         {
-            if (textView == null) throw new ArgumentNullException("textView");
-            if (buffer == null) throw new ArgumentNullException("buffer");
+            if (textView == null) throw new ArgumentNullException(nameof(textView));
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
             if (buffer != textView.TextBuffer) return null;
 
             var wpfTextView = textView as IWpfTextView;

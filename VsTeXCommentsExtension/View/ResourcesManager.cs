@@ -11,9 +11,9 @@ namespace VsTeXCommentsExtension.View
         public static ResourcesManager Instance { get; } = new ResourcesManager();
 
         private bool useDark = true;
-        private ImageSource dropDown_Light, dropDown_Dark;
-        private ImageSource edit_Light, edit_Dark;
-        private ImageSource show_Light, show_Dark;
+        private readonly ImageSource dropDown_Light, dropDown_Dark;
+        private readonly ImageSource edit_Light, edit_Dark;
+        private readonly ImageSource show_Light, show_Dark;
 
         private ResourcesManager()
         {

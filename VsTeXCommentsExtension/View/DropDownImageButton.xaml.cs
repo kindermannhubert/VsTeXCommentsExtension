@@ -47,7 +47,6 @@ namespace VsTeXCommentsExtension.View
                 contextMenu.Placement = PlacementMode.Bottom;
                 contextMenu.IsOpen = true;
             }
-
         }
 
         private void ContextMenu_Closed(object sender, RoutedEventArgs e)

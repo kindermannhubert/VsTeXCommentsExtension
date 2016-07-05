@@ -145,7 +145,7 @@ namespace VsTeXCommentsExtension.View
                 webBrowser.Width = width;
                 webBrowser.Height = height;
 
-                var pixelFormat = PixelFormat.Format24bppRgb;
+                const PixelFormat pixelFormat = PixelFormat.Format24bppRgb;
                 using (var bitmap = new Bitmap(width, height, pixelFormat))
                 {
                     bitmap.SetResolution(Native.CurrentDpiX, Native.CurrentDpiY);

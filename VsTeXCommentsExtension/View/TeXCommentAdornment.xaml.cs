@@ -54,7 +54,10 @@ namespace VsTeXCommentsExtension.View
                     }
                     refreshTags(resultSpan);
                 }
-                else refreshTags(tag.Span);
+                else
+                {
+                    refreshTags(tag.Span);
+                }
             }
         }
 

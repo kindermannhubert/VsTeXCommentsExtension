@@ -5,7 +5,7 @@ using System.Windows.Media;
 
 namespace VsTeXCommentsExtension.SyntaxHighlighting
 {
-    static class ClassificationDefinitions
+    internal static class ClassificationDefinitions
     {
         #region Classification Type Definitions
         [Export]

@@ -60,7 +60,6 @@ namespace VsTeXCommentsExtension.View
 
         public string Add(Info info, Bitmap bitmap)
         {
-
             var filePath = Path.Combine(directory, info.GetFileName());
 
             try

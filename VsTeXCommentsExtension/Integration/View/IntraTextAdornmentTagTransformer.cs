@@ -19,8 +19,8 @@ namespace VsTeXCommentsExtension.Integration.View
         where TDataTag : ITag
         where TAdornment : UIElement, ITagAdornment
     {
-        protected readonly ITagAggregator<TDataTag> dataTagger;
-        protected readonly PositionAffinity? adornmentAffinity;
+        protected readonly ITagAggregator<TDataTag> DataTagger;
+        protected readonly PositionAffinity? AdornmentAffinity;
 
         /// <param name="adornmentAffinity">Determines whether adornments based on data tags with zero-length spans
         /// will stick with preceding or succeeding text characters.</param>
@@ -30,9 +30,9 @@ namespace VsTeXCommentsExtension.Integration.View
             PositionAffinity adornmentAffinity = PositionAffinity.Successor)
             : base(textView)
         {
-            this.adornmentAffinity = adornmentAffinity;
-            this.dataTagger = dataTagger;
-            this.dataTagger.TagsChanged += HandleDataTagsChanged;
+            this.AdornmentAffinity = adornmentAffinity;
+            this.DataTagger = dataTagger;
+            this.DataTagger.TagsChanged += HandleDataTagsChanged;
             Mode = mode;
         }
 
@@ -41,7 +41,7 @@ namespace VsTeXCommentsExtension.Integration.View
             if (spans.Count == 0) yield break;
 
             var snapshot = spans[0].Snapshot;
-            foreach (var dataTagSpan in dataTagger.GetTags(spans))
+            foreach (var dataTagSpan in DataTagger.GetTags(spans))
             {
                 var dataTagSpans = dataTagSpan.Span.GetSpans(snapshot);
 
@@ -49,19 +49,19 @@ namespace VsTeXCommentsExtension.Integration.View
                 // This is theoretically possible but unlikely in current scenarios.
                 if (dataTagSpans.Count != 1) continue;
 
-                yield return new TagData(dataTagSpans[0], adornmentAffinity, dataTagSpan.Tag);
+                yield return new TagData(dataTagSpans[0], AdornmentAffinity, dataTagSpan.Tag);
             }
         }
 
         private void HandleDataTagsChanged(object sender, TagsChangedEventArgs args)
         {
-            var changedSpans = args.Span.GetSpans(textView.TextBuffer.CurrentSnapshot);
+            var changedSpans = args.Span.GetSpans(TextView.TextBuffer.CurrentSnapshot);
             InvalidateSpans(changedSpans);
         }
 
         public virtual void Dispose()
         {
-            dataTagger.Dispose();
+            DataTagger.Dispose();
         }
     }
 }

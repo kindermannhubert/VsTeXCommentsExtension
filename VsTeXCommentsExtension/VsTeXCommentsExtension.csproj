@@ -37,6 +37,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <CopyVsixExtensionFiles>False</CopyVsixExtensionFiles>
     <DeployExtension>True</DeployExtension>
+    <CodeAnalysisRuleSet>..\Analyzers\Rules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -149,6 +150,13 @@
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>TeXCommentHtmlTemplate.cs</LastGenOutput>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\Analyzers\CodeCrackerAnalyzers\CodeCracker.Common.dll" />
+    <Analyzer Include="..\Analyzers\CodeCrackerAnalyzers\CodeCracker.CSharp.dll" />
+    <Analyzer Include="..\Analyzers\StyleCopAnalyzers\Newtonsoft.Json.dll" />
+    <Analyzer Include="..\Analyzers\StyleCopAnalyzers\StyleCop.Analyzers.CodeFixes.dll" />
+    <Analyzer Include="..\Analyzers\StyleCopAnalyzers\StyleCop.Analyzers.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
