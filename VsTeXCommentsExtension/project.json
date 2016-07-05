@@ -3,10 +3,10 @@
     "net45": {}
   },
   "dependencies": {
-    "Microsoft.VisualStudio.Editor": "14.2.25123",
+    "Microsoft.VisualStudio.Editor": "14.3.25407",
     "Microsoft.VisualStudio.SDK.EmbedInteropTypes": "14.1.2",
-    "Microsoft.VisualStudio.Text.UI.Wpf": "14.2.25123",
-    "Microsoft.VSSDK.BuildTools": "14.2.25201"
+    "Microsoft.VisualStudio.Text.UI.Wpf": "14.3.25407",
+    "Microsoft.VSSDK.BuildTools": "14.3.25407"
   },
   "runtimes": {
     "win": {}

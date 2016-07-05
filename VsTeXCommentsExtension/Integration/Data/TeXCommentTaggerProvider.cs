@@ -13,7 +13,7 @@ namespace VsTeXCommentsExtension.Integration.Data
     internal sealed class TeXCommentTaggerProvider : ITaggerProvider
     {
         [Import]
-        internal IClassifierAggregatorService AggregatorService { get; set; }
+        private IClassifierAggregatorService AggregatorService { get; set; }
 
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer)
             where T : ITag

@@ -14,7 +14,6 @@
         </StackPanel>
 
         <Image x:Name="imageControl" Margin="0,2,0,0" RenderOptions.BitmapScalingMode="HighQuality" />
-        <ProgressBar x:Name="progressBar" IsIndeterminate="True" Height="8" Width="128" />
 
         <local:DropDownImageButton x:Name="btnEdit" ImageSource="{Binding Source={x:Static local:ResourcesManager.Instance}, Path=Edit}" Click="ButtonEdit_Click" Margin="12,0,0,0">
             <local:DropDownImageButton.ContextMenu>
@@ -42,5 +41,7 @@
                 </ContextMenu>
             </local:DropDownImageButton.ContextMenu>
         </local:DropDownImageButton>
+
+        <local:CircleProgressBar x:Name="progressBar" Width="14" Height="14" />
     </StackPanel>
 </UserControl>

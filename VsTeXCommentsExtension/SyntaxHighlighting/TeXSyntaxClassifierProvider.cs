@@ -10,7 +10,7 @@ namespace VsTeXCommentsExtension.SyntaxHighlighting
     internal class TeXSyntaxClassifierProvider : IClassifierProvider
     {
         [Import]
-        internal IClassificationTypeRegistryService ClassificationRegistry = null; //MEF
+        private IClassificationTypeRegistryService ClassificationRegistry = null; //MEF
 
         private static TeXSyntaxClassifier diffClassifier;
 

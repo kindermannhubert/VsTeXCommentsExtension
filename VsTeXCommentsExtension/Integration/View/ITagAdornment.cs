@@ -3,7 +3,7 @@
     internal interface ITagAdornment
     {
         IntraTextAdornmentTaggerDisplayMode DisplayMode { get; }
-        bool IsInEditMode { get; set; }
+        TeXCommentAdornmentState CurrentState { get; set; }
         void Invalidate();
         int DebugIndex { get; }
     }

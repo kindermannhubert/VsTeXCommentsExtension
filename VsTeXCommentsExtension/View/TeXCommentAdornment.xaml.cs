@@ -19,7 +19,7 @@ namespace VsTeXCommentsExtension.View
     {
         private readonly List<Span> spansOfChangesFromEditing = new List<Span>();
         private readonly Action<Span> refreshTags;
-        private readonly Action<bool> setIsInEditModeForAllAornmentsInDocument;
+        private readonly Action<bool> setIsInEditModeForAllAdornmentsInDocument;
         private readonly IRenderingManager renderingManager;
         private readonly IWpfTextView textView;
 
@@ -27,19 +27,30 @@ namespace VsTeXCommentsExtension.View
         private bool changeMadeWhileInEditMode;
         private bool isInvalidated;
 
-        private bool isInEditMode;
-        public bool IsInEditMode
+        private bool IsInEditMode => currentState == TeXCommentAdornmentState.Editing;
+
+        private TeXCommentAdornmentState currentState;
+        public TeXCommentAdornmentState CurrentState
         {
-            get { return isInEditMode; }
+            get { return currentState; }
             set
             {
-                Debug.WriteLine($"Adornment {DebugIndex}: IsInEditMode={value}");
+                switch (value)
+                {
+                    case TeXCommentAdornmentState.Shown:
+                    case TeXCommentAdornmentState.Editing:
+                        break;
+                    case TeXCommentAdornmentState.Rendering:
+                        throw new InvalidOperationException($"Setting invalid state '{value}'.");
+                }
 
                 if (changeMadeWhileInEditMode) imageControl.Source = null;
+                if (value == TeXCommentAdornmentState.Shown && imageControl.Source == null) value = TeXCommentAdornmentState.Rendering;
 
-                isInEditMode = value;
-                DisplayMode = isInEditMode ? IntraTextAdornmentTaggerDisplayMode.DoNotHideOriginalText : IntraTextAdornmentTaggerDisplayMode.HideOriginalText;
-                if (isInEditMode) spansOfChangesFromEditing.Clear();
+                Debug.WriteLine($"Adornment {DebugIndex}: changing state from '{currentState}' to '{value}'");
+
+                currentState = value;
+                if (IsInEditMode) spansOfChangesFromEditing.Clear();
                 changeMadeWhileInEditMode = false;
 
                 SetUpControlsVisibility();
@@ -61,7 +72,22 @@ namespace VsTeXCommentsExtension.View
             }
         }
 
-        public IntraTextAdornmentTaggerDisplayMode DisplayMode { get; private set; }
+        public IntraTextAdornmentTaggerDisplayMode DisplayMode
+        {
+            get
+            {
+                switch (currentState)
+                {
+                    case TeXCommentAdornmentState.Rendering:
+                    case TeXCommentAdornmentState.Editing:
+                        return IntraTextAdornmentTaggerDisplayMode.DoNotHideOriginalText;
+                    case TeXCommentAdornmentState.Shown:
+                        return IntraTextAdornmentTaggerDisplayMode.HideOriginalText;
+                    default:
+                        throw new InvalidOperationException($"Unknown state: {currentState}.");
+                }
+            }
+        }
 
         private static int debugIndexer;
         public int DebugIndex { get; } = debugIndexer++;
@@ -87,9 +113,8 @@ namespace VsTeXCommentsExtension.View
             TeXCommentTag tag,
             LineSpan lineSpan,
             SolidColorBrush commentsForegroundBrush,
-            IntraTextAdornmentTaggerDisplayMode defaultDisplayMode,
             Action<Span> refreshTags,
-            Action<bool> setIsInEditModeForAllAornmentsInDocument,
+            Action<bool> setIsInEditModeForAllAdornmentsInDocument,
             IRenderingManager renderingManager,
             IWpfTextView textView)
         {
@@ -97,20 +122,18 @@ namespace VsTeXCommentsExtension.View
 
             this.tag = tag;
             this.refreshTags = refreshTags;
-            this.setIsInEditModeForAllAornmentsInDocument = setIsInEditModeForAllAornmentsInDocument;
+            this.setIsInEditModeForAllAdornmentsInDocument = setIsInEditModeForAllAdornmentsInDocument;
             this.textView = textView;
             this.renderingManager = renderingManager;
 
             LineSpan = lineSpan;
-            DisplayMode = defaultDisplayMode;
             DataContext = this;
 
             InitializeComponent();
 
             CommentsForegroundBrush = commentsForegroundBrush;
 
-            isInEditMode = false;
-            SetUpControlsVisibility();
+            CurrentState = TeXCommentAdornmentState.Shown;
             UpdateImageAsync();
         }
 
@@ -135,7 +158,10 @@ namespace VsTeXCommentsExtension.View
         {
             isInvalidated = true;
             imageControl.Source = null;
-            SetUpControlsVisibility();
+            if (CurrentState != TeXCommentAdornmentState.Editing)
+            {
+                CurrentState = TeXCommentAdornmentState.Shown;
+            }
         }
 
         public void HandleTextBufferChanged(object sender, TextContentChangedEventArgs args)
@@ -162,12 +188,12 @@ namespace VsTeXCommentsExtension.View
 
         private void ButtonEdit_Click(object sender, RoutedEventArgs e)
         {
-            IsInEditMode = true;
+            CurrentState = TeXCommentAdornmentState.Editing;
         }
 
         private void ButtonShow_Click(object sender, RoutedEventArgs e)
         {
-            IsInEditMode = false;
+            CurrentState = TeXCommentAdornmentState.Shown;
         }
 
         private void ImageIsReady(RendererResult result)
@@ -183,26 +209,39 @@ namespace VsTeXCommentsExtension.View
                 imageControl.Width = img.Width / (textView.ZoomLevel * 0.01);
                 imageControl.Height = img.Height / (textView.ZoomLevel * 0.01);
                 imageControl.Tag = result.CachePath;
-                SetUpControlsVisibility();
+
+                if (CurrentState == TeXCommentAdornmentState.Rendering) CurrentState = TeXCommentAdornmentState.Shown;
             }
         }
 
         private void SetUpControlsVisibility()
         {
-            if (imageControl.Source == null)
+            switch (currentState)
             {
-                imageControl.Visibility = Visibility.Collapsed;
-                progressBar.Visibility = !IsInEditMode ? Visibility.Visible : Visibility.Collapsed;
+                case TeXCommentAdornmentState.Rendering:
+                    imageControl.Visibility = Visibility.Collapsed;
+                    progressBar.Visibility = Visibility.Visible;
+                    btnEdit.Visibility = Visibility.Visible;
+                    btnShow.Visibility = Visibility.Collapsed;
+                    leftBorderGroupPanel.Visibility = Visibility.Collapsed;
+                    break;
+                case TeXCommentAdornmentState.Shown:
+                    imageControl.Visibility = Visibility.Visible;
+                    progressBar.Visibility = Visibility.Collapsed;
+                    btnEdit.Visibility = Visibility.Visible;
+                    btnShow.Visibility = Visibility.Collapsed;
+                    leftBorderGroupPanel.Visibility = Visibility.Visible;
+                    break;
+                case TeXCommentAdornmentState.Editing:
+                    imageControl.Visibility = Visibility.Collapsed;
+                    progressBar.Visibility = Visibility.Collapsed;
+                    btnEdit.Visibility = Visibility.Collapsed;
+                    btnShow.Visibility = Visibility.Visible;
+                    leftBorderGroupPanel.Visibility = Visibility.Collapsed;
+                    break;
+                default:
+                    throw new InvalidOperationException($"Unknown state '{currentState}'.");
             }
-            else
-            {
-                imageControl.Visibility = !IsInEditMode ? Visibility.Visible : Visibility.Collapsed;
-                progressBar.Visibility = Visibility.Collapsed;
-            }
-
-            btnEdit.Visibility = !IsInEditMode ? Visibility.Visible : Visibility.Collapsed;
-            btnShow.Visibility = IsInEditMode ? Visibility.Visible : Visibility.Collapsed;
-            leftBorderGroupPanel.Visibility = !IsInEditMode ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void CustomZoomChanged(double zoomScale)
@@ -217,12 +256,12 @@ namespace VsTeXCommentsExtension.View
 
         private void MenuItem_EditAll_Click(object sender, RoutedEventArgs e)
         {
-            setIsInEditModeForAllAornmentsInDocument(true);
+            setIsInEditModeForAllAdornmentsInDocument(true);
         }
 
         private void MenuItem_ShowAll_Click(object sender, RoutedEventArgs e)
         {
-            setIsInEditModeForAllAornmentsInDocument(false);
+            setIsInEditModeForAllAdornmentsInDocument(false);
         }
 
         private void MenuItem_OpenImageCache_Click(object sender, RoutedEventArgs e)

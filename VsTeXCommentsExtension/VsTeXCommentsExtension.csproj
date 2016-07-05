@@ -50,6 +50,7 @@
     <StartProgram>$(ProgramFiles)\Microsoft Visual Studio 14.0\Common7\IDE\devenv.exe</StartProgram>
     <StartArguments>/rootsuffix Exp</StartArguments>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CodeAnalysisRuleSet>..\Analyzers\Rules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.mshtml, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -79,6 +80,9 @@
     <Compile Include="SyntaxHighlighting\MatchingBracesTaggerProvider.cs" />
     <Compile Include="SyntaxHighlighting\TeXSyntaxClassifier.cs" />
     <Compile Include="SyntaxHighlighting\TeXSyntaxClassifierProvider.cs" />
+    <Compile Include="View\CircleProgressBar.xaml.cs">
+      <DependentUpon>CircleProgressBar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\DropDownImageButton.xaml.cs">
       <DependentUpon>DropDownImageButton.xaml</DependentUpon>
     </Compile>
@@ -88,6 +92,7 @@
     <Compile Include="View\RendererResult.cs" />
     <Compile Include="View\RenderingManager.cs" />
     <Compile Include="View\ResourcesManager.cs" />
+    <Compile Include="Integration\View\TeXCommentAdornmentState.cs" />
     <Compile Include="View\TeXCommentHtmlTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -117,6 +122,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="View\CircleProgressBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\DropDownImageButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

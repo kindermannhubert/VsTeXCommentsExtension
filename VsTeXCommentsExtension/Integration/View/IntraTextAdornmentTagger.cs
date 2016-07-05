@@ -44,7 +44,7 @@ namespace VsTeXCommentsExtension.Integration.View
 
         /// <param name="span">The span of text that this adornment will elide.</param>
         /// <returns>Adornment corresponding to given data. May be null.</returns>
-        protected abstract TAdornment CreateAdornment(TDataTag data, Span adornmentSpan, IntraTextAdornmentTaggerDisplayMode defaultDisplayMode);
+        protected abstract TAdornment CreateAdornment(TDataTag data, Span adornmentSpan);
 
         protected abstract void UpdateAdornment(TAdornment adornment, TDataTag data, Span adornmentSpan);
 
@@ -271,12 +271,12 @@ namespace VsTeXCommentsExtension.Integration.View
                             adornment = adornmentsPool[adornmentsPool.Count - 1];
                             adornmentsPool.RemoveAt(adornmentsPool.Count - 1);
                             UpdateAdornment(adornment, tagData.Tag, adornmentInfo.Span.Span);
-                            adornment.IsInEditMode = false;
+                            adornment.CurrentState = TeXCommentAdornmentState.Shown;
                             Debug.WriteLine($"Reusing adornment {adornment.DebugIndex} from pool");
                         }
                         else
                         {
-                            adornment = CreateAdornment(tagData.Tag, adornmentInfo.Span, Mode);
+                            adornment = CreateAdornment(tagData.Tag, adornmentInfo.Span);
                             Debug.WriteLine($"Creating adornment {adornment.DebugIndex}");
                         }
 
@@ -329,7 +329,6 @@ namespace VsTeXCommentsExtension.Integration.View
             {
                 Span = span;
                 SnapshotVersion = span.Snapshot.Version.VersionNumber;
-                //SnapshotVersion = 0;
                 SpanStart = span.Start.Position;
             }
 

@@ -16,10 +16,10 @@
 //    public class HighlightWordTaggerProvider : IViewTaggerProvider
 //    {
 //        [Import]
-//        internal ITextSearchService TextSearchService { get; set; }
+//        private ITextSearchService TextSearchService { get; set; }
 
 //        [Import]
-//        internal ITextStructureNavigatorSelectorService TextStructureNavigatorSelector { get; set; }
+//        private ITextStructureNavigatorSelectorService TextStructureNavigatorSelector { get; set; }
 
 //        /// <summary>
 //        /// This method is called by VS to generate the tagger

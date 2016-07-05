@@ -33,7 +33,7 @@ namespace VsTeXCommentsExtension.Integration.View
             IRenderingManager renderingManager,
             ITagAggregator<TeXCommentTag> texCommentTagger,
             SolidColorBrush commentsForegroundBrush)
-            : base(view, texCommentTagger, IntraTextAdornmentTaggerDisplayMode.HideOriginalText)
+            : base(view, texCommentTagger, IntraTextAdornmentTaggerDisplayMode.DoNotHideOriginalText)
         {
             this.renderingManager = renderingManager;
             CommentsForegroundBrush = commentsForegroundBrush;
@@ -94,9 +94,9 @@ namespace VsTeXCommentsExtension.Integration.View
                             !firstLineNewText.ConsistOnlyFromLineBreaks(firstLineNewChangeStart, Math.Min(firstLineNewText.Length - firstLineNewChangeStart, change.NewLength)))
                         {
                             var adornmentOnLine = GetAdornmentOnLine(firstLineOld.LineNumber);
-                            if (adornmentOnLine != null && !adornmentOnLine.IsInEditMode)
+                            if (adornmentOnLine != null && adornmentOnLine.CurrentState != TeXCommentAdornmentState.Editing)
                             {
-                                adornmentOnLine.IsInEditMode = true;
+                                adornmentOnLine.CurrentState = TeXCommentAdornmentState.Editing;
                             }
                         }
                     }
@@ -121,7 +121,7 @@ namespace VsTeXCommentsExtension.Integration.View
                             Thread.Sleep(delayMs / 10);
                         }
                         lastTimeZoomChanged = DateTime.Now;
-                        textView.VisualElement.Dispatcher.BeginInvoke(new Action(() => ForAllCurrentlyUsedAdornments(a => a.Invalidate(), true)));
+                        textView.VisualElement.Dispatcher.BeginInvoke(new Action(() => ForAllCurrentlyUsedAdornments(a => a.Invalidate(), false)));
                     });
             }
 
@@ -130,13 +130,13 @@ namespace VsTeXCommentsExtension.Integration.View
 
         private void CustomZoomChanged(double zoomScale)
         {
-            ForAllCurrentlyUsedAdornments(a => a.Invalidate(), true);
+            ForAllCurrentlyUsedAdornments(a => a.Invalidate(), false);
         }
 
         private void ColorsChanged(IWpfTextView textView, SolidColorBrush foreground, SolidColorBrush background)
         {
             CommentsForegroundBrush = foreground;
-            ForAllCurrentlyUsedAdornments(a => a.Invalidate(), true);
+            ForAllCurrentlyUsedAdornments(a => a.Invalidate(), false);
         }
 
         public override void Dispose()
@@ -149,7 +149,7 @@ namespace VsTeXCommentsExtension.Integration.View
             TextView.Properties.RemoveProperty(typeof(TeXCommentAdornmentTagger));
         }
 
-        protected override TeXCommentAdornment CreateAdornment(TeXCommentTag dataTag, Span adornmentSpan, IntraTextAdornmentTaggerDisplayMode defaultDisplayMode)
+        protected override TeXCommentAdornment CreateAdornment(TeXCommentTag dataTag, Span adornmentSpan)
         {
             var firstLine = Snapshot.GetLineNumberFromPosition(dataTag.Span.Start);
             var lastLine = Snapshot.GetLineNumberFromPosition(dataTag.Span.End);
@@ -159,7 +159,6 @@ namespace VsTeXCommentsExtension.Integration.View
                 dataTag,
                 lineSpan,
                 CommentsForegroundBrush,
-                defaultDisplayMode,
                 span =>
                 {
                     //var blockSpans = texCommentBlocks.GetBlockSpansWithLastLineBreakIntersectedBy(Snapshot, span);
@@ -174,7 +173,7 @@ namespace VsTeXCommentsExtension.Integration.View
                 },
                 isInEditMode =>
                 {
-                    ForAllCurrentlyUsedAdornments(a => a.IsInEditMode = isInEditMode, false);
+                    ForAllCurrentlyUsedAdornments(a => a.CurrentState = isInEditMode ? TeXCommentAdornmentState.Editing : TeXCommentAdornmentState.Shown, false);
                 },
                 renderingManager,
                 TextView);

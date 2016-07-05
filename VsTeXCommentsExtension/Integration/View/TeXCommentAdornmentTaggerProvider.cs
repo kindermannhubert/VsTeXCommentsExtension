@@ -26,13 +26,13 @@ namespace VsTeXCommentsExtension.Integration.View
         private readonly HashSet<IWpfTextView> textViews = new HashSet<IWpfTextView>();
 
         [Import]
-        internal IBufferTagAggregatorFactoryService BufferTagAggregatorFactoryService = null; //MEF
+        private IBufferTagAggregatorFactoryService BufferTagAggregatorFactoryService = null; //MEF
 
         [Import]
-        internal IEditorFormatMapService EditorFormatMapService = null; //MEF
+        private IEditorFormatMapService EditorFormatMapService = null; //MEF
 
         [Import]
-        internal IVsFontsAndColorsInformationService VsFontsAndColorsInformationService = null; //MEF
+        private IVsFontsAndColorsInformationService VsFontsAndColorsInformationService = null; //MEF
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer)
             where T : ITag
