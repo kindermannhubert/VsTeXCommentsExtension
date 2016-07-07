@@ -15,7 +15,10 @@
 
         <Image x:Name="imageControl" Margin="0,2,0,0" RenderOptions.BitmapScalingMode="HighQuality" />
 
-        <local:DropDownImageButton x:Name="btnEdit" ImageSource="{Binding Source={x:Static local:ResourcesManager.Instance}, Path=Edit}" Click="ButtonEdit_Click" Margin="12,0,0,0">
+        <local:DropDownImageButton x:Name="btnEdit" 
+                                   ImageSource="{Binding ResourcesManager.Edit, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TeXCommentAdornment}}}" 
+                                   ResourcesManager="{Binding ResourcesManager, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TeXCommentAdornment}}}" 
+                                   Click="ButtonEdit_Click" Margin="12,0,0,0">
             <local:DropDownImageButton.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Edit All" Click="MenuItem_EditAll_Click" />
@@ -34,7 +37,10 @@
             </local:DropDownImageButton.ContextMenu>
         </local:DropDownImageButton>
 
-        <local:DropDownImageButton x:Name="btnShow" ImageSource="{Binding Source={x:Static local:ResourcesManager.Instance}, Path=Show}" Click="ButtonShow_Click" Margin="12,0,0,0">
+        <local:DropDownImageButton x:Name="btnShow"
+                                   ImageSource="{Binding ResourcesManager.Show, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TeXCommentAdornment}}}" 
+                                   ResourcesManager="{Binding ResourcesManager, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TeXCommentAdornment}}}" 
+                                   Click="ButtonShow_Click" Margin="12,0,0,0">
             <local:DropDownImageButton.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Show All" Click="MenuItem_ShowAll_Click" />

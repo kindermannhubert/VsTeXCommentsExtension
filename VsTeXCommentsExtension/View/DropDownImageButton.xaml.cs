@@ -12,6 +12,10 @@ namespace VsTeXCommentsExtension.View
     /// </summary>
     public partial class DropDownImageButton : UserControl
     {
+        public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.Register(nameof(ImageSource), typeof(ImageSource), typeof(DropDownImageButton), new PropertyMetadata(null));
+
+        public static readonly DependencyProperty ResourcesManagerProperty = DependencyProperty.Register(nameof(ResourcesManager), typeof(ResourcesManager), typeof(DropDownImageButton), new PropertyMetadata(null));
+
         private DateTime contextMenuClosed;
 
         public DropDownImageButton()
@@ -27,8 +31,11 @@ namespace VsTeXCommentsExtension.View
             set { SetValue(ImageSourceProperty, value); }
         }
 
-        public static readonly DependencyProperty ImageSourceProperty =
-            DependencyProperty.Register(nameof(ImageSource), typeof(ImageSource), typeof(DropDownImageButton), new PropertyMetadata(null));
+        public ResourcesManager ResourcesManager
+        {
+            get { return (ResourcesManager)GetValue(ResourcesManagerProperty); }
+            set { SetValue(ResourcesManagerProperty, value); }
+        }
 
         private void MainButton_Click(object sender, RoutedEventArgs e)
         {

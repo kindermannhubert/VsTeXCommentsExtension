@@ -22,6 +22,7 @@ namespace VsTeXCommentsExtension.View
         private readonly Action<bool> setIsInEditModeForAllAdornmentsInDocument;
         private readonly IRenderingManager renderingManager;
         private readonly IWpfTextView textView;
+        private readonly ResourcesManager resourcesManager;
 
         private TeXCommentTag tag;
         private bool changeMadeWhileInEditMode;
@@ -109,6 +110,8 @@ namespace VsTeXCommentsExtension.View
             }
         }
 
+        public ResourcesManager ResourcesManager => resourcesManager;
+
         public TeXCommentAdornment(
             TeXCommentTag tag,
             LineSpan lineSpan,
@@ -125,6 +128,7 @@ namespace VsTeXCommentsExtension.View
             this.setIsInEditModeForAllAdornmentsInDocument = setIsInEditModeForAllAdornmentsInDocument;
             this.textView = textView;
             this.renderingManager = renderingManager;
+            this.resourcesManager = View.ResourcesManager.CreateInstance(textView);
 
             LineSpan = lineSpan;
             DataContext = this;
@@ -177,6 +181,7 @@ namespace VsTeXCommentsExtension.View
         public void Dispose()
         {
             ExtensionSettings.Instance.CustomZoomChanged -= CustomZoomChanged;
+            resourcesManager.Dispose();
         }
 
         private void UpdateImageAsync()
