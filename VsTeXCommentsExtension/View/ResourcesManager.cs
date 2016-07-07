@@ -14,14 +14,14 @@ namespace VsTeXCommentsExtension.View
         private static readonly Color BackgroundUIColor_Dark = ForegroundUIColor_Light;
         private static readonly Color BackgroundUIColor_Light = ForegroundUIColor_Dark;
 
-        private static readonly ImageSource dropDown_Light = new BitmapImage(new Uri("pack://application:,,,/VsTeXCommentsExtension;component/Resources/DropDown_Light.png"));
-        private static readonly ImageSource dropDown_Dark = new BitmapImage(new Uri("pack://application:,,,/VsTeXCommentsExtension;component/Resources/DropDown_Dark.png"));
+        private static readonly ImageSource dropDown_Light = new BitmapImage(GetAssemblyResourceUri("DropDown_Light.png"));
+        private static readonly ImageSource dropDown_Dark = new BitmapImage(GetAssemblyResourceUri("DropDown_Dark.png"));
 
-        private static readonly ImageSource edit_Light = new BitmapImage(new Uri("pack://application:,,,/VsTeXCommentsExtension;component/Resources/Edit_Light.png"));
-        private static readonly ImageSource edit_Dark = new BitmapImage(new Uri("pack://application:,,,/VsTeXCommentsExtension;component/Resources/Edit_Dark.png"));
+        private static readonly ImageSource edit_Light = new BitmapImage(GetAssemblyResourceUri("Edit_Light.png"));
+        private static readonly ImageSource edit_Dark = new BitmapImage(GetAssemblyResourceUri("Edit_Dark.png"));
 
-        private static readonly ImageSource show_Light = new BitmapImage(new Uri("pack://application:,,,/VsTeXCommentsExtension;component/Resources/Show_Light.png"));
-        private static readonly ImageSource show_Dark = new BitmapImage(new Uri("pack://application:,,,/VsTeXCommentsExtension;component/Resources/Show_Dark.png"));
+        private static readonly ImageSource show_Light = new BitmapImage(GetAssemblyResourceUri("Show_Light.png"));
+        private static readonly ImageSource show_Dark = new BitmapImage(GetAssemblyResourceUri("Show_Dark.png"));
 
         private static readonly Dictionary<IWpfTextView, ResourcesManager> instances = new Dictionary<IWpfTextView, ResourcesManager>();
 
@@ -94,6 +94,11 @@ namespace VsTeXCommentsExtension.View
         public void Dispose()
         {
             vsSettings.CommentsColorChanged -= CommentsColorChanged;
+        }
+
+        public static Uri GetAssemblyResourceUri(string pathRelativeToResourcesFolder)
+        {
+            return new Uri($"pack://application:,,,/VsTeXCommentsExtension;component/Resources/{pathRelativeToResourcesFolder}");
         }
     }
 }

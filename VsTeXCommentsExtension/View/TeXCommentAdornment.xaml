@@ -42,17 +42,20 @@
                                    ImageSource="{Binding ResourcesManager.Show, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TeXCommentAdornment}}}" 
                                    ResourcesManager="{Binding ResourcesManager, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TeXCommentAdornment}}}" 
                                    Click="ButtonShow_Click" Margin="12,0,0,0">
+            <local:DropDownImageButton.Resources>
+                <Image Source="{Binding Path=Icon}" Height="16px" Width="16px" x:Key="SnippetsMenuItemIcon" x:Shared="false" />
+
+                <Style x:Key="SnippetsMenuItemStyle" TargetType="MenuItem">
+                    <Setter Property="Header" Value="{Binding Header}"/>
+                    <Setter Property="Icon" Value="{StaticResource SnippetsMenuItemIcon}" />
+                    <EventSetter Event="Click" Handler="MenuItem_InsertSnippet_Click"/>
+                </Style>
+            </local:DropDownImageButton.Resources>
+
             <local:DropDownImageButton.ContextMenu>
-                <ContextMenu>
+                <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
                     <MenuItem Header="Show All" Click="MenuItem_ShowAll_Click" />
-                    <!--<MenuItem Header="Insert">
-                        <MenuItem Header="Fraction" Click="MenuItem_ShowAll_Click" />
-                        <MenuItem Header="Root" Click="MenuItem_ShowAll_Click" />
-                        <MenuItem Header="Sum" Click="MenuItem_ShowAll_Click" />
-                        <MenuItem Header="Integral" Click="MenuItem_ShowAll_Click" />
-                        <MenuItem Header="Limit" Click="MenuItem_ShowAll_Click" />
-                        <MenuItem Header="Matrix" Click="MenuItem_ShowAll_Click" />
-                    </MenuItem>-->
+                    <MenuItem Header="Snippets" ItemsSource="{Binding Snippets}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
                 </ContextMenu>
             </local:DropDownImageButton.ContextMenu>
         </local:DropDownImageButton>

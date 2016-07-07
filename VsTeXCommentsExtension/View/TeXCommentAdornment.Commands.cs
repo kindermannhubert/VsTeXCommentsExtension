@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using VsTeXCommentsExtension.Integration.View;
 
 namespace VsTeXCommentsExtension.View
@@ -13,6 +15,12 @@ namespace VsTeXCommentsExtension.View
             new ZoomMenuItem(0.5), new ZoomMenuItem(0.6), new ZoomMenuItem(0.7), new ZoomMenuItem(0.8), new ZoomMenuItem(0.9), new ZoomMenuItem(1, true),
             new ZoomMenuItem(1.1), new ZoomMenuItem(1.2), new ZoomMenuItem(1.3), new ZoomMenuItem(1.4), new ZoomMenuItem(1.5), new ZoomMenuItem(1.6),
             new ZoomMenuItem(1.7), new ZoomMenuItem(1.8), new ZoomMenuItem(1.9), new ZoomMenuItem(2)
+        };
+
+        public SnippetMenuItem[] Snippets { get; } = new[]
+        {
+            new SnippetMenuItem("Fraction", "\\frac{a}{b}", "Snippets/Fraction.png"),
+            new SnippetMenuItem("Square root", "\\sqrt{x}", "Snippets/SquareRoot.png")
         };
 
         private void ButtonEdit_Click(object sender, RoutedEventArgs e)
@@ -65,9 +73,19 @@ namespace VsTeXCommentsExtension.View
             ExtensionSettings.Instance.CustomZoomScale = customZoomScale; //will trigger zoom changed event
         }
 
+        private void MenuItem_InsertSnippet_Click(object sender, RoutedEventArgs e)
+        {
+            var snippet = (sender as MenuItem)?.DataContext as SnippetMenuItem;
+            if (snippet == null) return;
+
+            var caret = textView.Caret;
+            caret.EnsureVisible();
+            textView.TextBuffer.Insert(caret.Position.BufferPosition.Position, snippet.Snippet);
+        }
+
         public class ZoomMenuItem : INotifyPropertyChanged
         {
-            public readonly double ZoomScale;
+            public double ZoomScale { get; }
 
             private bool isChecked;
             public bool IsChecked
@@ -89,6 +107,20 @@ namespace VsTeXCommentsExtension.View
             }
 
             public override string ToString() => $"{100 * ZoomScale}%";
+        }
+
+        public class SnippetMenuItem
+        {
+            public string Header { get; }
+            public string Snippet { get; }
+            public ImageSource Icon { get; }
+
+            public SnippetMenuItem(string header, string snippet, string iconPath)
+            {
+                Header = header;
+                Snippet = snippet;
+                Icon = new BitmapImage(ResourcesManager.GetAssemblyResourceUri(iconPath));
+            }
         }
     }
 }
