@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -58,8 +57,6 @@ namespace VsTeXCommentsExtension.View
         private ResourcesManager(IWpfTextView textView)
         {
             vsSettings = VsSettings.GetOrCreate(textView);
-            Debug.Assert(vsSettings.IsInitialized);
-
             OnEditorBackgroundColorChange(vsSettings.GetCommentsBackground().Color);
             vsSettings.CommentsColorChanged += CommentsColorChanged;
         }

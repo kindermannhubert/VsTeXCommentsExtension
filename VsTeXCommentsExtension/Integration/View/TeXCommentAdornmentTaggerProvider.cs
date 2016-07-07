@@ -6,7 +6,6 @@ using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using System;
 using System.ComponentModel.Composition;
-using System.Diagnostics;
 using System.Windows.Media;
 using VsTeXCommentsExtension.Integration.Data;
 using VsTeXCommentsExtension.View;
@@ -44,6 +43,17 @@ namespace VsTeXCommentsExtension.Integration.View
             var wpfTextView = textView as IWpfTextView;
             if (wpfTextView == null) return null;
 
+            if (!VsSettings.IsInitialized)
+            {
+                lock (sync)
+                {
+                    if (!VsSettings.IsInitialized)
+                    {
+                        VsSettings.Initialize(EditorFormatMapService, VsFontsAndColorsInformationService);
+                    }
+                }
+            }
+
             if (vsSettings == null)
             {
                 lock (sync)
@@ -51,8 +61,6 @@ namespace VsTeXCommentsExtension.Integration.View
                     if (vsSettings == null)
                     {
                         vsSettings = VsSettings.GetOrCreate(wpfTextView);
-                        Debug.Assert(!vsSettings.IsInitialized);
-                        vsSettings.Initialize(EditorFormatMapService, VsFontsAndColorsInformationService);
                         vsSettings.CommentsColorChanged += ColorsChanged;
                         vsSettings.ZoomChanged += ZoomChanged;
                     }

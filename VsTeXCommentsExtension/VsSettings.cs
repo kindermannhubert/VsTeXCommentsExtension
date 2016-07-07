@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Media;
@@ -17,11 +18,13 @@ namespace VsTeXCommentsExtension
         private static readonly SolidColorBrush DefaultBackgroundBrush = new SolidColorBrush(Colors.White);
         private static readonly Dictionary<IWpfTextView, VsSettings> instances = new Dictionary<IWpfTextView, VsSettings>();
 
+        public static bool IsInitialized { get; private set; }
+        private static IEditorFormatMapService editorFormatMapService;
+        private static IVsFontsAndColorsInformationService vsFontsAndColorsInformationService;
+
         private readonly IWpfTextView textView;
         private IEditorFormatMap editorFormatMap;
-        private IVsFontsAndColorsInformationService vsFontsAndColorsInformationService;
 
-        public bool IsInitialized { get; private set; }
         public Font CommentsFont { get; private set; }
 
         public event CommentsColorChangedHandler CommentsColorChanged;
@@ -41,12 +44,7 @@ namespace VsTeXCommentsExtension
             }
         }
 
-        private VsSettings(IWpfTextView textView)
-        {
-            this.textView = textView;
-        }
-
-        public void Initialize(IEditorFormatMapService editorFormatMapService, IVsFontsAndColorsInformationService vsFontsAndColorsInformationService)
+        public static void Initialize(IEditorFormatMapService editorFormatMapService, IVsFontsAndColorsInformationService vsFontsAndColorsInformationService)
         {
             if (IsInitialized)
                 throw new InvalidOperationException($"{nameof(VsSettings)} class is already initialized.");
@@ -56,10 +54,17 @@ namespace VsTeXCommentsExtension
             DefaultForegroundBrush.Freeze();
             DefaultBackgroundBrush.Freeze();
 
-            this.editorFormatMap = editorFormatMapService.GetEditorFormatMap(textView);
-            this.vsFontsAndColorsInformationService = vsFontsAndColorsInformationService;
+            VsSettings.editorFormatMapService = editorFormatMapService;
+            VsSettings.vsFontsAndColorsInformationService = vsFontsAndColorsInformationService;
+        }
 
+        private VsSettings(IWpfTextView textView)
+        {
+            Debug.Assert(IsInitialized);
+
+            this.textView = textView;
             CommentsFont = LoadTextEditorFont(vsFontsAndColorsInformationService);
+            editorFormatMap = editorFormatMapService.GetEditorFormatMap(textView);
 
             editorFormatMap.FormatMappingChanged += OnFormatItemsChanged;
             textView.BackgroundBrushChanged += OnBackgroundBrushChanged;
