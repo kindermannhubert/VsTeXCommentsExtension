@@ -5,8 +5,8 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics;
 using System.Windows.Media;
 using VsTeXCommentsExtension.Integration.Data;
 using VsTeXCommentsExtension.View;
@@ -23,7 +23,7 @@ namespace VsTeXCommentsExtension.Integration.View
         private static IRenderingManager renderingManager;
         private static HtmlRenderer renderer;
 
-        private readonly HashSet<IWpfTextView> textViews = new HashSet<IWpfTextView>();
+        private VsSettings vsSettings;
 
         [Import]
         private IBufferTagAggregatorFactoryService BufferTagAggregatorFactoryService = null; //MEF
@@ -44,29 +44,24 @@ namespace VsTeXCommentsExtension.Integration.View
             var wpfTextView = textView as IWpfTextView;
             if (wpfTextView == null) return null;
 
-            if (!VisualStudioSettings.Instance.IsInitialized)
+            if (vsSettings == null)
             {
                 lock (sync)
                 {
-                    if (!VisualStudioSettings.Instance.IsInitialized)
+                    if (vsSettings == null)
                     {
-                        VisualStudioSettings.Instance.Initialize(EditorFormatMapService, VsFontsAndColorsInformationService);
-                        VisualStudioSettings.Instance.CommentsColorChanged += ColorsChanged;
+                        vsSettings = VsSettings.GetOrCreate(wpfTextView);
+                        Debug.Assert(!vsSettings.IsInitialized);
+                        vsSettings.Initialize(EditorFormatMapService, VsFontsAndColorsInformationService);
+                        vsSettings.CommentsColorChanged += ColorsChanged;
+                        vsSettings.ZoomChanged += ZoomChanged;
                     }
                 }
             }
 
-            lock (sync)
-            {
-                if (textViews.Add(wpfTextView))
-                {
-                    VisualStudioSettings.Instance.RegisterForEventsListening(wpfTextView);
-                }
-            }
-
-            var background = VisualStudioSettings.Instance.GetCommentsBackground(wpfTextView);
-            var foreground = VisualStudioSettings.Instance.GetCommentsForeground(wpfTextView);
-            var font = VisualStudioSettings.Instance.CommentsFont;
+            var background = vsSettings.GetCommentsBackground();
+            var foreground = vsSettings.GetCommentsForeground();
+            var font = vsSettings.CommentsFont;
 
             if (renderingManager == null)
             {
@@ -90,6 +85,11 @@ namespace VsTeXCommentsExtension.Integration.View
             return resultTagger as ITagger<T>;
         }
 
+        private void ZoomChanged(IWpfTextView textView, double zoomPercentage)
+        {
+            renderer.ZoomScale = 0.01 * zoomPercentage;
+        }
+
         private void ColorsChanged(IWpfTextView textView, SolidColorBrush foreground, SolidColorBrush background)
         {
             renderer.Foreground = foreground.Color;
@@ -98,11 +98,7 @@ namespace VsTeXCommentsExtension.Integration.View
 
         public void Dispose()
         {
-            VisualStudioSettings.Instance.CommentsColorChanged -= ColorsChanged;
-            foreach (var textView in textViews)
-            {
-                VisualStudioSettings.Instance.UnregisterFromEventsListening(textView);
-            }
+            vsSettings?.Dispose();
         }
     }
 }

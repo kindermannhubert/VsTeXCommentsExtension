@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -15,6 +16,7 @@ namespace VsTeXCommentsExtension.Integration.View
     {
         private readonly IRenderingManager renderingManager;
         private readonly List<TeXCommentAdornment> linesWithAdornments = new List<TeXCommentAdornment>();
+        private readonly VsSettings vsSettings;
 
         public SolidColorBrush CommentsForegroundBrush { get; set; }
 
@@ -29,18 +31,21 @@ namespace VsTeXCommentsExtension.Integration.View
         }
 
         private TeXCommentAdornmentTagger(
-            IWpfTextView view,
+            IWpfTextView textView,
             IRenderingManager renderingManager,
             ITagAggregator<TeXCommentTag> texCommentTagger,
             SolidColorBrush commentsForegroundBrush)
-            : base(view, texCommentTagger, IntraTextAdornmentTaggerDisplayMode.DoNotHideOriginalText)
+            : base(textView, texCommentTagger, IntraTextAdornmentTaggerDisplayMode.DoNotHideOriginalText)
         {
             this.renderingManager = renderingManager;
             CommentsForegroundBrush = commentsForegroundBrush;
-            view.TextBuffer.Changed += TextBuffer_Changed;
+            textView.TextBuffer.Changed += TextBuffer_Changed;
 
-            VisualStudioSettings.Instance.CommentsColorChanged += ColorsChanged;
-            VisualStudioSettings.Instance.ZoomChanged += ZoomChanged;
+            vsSettings = VsSettings.GetOrCreate(textView);
+            Debug.Assert(vsSettings.IsInitialized);
+
+            vsSettings.CommentsColorChanged += ColorsChanged;
+            vsSettings.ZoomChanged += ZoomChanged;
             ExtensionSettings.Instance.CustomZoomChanged += CustomZoomChanged;
         }
 
@@ -143,8 +148,8 @@ namespace VsTeXCommentsExtension.Integration.View
         {
             base.Dispose();
             TextView.TextBuffer.Changed -= TextBuffer_Changed;
-            VisualStudioSettings.Instance.ZoomChanged -= ZoomChanged;
-            VisualStudioSettings.Instance.CommentsColorChanged -= ColorsChanged;
+            vsSettings.ZoomChanged -= ZoomChanged;
+            vsSettings.CommentsColorChanged -= ColorsChanged;
             ExtensionSettings.Instance.CustomZoomChanged -= CustomZoomChanged;
             TextView.Properties.RemoveProperty(typeof(TeXCommentAdornmentTagger));
         }

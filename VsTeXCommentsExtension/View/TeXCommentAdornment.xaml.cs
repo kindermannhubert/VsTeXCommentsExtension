@@ -181,7 +181,7 @@ namespace VsTeXCommentsExtension.View
         public void Dispose()
         {
             ExtensionSettings.Instance.CustomZoomChanged -= CustomZoomChanged;
-            resourcesManager.Dispose();
+            resourcesManager?.Dispose();
         }
 
         private void UpdateImageAsync()

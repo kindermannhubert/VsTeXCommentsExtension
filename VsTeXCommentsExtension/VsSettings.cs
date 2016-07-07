@@ -11,15 +11,14 @@ using wpf = System.Windows.Media;
 
 namespace VsTeXCommentsExtension
 {
-    public class VisualStudioSettings
+    public class VsSettings : IDisposable
     {
         private static readonly SolidColorBrush DefaultForegroundBrush = new SolidColorBrush(wpf.Color.FromRgb(0, 128, 0));
         private static readonly SolidColorBrush DefaultBackgroundBrush = new SolidColorBrush(Colors.White);
+        private static readonly Dictionary<IWpfTextView, VsSettings> instances = new Dictionary<IWpfTextView, VsSettings>();
 
-        public static VisualStudioSettings Instance { get; } = new VisualStudioSettings();
-
-        private readonly Dictionary<IWpfTextView, IEditorFormatMap> textViewEditorFormatMapMapping = new Dictionary<IWpfTextView, IEditorFormatMap>();
-        private IEditorFormatMapService editorFormatMapService;
+        private readonly IWpfTextView textView;
+        private IEditorFormatMap editorFormatMap;
         private IVsFontsAndColorsInformationService vsFontsAndColorsInformationService;
 
         public bool IsInitialized { get; private set; }
@@ -28,69 +27,60 @@ namespace VsTeXCommentsExtension
         public event CommentsColorChangedHandler CommentsColorChanged;
         public event ZoomChangedHandler ZoomChanged;
 
-        private VisualStudioSettings()
+        public static VsSettings GetOrCreate(IWpfTextView textView)
         {
+            VsSettings settings;
+            if (!instances.TryGetValue(textView, out settings))
+            {
+                settings = new VsSettings(textView);
+                instances.Add(textView, settings);
+            }
+            return settings;
+        }
+
+        private VsSettings(IWpfTextView textView)
+        {
+            this.textView = textView;
         }
 
         public void Initialize(IEditorFormatMapService editorFormatMapService, IVsFontsAndColorsInformationService vsFontsAndColorsInformationService)
         {
             if (IsInitialized)
-                throw new InvalidOperationException($"{nameof(VisualStudioSettings)} class is already initialized.");
+                throw new InvalidOperationException($"{nameof(VsSettings)} class is already initialized.");
 
             IsInitialized = true;
 
             DefaultForegroundBrush.Freeze();
             DefaultBackgroundBrush.Freeze();
 
-            this.editorFormatMapService = editorFormatMapService;
+            this.editorFormatMap = editorFormatMapService.GetEditorFormatMap(textView);
             this.vsFontsAndColorsInformationService = vsFontsAndColorsInformationService;
 
             CommentsFont = LoadTextEditorFont(vsFontsAndColorsInformationService);
-        }
-
-        public SolidColorBrush GetCommentsForeground(IWpfTextView textView) => GetBrush(editorFormatMapService.GetEditorFormatMap(textView), BrushType.Foreground, textView);
-        public SolidColorBrush GetCommentsBackground(IWpfTextView textView) => GetBrush(editorFormatMapService.GetEditorFormatMap(textView), BrushType.Background, textView);
-        public double GetZoomPercentage(IWpfTextView textView) => textView.ZoomLevel;
-
-        public void RegisterForEventsListening(IWpfTextView textView)
-        {
-            var editorFormatMap = editorFormatMapService.GetEditorFormatMap(textView);
-            textViewEditorFormatMapMapping.Add(textView, editorFormatMap);
 
             editorFormatMap.FormatMappingChanged += OnFormatItemsChanged;
             textView.BackgroundBrushChanged += OnBackgroundBrushChanged;
             textView.ZoomLevelChanged += OnZoomChanged;
         }
 
-        public void UnregisterFromEventsListening(IWpfTextView textView)
-        {
-            var editorFormatMap = textViewEditorFormatMapMapping[textView];
-            textViewEditorFormatMapMapping.Remove(textView);
-
-            editorFormatMap.FormatMappingChanged -= OnFormatItemsChanged;
-            textView.BackgroundBrushChanged -= OnBackgroundBrushChanged;
-            textView.ZoomLevelChanged -= OnZoomChanged;
-        }
+        public SolidColorBrush GetCommentsForeground() => GetBrush(editorFormatMap, BrushType.Foreground, textView);
+        public SolidColorBrush GetCommentsBackground() => GetBrush(editorFormatMap, BrushType.Background, textView);
+        public double GetZoomPercentage() => textView.ZoomLevel;
 
         private void OnFormatItemsChanged(object sender, FormatItemsEventArgs args)
         {
             if (args.ChangedItems.Any(i => i == "Comment"))
             {
-                foreach (var textView in textViewEditorFormatMapMapping.Where(kv => kv.Value == sender).Select(kv => kv.Key).Distinct())
-                {
-                    var editorFormatMap = (IEditorFormatMap)sender;
-                    CommentsColorChanged?.Invoke(
-                        textView,
-                        GetBrush(editorFormatMap, BrushType.Foreground, textView),
-                        GetBrush(editorFormatMap, BrushType.Background, textView));
-                }
+                var editorFormatMap = (IEditorFormatMap)sender;
+                CommentsColorChanged?.Invoke(
+                    textView,
+                    GetBrush(editorFormatMap, BrushType.Foreground, textView),
+                    GetBrush(editorFormatMap, BrushType.Background, textView));
             }
         }
 
         private void OnBackgroundBrushChanged(object sender, BackgroundBrushChangedEventArgs args)
         {
-            var textView = (IWpfTextView)sender;
-            var editorFormatMap = textViewEditorFormatMapMapping[textView];
             CommentsColorChanged?.Invoke(
                 textView,
                 GetBrush(editorFormatMap, BrushType.Foreground, textView),
@@ -157,6 +147,16 @@ namespace VsTeXCommentsExtension
             {
                 return SystemFonts.DefaultFont;
             }
+        }
+
+        public void Dispose()
+        {
+            editorFormatMap.FormatMappingChanged -= OnFormatItemsChanged;
+            textView.BackgroundBrushChanged -= OnBackgroundBrushChanged;
+            textView.ZoomLevelChanged -= OnZoomChanged;
+
+            foreach (CommentsColorChangedHandler method in CommentsColorChanged.GetInvocationList()) CommentsColorChanged -= method;
+            foreach (ZoomChangedHandler method in ZoomChanged.GetInvocationList()) ZoomChanged -= method;
         }
 
         public delegate void CommentsColorChangedHandler(IWpfTextView textView, SolidColorBrush foreground, SolidColorBrush background);

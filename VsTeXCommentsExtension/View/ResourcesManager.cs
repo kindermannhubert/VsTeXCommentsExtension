@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.Text.Editor;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -24,6 +25,7 @@ namespace VsTeXCommentsExtension.View
 
         public static ResourcesManager CreateInstance(IWpfTextView textView) => new ResourcesManager(textView);
 
+        private readonly VsSettings vsSettings;
         private bool useDark = true;
 
         public ImageSource DropDown => useDark ? dropDown_Dark : dropDown_Light;
@@ -40,8 +42,11 @@ namespace VsTeXCommentsExtension.View
 
         private ResourcesManager(IWpfTextView textView)
         {
-            OnEditorBackgroundColorChange(VisualStudioSettings.Instance.GetCommentsBackground(textView).Color);
-            VisualStudioSettings.Instance.CommentsColorChanged += CommentsColorChanged;
+            vsSettings = VsSettings.GetOrCreate(textView);
+            Debug.Assert(vsSettings.IsInitialized);
+
+            OnEditorBackgroundColorChange(vsSettings.GetCommentsBackground().Color);
+            vsSettings.CommentsColorChanged += CommentsColorChanged;
         }
 
         private void CommentsColorChanged(IWpfTextView textView, SolidColorBrush foreground, SolidColorBrush background)
@@ -76,7 +81,7 @@ namespace VsTeXCommentsExtension.View
 
         public void Dispose()
         {
-            VisualStudioSettings.Instance.CommentsColorChanged -= CommentsColorChanged;
+            vsSettings.CommentsColorChanged -= CommentsColorChanged;
         }
     }
 }

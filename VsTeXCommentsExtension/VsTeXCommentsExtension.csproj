@@ -113,7 +113,7 @@
     <Compile Include="Integration\View\IntraTextAdornmentTagTransformer.cs" />
     <Compile Include="Integration\View\ITagAdornment.cs" />
     <Compile Include="ExtensionSettings.cs" />
-    <Compile Include="VisualStudioSettings.cs" />
+    <Compile Include="VsSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />

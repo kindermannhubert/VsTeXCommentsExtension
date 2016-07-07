@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.Text.Editor;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -43,14 +42,14 @@ namespace VsTeXCommentsExtension.View
             }
         }
 
-        private double zoomScale;
+        public double ZoomScale { get; set; }
 
         public HtmlRenderer(double zoomPercentage, wpf.Color background, wpf.Color foreground, Font font)
         {
-            this.zoomScale = 0.01 * zoomPercentage;
-            this.Background = background;
-            this.Foreground = foreground;
             this.font = font;
+            ZoomScale = 0.01 * zoomPercentage;
+            Background = background;
+            Foreground = foreground;
 
             webBrowser = new WebBrowser()
             {
@@ -66,13 +65,6 @@ namespace VsTeXCommentsExtension.View
             webBrowser.Document.OpenNew(true);
 
             objectForScripting.RenderingDone += () => mathJaxRenderingDone = true;
-
-            VisualStudioSettings.Instance.ZoomChanged += OnZoomChanged;
-        }
-
-        private void OnZoomChanged(IWpfTextView textView, double zoomPercentage)
-        {
-            zoomScale = 0.01 * zoomPercentage;
         }
 
         private void WebBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
@@ -90,7 +82,7 @@ namespace VsTeXCommentsExtension.View
                 Foreground,
                 Background,
                 font,
-                zoomScale * ExtensionSettings.Instance.CustomZoomScale,
+                ZoomScale * ExtensionSettings.Instance.CustomZoomScale,
                 CacheVersion);
             if (cache.TryGetImage(cacheInfo, out resultImage))
             {
@@ -134,8 +126,8 @@ namespace VsTeXCommentsExtension.View
             }
             else
             {
-                webBrowser.Width = (int)(zoomScale * ExtensionSettings.Instance.CustomZoomScale * DefaultBrowserWidth);
-                webBrowser.Height = (int)(zoomScale * ExtensionSettings.Instance.CustomZoomScale * DefaultBrowserHeight);
+                webBrowser.Width = (int)(ZoomScale * ExtensionSettings.Instance.CustomZoomScale * DefaultBrowserWidth);
+                webBrowser.Height = (int)(ZoomScale * ExtensionSettings.Instance.CustomZoomScale * DefaultBrowserHeight);
 
                 const int ExtraMargin = 4;
                 var myDiv = webBrowser.Document.GetElementById("myDiv");
@@ -206,7 +198,7 @@ namespace VsTeXCommentsExtension.View
                                     Foreground,
                                     Background,
                                     font,
-                                    zoomScale * ExtensionSettings.Instance.CustomZoomScale,
+                                    ZoomScale * ExtensionSettings.Instance.CustomZoomScale,
                                     CacheVersion);
 
                                 var cachedImagePath = cache.Add(cacheInfo, croppedBitmap);
@@ -311,7 +303,7 @@ namespace VsTeXCommentsExtension.View
                 BackgroundColor = background,
                 ForegroundColor = Foreground,
                 FontFamily = font.FontFamily.Name,
-                FontSize = zoomScale * ExtensionSettings.Instance.CustomZoomScale * font.Size,
+                FontSize = ZoomScale * ExtensionSettings.Instance.CustomZoomScale * font.Size,
                 Source = content
             };
 
@@ -321,7 +313,6 @@ namespace VsTeXCommentsExtension.View
         public void Dispose()
         {
             webBrowser?.Dispose();
-            VisualStudioSettings.Instance.ZoomChanged -= OnZoomChanged;
         }
 
         [ComImport]
