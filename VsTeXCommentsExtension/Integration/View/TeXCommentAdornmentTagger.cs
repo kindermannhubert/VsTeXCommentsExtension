@@ -3,7 +3,6 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -42,8 +41,6 @@ namespace VsTeXCommentsExtension.Integration.View
             textView.TextBuffer.Changed += TextBuffer_Changed;
 
             vsSettings = VsSettings.GetOrCreate(textView);
-            Debug.Assert(vsSettings.IsInitialized);
-
             vsSettings.CommentsColorChanged += ColorsChanged;
             vsSettings.ZoomChanged += ZoomChanged;
             ExtensionSettings.Instance.CustomZoomChanged += CustomZoomChanged;

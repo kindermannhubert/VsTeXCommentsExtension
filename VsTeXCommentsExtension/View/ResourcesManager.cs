@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.Text.Editor;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Media;
@@ -23,7 +24,21 @@ namespace VsTeXCommentsExtension.View
         private static readonly ImageSource show_Light = new BitmapImage(new Uri("pack://application:,,,/VsTeXCommentsExtension;component/Resources/Show_Light.png"));
         private static readonly ImageSource show_Dark = new BitmapImage(new Uri("pack://application:,,,/VsTeXCommentsExtension;component/Resources/Show_Dark.png"));
 
-        public static ResourcesManager CreateInstance(IWpfTextView textView) => new ResourcesManager(textView);
+        private static readonly Dictionary<IWpfTextView, ResourcesManager> instances = new Dictionary<IWpfTextView, ResourcesManager>();
+
+        public static ResourcesManager GetOrCreate(IWpfTextView textView)
+        {
+            lock (instances)
+            {
+                ResourcesManager instance;
+                if (!instances.TryGetValue(textView, out instance))
+                {
+                    instance = new ResourcesManager(textView);
+                    instances.Add(textView, instance);
+                }
+                return instance;
+            }
+        }
 
         private readonly VsSettings vsSettings;
         private bool useDark = true;

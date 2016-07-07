@@ -29,13 +29,16 @@ namespace VsTeXCommentsExtension
 
         public static VsSettings GetOrCreate(IWpfTextView textView)
         {
-            VsSettings settings;
-            if (!instances.TryGetValue(textView, out settings))
+            lock (instances)
             {
-                settings = new VsSettings(textView);
-                instances.Add(textView, settings);
+                VsSettings settings;
+                if (!instances.TryGetValue(textView, out settings))
+                {
+                    settings = new VsSettings(textView);
+                    instances.Add(textView, settings);
+                }
+                return settings;
             }
-            return settings;
         }
 
         private VsSettings(IWpfTextView textView)

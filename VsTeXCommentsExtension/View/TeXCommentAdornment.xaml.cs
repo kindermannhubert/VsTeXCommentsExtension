@@ -128,7 +128,7 @@ namespace VsTeXCommentsExtension.View
             this.setIsInEditModeForAllAdornmentsInDocument = setIsInEditModeForAllAdornmentsInDocument;
             this.textView = textView;
             this.renderingManager = renderingManager;
-            this.resourcesManager = View.ResourcesManager.CreateInstance(textView);
+            this.resourcesManager = View.ResourcesManager.GetOrCreate(textView);
 
             LineSpan = lineSpan;
             DataContext = this;
@@ -191,16 +191,6 @@ namespace VsTeXCommentsExtension.View
             renderingManager.LoadContentAsync(tag.GetTextWithoutCommentMarks(), ImageIsReady);
         }
 
-        private void ButtonEdit_Click(object sender, RoutedEventArgs e)
-        {
-            CurrentState = TeXCommentAdornmentState.Editing;
-        }
-
-        private void ButtonShow_Click(object sender, RoutedEventArgs e)
-        {
-            CurrentState = TeXCommentAdornmentState.Shown;
-        }
-
         private void ImageIsReady(RendererResult result)
         {
             if (!Dispatcher.CheckAccess())
@@ -247,48 +237,6 @@ namespace VsTeXCommentsExtension.View
                 default:
                     throw new InvalidOperationException($"Unknown state '{currentState}'.");
             }
-        }
-
-        private void CustomZoomChanged(double zoomScale)
-        {
-            var zoomHeader = $"{(int)(100 * zoomScale)}%";
-            var zoomMainMenuItem = btnEdit.ContextMenu.Items.Cast<MenuItem>().Single(i => i.Header.ToString() == "Zoom");
-            foreach (MenuItem item in zoomMainMenuItem.Items)
-            {
-                item.IsChecked = item.Header.ToString() == zoomHeader;
-            }
-        }
-
-        private void MenuItem_EditAll_Click(object sender, RoutedEventArgs e)
-        {
-            setIsInEditModeForAllAdornmentsInDocument(true);
-        }
-
-        private void MenuItem_ShowAll_Click(object sender, RoutedEventArgs e)
-        {
-            setIsInEditModeForAllAdornmentsInDocument(false);
-        }
-
-        private void MenuItem_OpenImageCache_Click(object sender, RoutedEventArgs e)
-        {
-            if (imageControl.Source == null || imageControl.Tag == null) return;
-
-            try
-            {
-                var path = (string)imageControl.Tag;
-                var processArgs = $"/e, /select,\"{path}\"";
-                Process.Start(new ProcessStartInfo("explorer", processArgs));
-            }
-            catch { }
-        }
-
-        private void MenuItem_ChangeZoom_Click(object sender, RoutedEventArgs e)
-        {
-            var item = (MenuItem)sender;
-            var itemHeader = item.Header.ToString();
-            var customZoomScale = 0.01 * int.Parse(itemHeader.Substring(0, itemHeader.Length - 1));
-
-            ExtensionSettings.Instance.CustomZoomScale = customZoomScale; //will trigger zoom changed event
         }
     }
 }

@@ -20,18 +20,19 @@
                                    ResourcesManager="{Binding ResourcesManager, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TeXCommentAdornment}}}" 
                                    Click="ButtonEdit_Click" Margin="12,0,0,0">
             <local:DropDownImageButton.ContextMenu>
-                <ContextMenu>
+                <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
                     <MenuItem Header="Edit All" Click="MenuItem_EditAll_Click" />
                     <MenuItem Header="Open Image Cache..." Click="MenuItem_OpenImageCache_Click" />
-                    
+
                     <!--Name 'Zoom' is used also in code-behind.-->
-                    <MenuItem Header="Zoom">
-                        <MenuItem Header="50%" IsCheckable="True" Click="MenuItem_ChangeZoom_Click" />
-                        <MenuItem Header="75%" IsCheckable="True" Click="MenuItem_ChangeZoom_Click" />
-                        <MenuItem Header="100%" IsCheckable="True" Click="MenuItem_ChangeZoom_Click" IsChecked="True" />
-                        <MenuItem Header="125%" IsCheckable="True" Click="MenuItem_ChangeZoom_Click" />
-                        <MenuItem Header="150%" IsCheckable="True" Click="MenuItem_ChangeZoom_Click" />
-                        <MenuItem Header="200%" IsCheckable="True" Click="MenuItem_ChangeZoom_Click" />
+                    <MenuItem Header="Zoom" ItemsSource="{Binding ZoomMenuItems}">
+                        <MenuItem.ItemContainerStyle>
+                            <Style TargetType="MenuItem">
+                                <Setter Property="Header" Value="{Binding}"/>
+                                <Setter Property="IsChecked" Value="{Binding IsChecked}"/>
+                                <EventSetter Event="Click" Handler="MenuItem_ChangeZoom_Click"/>
+                            </Style>
+                        </MenuItem.ItemContainerStyle>
                     </MenuItem>
                 </ContextMenu>
             </local:DropDownImageButton.ContextMenu>
@@ -44,6 +45,14 @@
             <local:DropDownImageButton.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Show All" Click="MenuItem_ShowAll_Click" />
+                    <!--<MenuItem Header="Insert">
+                        <MenuItem Header="Fraction" Click="MenuItem_ShowAll_Click" />
+                        <MenuItem Header="Root" Click="MenuItem_ShowAll_Click" />
+                        <MenuItem Header="Sum" Click="MenuItem_ShowAll_Click" />
+                        <MenuItem Header="Integral" Click="MenuItem_ShowAll_Click" />
+                        <MenuItem Header="Limit" Click="MenuItem_ShowAll_Click" />
+                        <MenuItem Header="Matrix" Click="MenuItem_ShowAll_Click" />
+                    </MenuItem>-->
                 </ContextMenu>
             </local:DropDownImageButton.ContextMenu>
         </local:DropDownImageButton>
