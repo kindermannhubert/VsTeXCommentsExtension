@@ -30,7 +30,7 @@ namespace VsTeXCommentsExtension.View
 
         public wpf.Color Foreground { get; set; }
 
-        private BGR backgroundBgr;
+        private BGRA backgroundBgra;
         private wpf.Color background;
         public wpf.Color Background
         {
@@ -38,7 +38,7 @@ namespace VsTeXCommentsExtension.View
             set
             {
                 background = value;
-                backgroundBgr = new BGR { R = value.R, G = value.G, B = value.B };
+                backgroundBgra = new BGRA { R = value.R, G = value.G, B = value.B, A = value.A };
             }
         }
 
@@ -136,8 +136,9 @@ namespace VsTeXCommentsExtension.View
 
                 webBrowser.Width = width;
                 webBrowser.Height = height;
+                webBrowser.Document.BackColor = Color.Transparent;
 
-                const PixelFormat pixelFormat = PixelFormat.Format24bppRgb;
+                const PixelFormat pixelFormat = PixelFormat.Format32bppArgb;
                 using (var bitmap = new Bitmap(width, height, pixelFormat))
                 {
                     bitmap.SetResolution(Native.CurrentDpiX, Native.CurrentDpiY);
@@ -180,15 +181,16 @@ namespace VsTeXCommentsExtension.View
                             }
                         }
 
-                        using (var croppedBitmap = CropToContent(bitmap, backgroundBgr))
+                        using (var croppedBitmap = CropToContent(bitmap, backgroundBgra))
                         {
+                            MakeBackgroundTransparent(croppedBitmap, backgroundBgra);
                             var croppedBitmapData = croppedBitmap.LockBits(new Rectangle(0, 0, croppedBitmap.Width, croppedBitmap.Height), ImageLockMode.ReadOnly, croppedBitmap.PixelFormat);
                             try
                             {
                                 var bitmapSource = BitmapSource.Create(
                                     croppedBitmapData.Width, croppedBitmapData.Height,
                                     Native.CurrentDpiX, Native.CurrentDpiY,
-                                    wpf.PixelFormats.Bgr24, null,
+                                    wpf.PixelFormats.Bgra32, null,
                                     croppedBitmapData.Scan0,
                                     croppedBitmapData.Height * croppedBitmapData.Stride,
                                     croppedBitmapData.Stride);
@@ -214,9 +216,9 @@ namespace VsTeXCommentsExtension.View
             }
         }
 
-        private static unsafe Bitmap CropToContent(Bitmap source, BGR background)
+        private static unsafe Bitmap CropToContent(Bitmap source, BGRA background)
         {
-            Debug.Assert(source.PixelFormat == PixelFormat.Format24bppRgb);
+            Debug.Assert(source.PixelFormat == PixelFormat.Format32bppArgb);
 
             int sourceWidth = source.Width;
             int sourceHeight = source.Height;
@@ -228,7 +230,7 @@ namespace VsTeXCommentsExtension.View
             {
                 for (int y = 0; y < sourceHeight; y++)
                 {
-                    var pSourceData = (BGR*)((byte*)sourceData.Scan0 + y * sourceData.Stride);
+                    var pSourceData = (BGRA*)((byte*)sourceData.Scan0 + y * sourceData.Stride);
                     for (int x = 0; x < sourceWidth; x++)
                     {
                         var col = pSourceData[x];
@@ -258,8 +260,8 @@ namespace VsTeXCommentsExtension.View
                 {
                     for (int y = 0; y < resultHeight; y++)
                     {
-                        var pResultData = (BGR*)((byte*)resultData.Scan0 + y * resultData.Stride);
-                        var pSourceData = (BGR*)((byte*)sourceData.Scan0 + (minY + y) * sourceData.Stride);
+                        var pResultData = (BGRA*)((byte*)resultData.Scan0 + y * resultData.Stride);
+                        var pSourceData = (BGRA*)((byte*)sourceData.Scan0 + (minY + y) * sourceData.Stride);
                         for (int x = 0; x < resultWidth; x++)
                         {
                             pResultData[x] = pSourceData[minX + x];
@@ -279,21 +281,51 @@ namespace VsTeXCommentsExtension.View
             }
         }
 
-        private struct BGR
+        private static unsafe void MakeBackgroundTransparent(Bitmap bitmap, BGRA background)
         {
-            public byte B, G, R;
+            Debug.Assert(bitmap.PixelFormat == PixelFormat.Format32bppArgb);
 
-            public static bool operator ==(BGR a, BGR b) => a.B == b.B && a.G == b.G && a.R == b.R;
-            public static bool operator !=(BGR a, BGR b) => a.B != b.B || a.G != b.G || a.R != b.R;
+            int width = bitmap.Width;
+            int height = bitmap.Height;
+
+            var data = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
+            try
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    var pData = (BGRA*)((byte*)data.Scan0 + y * data.Stride);
+                    for (int x = 0; x < width; x++)
+                    {
+                        var col = pData[x];
+
+                        if (col == background)
+                        {
+                            *(int*)(pData + x) = 0; //transparent
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                bitmap.UnlockBits(data);
+            }
+        }
+
+        private struct BGRA
+        {
+            public byte B, G, R, A;
+
+            public static bool operator ==(BGRA a, BGRA b) => a.B == b.B && a.G == b.G && a.R == b.R && a.A == b.A;
+            public static bool operator !=(BGRA a, BGRA b) => a.B != b.B || a.G != b.G || a.R != b.R || a.A != b.A;
 
             public override bool Equals(object obj)
             {
                 if (obj == null) return false;
-                if (obj is BGR) return this == (BGR)obj;
+                if (obj is BGRA) return this == (BGRA)obj;
                 return false;
             }
 
-            public override int GetHashCode() => B ^ G ^ R;
+            public override int GetHashCode() => B ^ G ^ R ^ A;
         }
 
         private string GetHtmlSource(string content)
