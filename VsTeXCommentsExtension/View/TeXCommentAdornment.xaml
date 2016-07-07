@@ -60,6 +60,7 @@
             </local:DropDownImageButton.ContextMenu>
         </local:DropDownImageButton>
 
-        <local:CircleProgressBar x:Name="progressBar" Width="14" Height="14" />
+        <local:CircleProgressBar x:Name="progressBar" Width="14" Height="14"
+                                 ResourcesManager="{Binding ResourcesManager, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TeXCommentAdornment}}}"/>
     </StackPanel>
 </UserControl>
