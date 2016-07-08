@@ -156,8 +156,42 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Resource Include="Resources\Show_Light.png" />
-    <Resource Include="Resources\Snippets\Fraction.png" />
-    <Resource Include="Resources\Snippets\SquareRoot.png" />
+    <Resource Include="Resources\Snippets\Fraction\1.png" />
+    <Resource Include="Resources\Snippets\Fraction\2.png" />
+    <Resource Include="Resources\Snippets\Fraction\3.png" />
+    <Resource Include="Resources\Snippets\Fraction\4.png" />
+    <Resource Include="Resources\Snippets\Fraction\5.png" />
+    <Resource Include="Resources\Snippets\Fraction\6.png" />
+    <Resource Include="Resources\Snippets\Integral\1.png" />
+    <Resource Include="Resources\Snippets\Integral\2.png" />
+    <Resource Include="Resources\Snippets\Integral\3.png" />
+    <Resource Include="Resources\Snippets\Integral\4.png" />
+    <Resource Include="Resources\Snippets\Integral\5.png" />
+    <Resource Include="Resources\Snippets\Integral\6.png" />
+    <Resource Include="Resources\Snippets\LargeOperator\1.png" />
+    <Resource Include="Resources\Snippets\LargeOperator\2.png" />
+    <Resource Include="Resources\Snippets\LargeOperator\3.png" />
+    <Resource Include="Resources\Snippets\LargeOperator\4.png" />
+    <Resource Include="Resources\Snippets\LargeOperator\5.png" />
+    <Resource Include="Resources\Snippets\LargeOperator\6.png" />
+    <Resource Include="Resources\Snippets\Radical\1.png" />
+    <Resource Include="Resources\Snippets\Radical\2.png" />
+    <Resource Include="Resources\Snippets\Radical\3.png" />
+    <Resource Include="Resources\Snippets\Script\1.png" />
+    <Resource Include="Resources\Snippets\Script\2.png" />
+    <Resource Include="Resources\Snippets\Script\3.png" />
+    <Resource Include="Resources\Snippets\Script\4.png" />
+    <Resource Include="Resources\Snippets\Script\5.png" />
+    <Resource Include="Resources\Snippets\Script\6.png" />
+    <Resource Include="Resources\Snippets\Matrix\1.png" />
+    <Resource Include="Resources\Snippets\Matrix\2.png" />
+    <Resource Include="Resources\Snippets\Matrix\3.png" />
+    <Resource Include="Resources\Snippets\Matrix\4.png" />
+    <Resource Include="Resources\Snippets\Matrix\5.png" />
+    <Resource Include="Resources\Snippets\Matrix\6.png" />
+    <Resource Include="Resources\Snippets\Matrix\7.png" />
+    <Resource Include="Resources\Snippets\Matrix\8.png" />
+    <Resource Include="Resources\Snippets\Matrix\9.png" />
     <Content Include="View\TeXCommentHtmlTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>TeXCommentHtmlTemplate.cs</LastGenOutput>

@@ -17,10 +17,131 @@ namespace VsTeXCommentsExtension.View
             new ZoomMenuItem(1.7), new ZoomMenuItem(1.8), new ZoomMenuItem(1.9), new ZoomMenuItem(2)
         };
 
-        public SnippetMenuItem[] Snippets { get; } = new[]
+        public SnippetMenuItem[] Snippets_Fraction { get; } = new[]
         {
-            new SnippetMenuItem("Fraction", "\\frac{a}{b}", "Snippets/Fraction.png"),
-            new SnippetMenuItem("Square root", "\\sqrt{x}", "Snippets/SquareRoot.png")
+            new SnippetMenuItem("\\frac{a}{b}", "Snippets/Fraction/1.png"),
+            new SnippetMenuItem("\\frac{dy}{dx}", "Snippets/Fraction/2.png"),
+            new SnippetMenuItem("\\frac{\\Delta y}{\\Delta x}", "Snippets/Fraction/3.png"),
+            new SnippetMenuItem("\\frac{\\partial y}{\\partial x}", "Snippets/Fraction/4.png"),
+            new SnippetMenuItem("\\frac{\\delta y}{\\delta x}", "Snippets/Fraction/5.png"),
+            new SnippetMenuItem("\\frac{\\pi}{2}", "Snippets/Fraction/6.png"),
+        };
+
+        public SnippetMenuItem[] Snippets_Script { get; } = new[]
+        {
+            new SnippetMenuItem("a^b", "Snippets/Script/1.png"),
+            new SnippetMenuItem("a_b", "Snippets/Script/2.png"),
+            new SnippetMenuItem("a_b^c", "Snippets/Script/3.png"),
+            new SnippetMenuItem("{}_{a}^b{c}", "Snippets/Script/4.png"),
+            new SnippetMenuItem("x_{y^2}", "Snippets/Script/5.png"),
+            new SnippetMenuItem("e^{-i \\omega t}", "Snippets/Script/6.png"),
+        };
+
+        public SnippetMenuItem[] Snippets_Radical { get; } = new[]
+        {
+             new SnippetMenuItem("\\sqrt{a}", "Snippets/Radical/1.png"),
+             new SnippetMenuItem("\\sqrt{n}{a}", "Snippets/Radical/2.png"),
+             new SnippetMenuItem("\\sqrt{a^2+b^2}", "Snippets/Radical/3.png"),
+        };
+
+        public SnippetMenuItem[] Snippets_Integral { get; } = new[]
+        {
+            new SnippetMenuItem("\\int{f(x)}\\,\\mathrm{d}x", "Snippets/Integral/1.png"),
+            new SnippetMenuItem("\\int_{a}^{b}{f(x)}\\,\\mathrm{d}x", "Snippets/Integral/2.png"),
+            new SnippetMenuItem("\\iint_V{f(u,v)}\\,\\mathrm{d}u\\,\\mathrm{d}v", "Snippets/Integral/3.png"),
+            new SnippetMenuItem("\\iiint_V{f(u,v,w)}\\,\\mathrm{d}u\\,\\mathrm{d}v\\,\\mathrm{d}w", "Snippets/Integral/4.png"),
+            new SnippetMenuItem("\\idotsint_V{f(u_1,\\dots,u_k)}\\,\\mathrm{d}u_1\\dots\\,\\mathrm{d}u_k", "Snippets/Integral/5.png"),
+            new SnippetMenuItem("\\oint_V{f(s)}\\,\\mathrm{d}s", "Snippets/Integral/6.png"),
+        };
+
+        public SnippetMenuItem[] Snippets_LargeOperator { get; } = new[]
+        {
+            new SnippetMenuItem("\\sum_{i=1}^{N}{n_i}", "Snippets/LargeOperator/1.png"),
+            new SnippetMenuItem("\\prod_{i=1}^{N}{n_i}", "Snippets/LargeOperator/2.png"),
+            new SnippetMenuItem("\\bigcup_{i=1}^{N}{X_i}", "Snippets/LargeOperator/3.png"),
+            new SnippetMenuItem("\\bigcap_{i=1}^{N}{X_i}", "Snippets/LargeOperator/4.png"),
+            new SnippetMenuItem("\\bigwedge_{i=1}^{N}{n_i}", "Snippets/LargeOperator/5.png"),
+            new SnippetMenuItem("\\bigvee_{i=1}^{N}{n_i}", "Snippets/LargeOperator/6.png"),
+        };
+
+        public SnippetMenuItem[] Snippets_Matrix { get; } = new[]
+        {
+            new SnippetMenuItem(
+@"
+//\begin{matrix}
+//  a & b \\
+//  c & d \\
+//\end{matrix}
+//",
+"Snippets/Matrix/1.png"),
+                        new SnippetMenuItem(
+@"
+//\begin{pmatrix}
+//  a & b \\
+//  c & d \\
+//\end{pmatrix}
+//",
+"Snippets/Matrix/2.png"),
+                        new SnippetMenuItem(
+@"
+//\begin{bmatrix}
+//  a & b \\
+//  c & d \\
+//\end{bmatrix}
+//",
+"Snippets/Matrix/3.png"),
+                        new SnippetMenuItem(
+@"
+//\begin{Bmatrix}
+//  a & b \\
+//  c & d \\
+//\end{Bmatrix}
+//",
+"Snippets/Matrix/4.png"),
+                        new SnippetMenuItem(
+@"
+//\begin{vmatrix}
+//  a & b \\
+//  c & d \\
+//\end{vmatrix}
+//",
+"Snippets/Matrix/5.png"),
+                        new SnippetMenuItem(
+@"
+//\begin{Vmatrix}
+//  a & b \\
+//  c & d \\
+//\end{Vmatrix}
+//",
+"Snippets/Matrix/6.png"),
+                        new SnippetMenuItem(
+@"
+//\begin{pmatrix}
+//  a & b & c \\
+//  d & e & f \\
+//  g & h & i \\
+//\end{pmatrix}
+//",
+"Snippets/Matrix/7.png"),
+                        new SnippetMenuItem(
+@"
+//\begin{pmatrix}
+//  a_{1,1} & \cdots & a_{1,n} \\
+//  \vdots & \ddots & \vdots \\
+//  a_{n,1} & \cdots & a_{n,n} \\
+//\end{pmatrix}
+//",
+"Snippets/Matrix/8.png"),
+                        new SnippetMenuItem(
+@"
+//\left(
+//    \begin{array}{cc|c}
+//      a & b & c \\
+//      d & e & f
+//    \end{array}
+//\right)
+//",
+"Snippets/Matrix/9.png"),
         };
 
         private void ButtonEdit_Click(object sender, RoutedEventArgs e)
@@ -111,13 +232,11 @@ namespace VsTeXCommentsExtension.View
 
         public class SnippetMenuItem
         {
-            public string Header { get; }
             public string Snippet { get; }
             public ImageSource Icon { get; }
 
-            public SnippetMenuItem(string header, string snippet, string iconPath)
+            public SnippetMenuItem(string snippet, string iconPath)
             {
-                Header = header;
                 Snippet = snippet;
                 Icon = new BitmapImage(ResourcesManager.GetAssemblyResourceUri(iconPath));
             }
