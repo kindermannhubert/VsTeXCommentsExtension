@@ -28,8 +28,8 @@ namespace VsTeXCommentsExtension.Integration
         public TeXCommentBlockSpan Build(ITextSnapshot snapshot)
         {
             var spanWithLastLineBreak = span.AddToEnd(lineBreakText.Length);
-            if (spanWithLastLineBreak.Start + spanWithLastLineBreak.Length >= snapshot.Length ||
-                snapshot.GetText(spanWithLastLineBreak.Start - lineBreakText.Length, lineBreakText.Length) != lineBreakText)
+            if (span.Start + spanWithLastLineBreak.Length >= snapshot.Length ||
+                snapshot.GetText(span.End, lineBreakText.Length) != lineBreakText)
             {
                 //there is no line break at the end of block
                 spanWithLastLineBreak = span;
