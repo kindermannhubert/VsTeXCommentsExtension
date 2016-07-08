@@ -181,7 +181,8 @@ namespace VsTeXCommentsExtension.View
                 0.01 * vsSettings.ZoomPercentage,
                 vsSettings.CommentsForeground.Color,
                 vsSettings.CommentsBackground.Color,
-                vsSettings.CommentsFont);
+                vsSettings.CommentsFont,
+                textView);
             renderingManager.RenderAsync(input, ImageIsReady);
         }
 

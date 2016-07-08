@@ -7,9 +7,33 @@ namespace VsTeXCommentsExtension.View
 {
     public class RenderingManager : RenderingManager<HtmlRenderer.Input, RendererResult>, IRenderingManager
     {
+        private readonly Queue<Request> tempQueue = new Queue<Request>();
+
         public RenderingManager(IRenderer<HtmlRenderer.Input, RendererResult> renderer)
             : base(renderer)
         {
+        }
+
+        protected override void OnRequestAddition(Queue<Request> queue, HtmlRenderer.Input newRequest)
+        {
+            //We want to remove already existing requests with same content as newRequest if it's for same textView.
+            //Example: We change zoom and everything is going to be rerendered. While rendering we change
+            //         zoom again and it is useless to finish rendering with old zoom.
+
+            while (queue.Count > 0)
+            {
+                var existingRequest = queue.Dequeue();
+                if (existingRequest.Input.Content != newRequest.Content ||
+                    existingRequest.Input.TextView != newRequest.TextView)
+                {
+                    tempQueue.Enqueue(existingRequest);
+                }
+            }
+
+            while (tempQueue.Count > 0)
+            {
+                queue.Enqueue(tempQueue.Dequeue());
+            }
         }
     }
 
@@ -33,6 +57,7 @@ namespace VsTeXCommentsExtension.View
             lock (requests)
             {
                 Debug.WriteLine(nameof(RenderAsync));
+                OnRequestAddition(requests, input);
                 requests.Enqueue(new Request(input, renderingDoneCallback));
                 manualResetEvent.Set();
             }
@@ -59,7 +84,11 @@ namespace VsTeXCommentsExtension.View
             }
         }
 
-        private struct Request
+        protected virtual void OnRequestAddition(Queue<Request> queue, TInput newRequest)
+        {
+        }
+
+        protected struct Request
         {
             public readonly TInput Input;
             public readonly Action<TResult> ResultCallback;

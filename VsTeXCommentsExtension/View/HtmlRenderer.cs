@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.Text.Editor;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -428,14 +429,16 @@ namespace VsTeXCommentsExtension.View
             public readonly wpf.Color Foreground;
             public readonly wpf.Color Background;
             public readonly Font Font;
+            public readonly ITextView TextView;
 
-            public Input(string content, double zoomScale, wpf.Color foreground, wpf.Color background, Font font)
+            public Input(string content, double zoomScale, wpf.Color foreground, wpf.Color background, Font font, ITextView textView)
             {
                 Content = content;
                 ZoomScale = zoomScale;
                 Foreground = foreground;
                 Background = background;
                 Font = font;
+                TextView = textView;
             }
         }
     }
