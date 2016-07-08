@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.Text.Editor;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
@@ -38,9 +39,11 @@ namespace VsTeXCommentsExtension.View
     }
 
     public class RenderingManager<TInput, TResult> : IRenderingManager<TInput, TResult>
+        where TInput : IRendererInput
     {
         private readonly IRenderer<TInput, TResult> renderer;
         private readonly Queue<Request> requests = new Queue<Request>();
+        private readonly Queue<Request> tempQueue = new Queue<Request>();
         private readonly ManualResetEvent manualResetEvent = new ManualResetEvent(false);
 
         public RenderingManager(IRenderer<TInput, TResult> renderer)
@@ -86,6 +89,26 @@ namespace VsTeXCommentsExtension.View
 
         protected virtual void OnRequestAddition(Queue<Request> queue, TInput newRequest)
         {
+        }
+
+        public void RemoveRenderingRequestsForTextView(ITextView textView)
+        {
+            lock (requests)
+            {
+                while (requests.Count > 0)
+                {
+                    var request = requests.Dequeue();
+                    if (request.Input.TextView != textView)
+                    {
+                        tempQueue.Enqueue(request);
+                    }
+                }
+
+                while (tempQueue.Count > 0)
+                {
+                    requests.Enqueue(tempQueue.Dequeue());
+                }
+            }
         }
 
         protected struct Request

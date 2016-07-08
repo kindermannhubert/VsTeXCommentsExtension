@@ -422,14 +422,14 @@ namespace VsTeXCommentsExtension.View
             }
         }
 
-        public struct Input
+        public struct Input : IRendererInput
         {
             public readonly string Content;
             public readonly double ZoomScale;
             public readonly wpf.Color Foreground;
             public readonly wpf.Color Background;
             public readonly Font Font;
-            public readonly ITextView TextView;
+            public ITextView TextView { get; }
 
             public Input(string content, double zoomScale, wpf.Color foreground, wpf.Color background, Font font, ITextView textView)
             {

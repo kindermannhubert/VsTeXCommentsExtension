@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using VsTeXCommentsExtension.Integration.Data;
 using VsTeXCommentsExtension.View;
@@ -15,7 +16,7 @@ namespace VsTeXCommentsExtension.Integration.View
     [ContentType("text")]
     [ContentType("projection")]
     [TagType(typeof(IntraTextAdornmentTag))]
-    internal sealed class TeXCommentAdornmentTaggerProvider : IViewTaggerProvider
+    internal sealed class TeXCommentAdornmentTaggerProvider : IViewTaggerProvider, IDisposable
     {
         private static readonly object sync = new object();
         private static IRenderingManager renderingManager;
@@ -29,6 +30,8 @@ namespace VsTeXCommentsExtension.Integration.View
         [Import]
         private IVsFontsAndColorsInformationService VsFontsAndColorsInformationService = null; //MEF
 
+        private readonly HashSet<ITextView> textViews = new HashSet<ITextView>();
+
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer)
             where T : ITag
         {
@@ -38,6 +41,11 @@ namespace VsTeXCommentsExtension.Integration.View
 
             var wpfTextView = textView as IWpfTextView;
             if (wpfTextView == null) return null;
+
+            if (textViews.Add(textView))
+            {
+                textView.Closed += TextView_Closed;
+            }
 
             if (!VsSettings.IsInitialized)
             {
@@ -68,6 +76,22 @@ namespace VsTeXCommentsExtension.Integration.View
                     renderingManager);
 
             return resultTagger as ITagger<T>;
+        }
+
+        private void TextView_Closed(object sender, EventArgs e)
+        {
+            var textView = (ITextView)sender;
+            textViews.Remove(textView);
+            renderingManager.RemoveRenderingRequestsForTextView(textView);
+        }
+
+        public void Dispose()
+        {
+            foreach (var textView in textViews)
+            {
+                textView.Closed -= TextView_Closed;
+            }
+            textViews.Clear();
         }
     }
 }

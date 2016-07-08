@@ -87,6 +87,7 @@
       <DependentUpon>DropDownImageButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\HtmlRendererCache.cs" />
+    <Compile Include="View\IRendererInput.cs" />
     <Compile Include="View\IRenderingManager.cs" />
     <Compile Include="View\IRenderer.cs" />
     <Compile Include="View\RendererResult.cs" />
