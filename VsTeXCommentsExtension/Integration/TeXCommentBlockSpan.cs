@@ -2,37 +2,39 @@
 
 namespace VsTeXCommentsExtension.Integration
 {
-    internal struct TeXCommentBlockSpan
+    public struct TeXCommentBlockSpan
     {
-        public Span Span { get; private set; }
-        public Span SpanWithLastLineBreak { get; private set; }
-        public Span FirstLineSpan { get; private set; }
-        public int FirstLineStartWhiteSpaces { get; }
+        /// <summary>
+        /// Span of whole TeX comment block (without last line break).
+        /// </summary>
+        public Span Span { get; }
+
+        /// <summary>
+        /// Span of whole TeX comment block.
+        /// </summary>
+        public Span SpanWithLastLineBreak { get; }
+
+        /// <summary>
+        /// Number of white spaces before on first line before '//tex:' prefix.
+        /// </summary>
+        public int FirstLineWhiteSpacesAtStart { get; }
+
+        /// <summary>
+        /// Line break text used (should be "/r/n").
+        /// </summary>
         public string LineBreakText { get; }
 
-        public TeXCommentBlockSpan(Span firstLineSpan, int firstLineStartWhiteSpaces, string lineBreakText)
+        public TeXCommentBlockSpan(Span span, Span spanWithLastLineBreak, int firstLineWhiteSpacesAtStart, string lineBreakText)
         {
-            FirstLineSpan = firstLineSpan;
-            Span = firstLineSpan;
-            SpanWithLastLineBreak = firstLineSpan;
-            FirstLineStartWhiteSpaces = firstLineStartWhiteSpaces;
+            Span = span;
+            SpanWithLastLineBreak = spanWithLastLineBreak;
+            FirstLineWhiteSpacesAtStart = firstLineWhiteSpacesAtStart;
             LineBreakText = lineBreakText;
-        }
-
-        public void Add(int charactersCount)
-        {
-            Span = new Span(Span.Start, Span.Length + charactersCount);
-            SpanWithLastLineBreak = Span;
-        }
-
-        public void RemoveLastLineBreak(int breakLength)
-        {
-            Span = new Span(Span.Start, Span.Length - breakLength);
         }
 
         public bool IsPositionAfterTeXPrefix(ITextSnapshot snapshot, int position)
         {
-            return position - Span.Start - FirstLineStartWhiteSpaces >= TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length;
+            return position - Span.Start - FirstLineWhiteSpacesAtStart >= TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length;
         }
 
         public int GetMinNumberOfWhitespacesBeforeCommentPrefixes(ITextSnapshot snapshot)

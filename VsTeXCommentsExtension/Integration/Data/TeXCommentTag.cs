@@ -7,30 +7,27 @@ using System.Text;
 namespace VsTeXCommentsExtension.Integration.Data
 {
     /// <summary>
-    /// Data tag indicating that the tagged text represents a color.
+    /// Data tag indicating that the tagged text represents a TeX comment block.
     /// </summary>
     /// <remarks>
     /// Note that this tag has nothing directly to do with adornments or other UI.
     /// This sample's adornments will be produced based on the data provided in these tags.
-    /// This separation provides the potential for other extensions to consume color tags
+    /// This separation provides the potential for other extensions to consume tags
     /// and provide alternative UI or other derived functionality over this data.
     /// </remarks>
     public struct TeXCommentTag : ITag
     {
-        private readonly string lineBreakText;
         private string textTrimmed;
         public readonly string Text;
-        public readonly Span Span;
+        public readonly TeXCommentBlockSpan TeXBlock;
 
-        public TeXCommentTag(string text, string lineBreakText, Span span)
+        public TeXCommentTag(string text, TeXCommentBlockSpan span)
         {
             Debug.Assert(text != null);
-            Debug.Assert(lineBreakText != null);
 
-            this.lineBreakText = lineBreakText;
             textTrimmed = null;
             Text = text.TrimStart(TextSnapshotTeXCommentBlocks.WhiteSpaces);
-            Span = span;
+            TeXBlock = span;
         }
 
         public string GetTextWithoutCommentMarks()
@@ -40,7 +37,7 @@ namespace VsTeXCommentsExtension.Integration.Data
                 //TODO perf and allocations
 
                 var sb = new StringBuilder(Text.Length);
-                foreach (var line in Text.Split(new[] { lineBreakText }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var line in Text.Split(new[] { TeXBlock.LineBreakText }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     var trimmedLine = line.TrimStart(TextSnapshotTeXCommentBlocks.WhiteSpaces);
                     if (trimmedLine.StartsWith(TextSnapshotTeXCommentBlocks.TeXCommentPrefix))

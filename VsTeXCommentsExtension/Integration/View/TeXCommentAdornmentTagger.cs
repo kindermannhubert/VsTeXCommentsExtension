@@ -147,8 +147,8 @@ namespace VsTeXCommentsExtension.Integration.View
 
         protected override TeXCommentAdornment CreateAdornment(TeXCommentTag dataTag, Span adornmentSpan)
         {
-            var firstLine = Snapshot.GetLineNumberFromPosition(dataTag.Span.Start);
-            var lastLine = Snapshot.GetLineNumberFromPosition(dataTag.Span.End);
+            var firstLine = Snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.Start);
+            var lastLine = Snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.End);
             var lineSpan = new LineSpan(firstLine, lastLine);
 
             var adornment = new TeXCommentAdornment(
@@ -182,8 +182,8 @@ namespace VsTeXCommentsExtension.Integration.View
 
         protected override void UpdateAdornment(TeXCommentAdornment adornment, TeXCommentTag dataTag, Span adornmentSpan)
         {
-            var firstLine = Snapshot.GetLineNumberFromPosition(dataTag.Span.Start);
-            var lastLine = Snapshot.GetLineNumberFromPosition(dataTag.Span.End);
+            var firstLine = Snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.Start);
+            var lastLine = Snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.End);
             var lineSpan = new LineSpan(firstLine, lastLine);
 
             MarkAdornmentLines(adornment.LineSpan, null); //remove old

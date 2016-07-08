@@ -72,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions.cs" />
+    <Compile Include="Integration\TeXCommentBlockSpanBuilder.cs" />
     <Compile Include="LineSpan.cs" />
     <Compile Include="Integration\TeXCommentBlockSpan.cs" />
     <Compile Include="ObjectEventHandlerTuple.cs" />

@@ -9,12 +9,12 @@ using System.Linq;
 namespace VsTeXCommentsExtension.Integration.Data
 {
     /// <summary>
-    /// Determines which spans of text likely refer to color values.
+    /// Determines which spans of text likely refer TeX comment blocks.
     /// </summary>
     /// <remarks>
     /// <para>
     /// This is a data-only component. The tagging system is a good fit for presenting data-about-text.
-    /// The <see cref="TeXCommentAdornmentTagger"/> takes color tags produced by this tagger and creates corresponding UI for this data.
+    /// The <see cref="TeXCommentAdornmentTagger"/> takes tags produced by this tagger and creates corresponding UI for this data.
     /// </para>
     /// </remarks>
     internal sealed class TeXCommentTagger : ITagger<TeXCommentTag>
@@ -54,8 +54,8 @@ namespace VsTeXCommentsExtension.Integration.Data
                     var firstLine = snapshot.GetLineFromPosition(block.Span.Start);
                     var lastLine = snapshot.GetLineFromPosition(block.Span.End);
 
-                    var tag = new TeXCommentTag(snapshot.GetText(block.Span), block.LineBreakText, block.Span);
-                    var translatedBlockSpan = new Span(block.Span.Start + block.FirstLineStartWhiteSpaces, block.Span.Length - block.FirstLineStartWhiteSpaces);
+                    var tag = new TeXCommentTag(snapshot.GetText(block.Span), block);
+                    var translatedBlockSpan = new Span(block.Span.Start + block.FirstLineWhiteSpacesAtStart, block.Span.Length - block.FirstLineWhiteSpacesAtStart);
                     yield return new TagSpan<TeXCommentTag>(new SnapshotSpan(snapshot, translatedBlockSpan), tag);
                 }
             }

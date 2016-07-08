@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Microsoft.VisualStudio.Text;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace VsTeXCommentsExtension
@@ -70,5 +71,9 @@ namespace VsTeXCommentsExtension
                 yield return item;
             }
         }
+
+        public static Span AddToEnd(this Span span, int charactersCount) => new Span(span.Start, span.Length + charactersCount);
+
+        public static Span RemoveFromEnd(this Span span, int charactersCount) => new Span(span.Start, span.Length - charactersCount);
     }
 }

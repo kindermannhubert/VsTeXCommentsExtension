@@ -14,7 +14,7 @@ namespace VsTeXCommentsExtension.Integration.View
     /// </summary>
     /// <remarks>
     /// To avoid an issue around intra-text adornment support and its interaction with text buffer changes,
-    /// this tagger reacts to text and color tag changes with a delay. It waits to send out its own TagsChanged
+    /// this tagger reacts to text and tag changes with a delay. It waits to send out its own TagsChanged
     /// event until the WPF Dispatcher is running again and it takes care to report adornments
     /// that are consistent with the latest sent TagsChanged event by storing that particular snapshot
     /// and using it to query for the data tags.

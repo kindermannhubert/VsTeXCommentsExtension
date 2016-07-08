@@ -68,7 +68,7 @@ namespace VsTeXCommentsExtension.View
                 }
                 else
                 {
-                    refreshTags(tag.Span);
+                    refreshTags(tag.TeXBlock.Span);
                 }
             }
         }

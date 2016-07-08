@@ -53,7 +53,7 @@ namespace VsTeXCommentsExtension.Integration
         {
             var texCommentBlocks = new List<TeXCommentBlockSpan>();
             var atTexBlock = false;
-            var texBlockSpan = default(TeXCommentBlockSpan);
+            var texBlockSpanBuilder = default(TeXCommentBlockSpanBuilder);
             int lastBlockLineBreakLength = 0;
             foreach (var line in snapshot.Lines)
             {
@@ -63,23 +63,23 @@ namespace VsTeXCommentsExtension.Integration
                 {
                     if (lineTextTrimmed.StartsWith(TeXCommentPrefix))
                     {
-                        texBlockSpan.RemoveLastLineBreak(lastBlockLineBreakLength);
-                        texCommentBlocks.Add(texBlockSpan); //end of current block
+                        texBlockSpanBuilder.RemoveLastLineBreak(lastBlockLineBreakLength);
+                        texCommentBlocks.Add(texBlockSpanBuilder.Build(snapshot)); //end of current block
 
-                        texBlockSpan = new TeXCommentBlockSpan(line.ExtentIncludingLineBreak, lineText.Length - lineTextTrimmed.Length, line.GetLineBreakText()); //start of new block
+                        texBlockSpanBuilder = new TeXCommentBlockSpanBuilder(line.ExtentIncludingLineBreak, lineText.Length - lineTextTrimmed.Length, line.GetLineBreakText()); //start of new block
                         lastBlockLineBreakLength = line.LineBreakLength;
                     }
                     else if (lineTextTrimmed.StartsWith(CommentPrefix))
                     {
                         //continuation of current block
-                        texBlockSpan.Add(line.LengthIncludingLineBreak);
+                        texBlockSpanBuilder.Add(line.LengthIncludingLineBreak);
                         lastBlockLineBreakLength = line.LineBreakLength;
                     }
                     else
                     {
                         //end of current block
-                        texBlockSpan.RemoveLastLineBreak(lastBlockLineBreakLength);
-                        texCommentBlocks.Add(texBlockSpan);
+                        texBlockSpanBuilder.RemoveLastLineBreak(lastBlockLineBreakLength);
+                        texCommentBlocks.Add(texBlockSpanBuilder.Build(snapshot));
                         atTexBlock = false;
                     }
                 }
@@ -87,14 +87,14 @@ namespace VsTeXCommentsExtension.Integration
                 {
                     //start of new block
                     atTexBlock = true;
-                    texBlockSpan = new TeXCommentBlockSpan(line.ExtentIncludingLineBreak, lineText.Length - lineTextTrimmed.Length, line.GetLineBreakText());
+                    texBlockSpanBuilder = new TeXCommentBlockSpanBuilder(line.ExtentIncludingLineBreak, lineText.Length - lineTextTrimmed.Length, line.GetLineBreakText());
                     lastBlockLineBreakLength = line.LineBreakLength;
                 }
             }
             if (atTexBlock)
             {
-                texBlockSpan.RemoveLastLineBreak(lastBlockLineBreakLength);
-                texCommentBlocks.Add(texBlockSpan);
+                texBlockSpanBuilder.RemoveLastLineBreak(lastBlockLineBreakLength);
+                texCommentBlocks.Add(texBlockSpanBuilder.Build(snapshot));
             }
 
             return texCommentBlocks;
