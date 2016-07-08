@@ -23,7 +23,7 @@ namespace VsTeXCommentsExtension.SyntaxHighlighting
             this.classificationTypeRegistry = registry;
 
             mathBlockRegex = new Regex(@"[\$]?\$[^\$]+\$[\$]?", RegexOptions.Multiline | RegexOptions.Compiled);
-            commandRegex = new Regex(@"\\[^ {}_\^\$]+", RegexOptions.Multiline | RegexOptions.Compiled);
+            commandRegex = new Regex(@"\\[^ {}_\^\$\r\n]+", RegexOptions.Multiline | RegexOptions.Compiled);
             texPrefixRegex = new Regex($@"^[ \t]*({TextSnapshotTeXCommentBlocks.TeXCommentPrefix})", RegexOptions.Compiled);
 
             commandClassificationType = classificationTypeRegistry.GetClassificationType("TeX.command");
