@@ -6,7 +6,6 @@ using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using System;
 using System.ComponentModel.Composition;
-using System.Windows.Media;
 using VsTeXCommentsExtension.Integration.Data;
 using VsTeXCommentsExtension.View;
 
@@ -16,13 +15,10 @@ namespace VsTeXCommentsExtension.Integration.View
     [ContentType("text")]
     [ContentType("projection")]
     [TagType(typeof(IntraTextAdornmentTag))]
-    internal sealed class TeXCommentAdornmentTaggerProvider : IViewTaggerProvider, IDisposable
+    internal sealed class TeXCommentAdornmentTaggerProvider : IViewTaggerProvider
     {
         private static readonly object sync = new object();
         private static IRenderingManager renderingManager;
-        private static HtmlRenderer renderer;
-
-        private VsSettings vsSettings;
 
         [Import]
         private IBufferTagAggregatorFactoryService BufferTagAggregatorFactoryService = null; //MEF
@@ -54,31 +50,13 @@ namespace VsTeXCommentsExtension.Integration.View
                 }
             }
 
-            if (vsSettings == null)
-            {
-                lock (sync)
-                {
-                    if (vsSettings == null)
-                    {
-                        vsSettings = VsSettings.GetOrCreate(wpfTextView);
-                        vsSettings.CommentsColorChanged += ColorsChanged;
-                        vsSettings.ZoomChanged += ZoomChanged;
-                    }
-                }
-            }
-
-            var background = vsSettings.GetCommentsBackground();
-            var foreground = vsSettings.GetCommentsForeground();
-            var font = vsSettings.CommentsFont;
-
             if (renderingManager == null)
             {
                 lock (sync)
                 {
                     if (renderingManager == null)
                     {
-                        renderer = new HtmlRenderer(wpfTextView.ZoomLevel, background.Color, foreground.Color, font);
-                        renderingManager = new RenderingManager(renderer);
+                        renderingManager = new RenderingManager(new HtmlRenderer());
                     }
                 }
             }
@@ -87,26 +65,9 @@ namespace VsTeXCommentsExtension.Integration.View
                 wpfTextView,
                 new Lazy<ITagAggregator<TeXCommentTag>>(
                     () => BufferTagAggregatorFactoryService.CreateTagAggregator<TeXCommentTag>(textView.TextBuffer)),
-                    renderingManager,
-                    foreground);
+                    renderingManager);
 
             return resultTagger as ITagger<T>;
-        }
-
-        private void ZoomChanged(IWpfTextView textView, double zoomPercentage)
-        {
-            renderer.ZoomScale = 0.01 * zoomPercentage;
-        }
-
-        private void ColorsChanged(IWpfTextView textView, SolidColorBrush foreground, SolidColorBrush background)
-        {
-            renderer.Foreground = foreground.Color;
-            renderer.Background = background.Color;
-        }
-
-        public void Dispose()
-        {
-            vsSettings?.Dispose();
         }
     }
 }

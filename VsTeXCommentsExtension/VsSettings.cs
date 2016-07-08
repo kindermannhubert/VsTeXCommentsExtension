@@ -25,7 +25,11 @@ namespace VsTeXCommentsExtension
         private readonly IWpfTextView textView;
         private IEditorFormatMap editorFormatMap;
 
-        public Font CommentsFont { get; private set; }
+        public Font CommentsFont { get; }
+
+        public SolidColorBrush CommentsForeground { get; private set; }
+        public SolidColorBrush CommentsBackground { get; private set; }
+        public double ZoomPercentage => textView.ZoomLevel;
 
         public event CommentsColorChangedHandler CommentsColorChanged;
         public event ZoomChangedHandler ZoomChanged;
@@ -63,36 +67,34 @@ namespace VsTeXCommentsExtension
             Debug.Assert(IsInitialized);
 
             this.textView = textView;
-            CommentsFont = LoadTextEditorFont(vsFontsAndColorsInformationService);
             editorFormatMap = editorFormatMapService.GetEditorFormatMap(textView);
+            CommentsFont = LoadTextEditorFont(vsFontsAndColorsInformationService);
+            ReloadColors();
 
             editorFormatMap.FormatMappingChanged += OnFormatItemsChanged;
             textView.BackgroundBrushChanged += OnBackgroundBrushChanged;
             textView.ZoomLevelChanged += OnZoomChanged;
         }
 
-        public SolidColorBrush GetCommentsForeground() => GetBrush(editorFormatMap, BrushType.Foreground, textView);
-        public SolidColorBrush GetCommentsBackground() => GetBrush(editorFormatMap, BrushType.Background, textView);
-        public double GetZoomPercentage() => textView.ZoomLevel;
+        private void ReloadColors()
+        {
+            CommentsForeground = GetBrush(editorFormatMap, BrushType.Foreground, textView);
+            CommentsBackground = GetBrush(editorFormatMap, BrushType.Background, textView);
+        }
 
         private void OnFormatItemsChanged(object sender, FormatItemsEventArgs args)
         {
             if (args.ChangedItems.Any(i => i == "Comment"))
             {
-                var editorFormatMap = (IEditorFormatMap)sender;
-                CommentsColorChanged?.Invoke(
-                    textView,
-                    GetBrush(editorFormatMap, BrushType.Foreground, textView),
-                    GetBrush(editorFormatMap, BrushType.Background, textView));
+                ReloadColors();
+                CommentsColorChanged?.Invoke(textView, CommentsForeground, CommentsBackground);
             }
         }
 
         private void OnBackgroundBrushChanged(object sender, BackgroundBrushChangedEventArgs args)
         {
-            CommentsColorChanged?.Invoke(
-                textView,
-                GetBrush(editorFormatMap, BrushType.Foreground, textView),
-                GetBrush(editorFormatMap, BrushType.Background, textView));
+            ReloadColors();
+            CommentsColorChanged?.Invoke(textView, CommentsForeground, CommentsBackground);
         }
 
         private void OnZoomChanged(object sender, ZoomLevelChangedEventArgs args)

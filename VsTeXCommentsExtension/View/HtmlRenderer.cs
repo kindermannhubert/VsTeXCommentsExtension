@@ -11,7 +11,7 @@ using wpf = System.Windows.Media;
 
 namespace VsTeXCommentsExtension.View
 {
-    public class HtmlRenderer : IRenderer<RendererResult>, IDisposable
+    public class HtmlRenderer : IRenderer<HtmlRenderer.Input, RendererResult>, IDisposable
     {
         private const int CacheVersion = 2; //increase when we want to invalidate all cached results
         private const int WaitingIntervalMs = 50;
@@ -21,36 +21,14 @@ namespace VsTeXCommentsExtension.View
         private readonly HtmlRendererCache cache = new HtmlRendererCache();
         private readonly WebBrowser webBrowser;
         private readonly ObjectForScripting objectForScripting = new ObjectForScripting();
-        private readonly Font font;
 
         private RendererResult? resultImage;
         private volatile bool documentCompleted;
         private volatile bool mathJaxRenderingDone;
         private volatile string currentContent;
 
-        public wpf.Color Foreground { get; set; }
-
-        private BGRA backgroundBgra;
-        private wpf.Color background;
-        public wpf.Color Background
+        public HtmlRenderer()
         {
-            get { return background; }
-            set
-            {
-                background = value;
-                backgroundBgra = new BGRA { R = value.R, G = value.G, B = value.B, A = value.A };
-            }
-        }
-
-        public double ZoomScale { get; set; }
-
-        public HtmlRenderer(double zoomPercentage, wpf.Color background, wpf.Color foreground, Font font)
-        {
-            this.font = font;
-            ZoomScale = 0.01 * zoomPercentage;
-            Background = background;
-            Foreground = foreground;
-
             webBrowser = new WebBrowser()
             {
                 Width = DefaultBrowserWidth,
@@ -72,17 +50,15 @@ namespace VsTeXCommentsExtension.View
             documentCompleted = true;
         }
 
-        public RendererResult Render(string content)
+        public RendererResult Render(Input input)
         {
-            Debug.Assert(content != null);
-
 #pragma warning disable CS0420 // A reference to a volatile field will not be treated as volatile
             var cacheInfo = new HtmlRendererCache.Info(
-                                   content,
-                Foreground,
-                Background,
-                font,
-                ZoomScale * ExtensionSettings.Instance.CustomZoomScale,
+                input.Content,
+                input.Foreground,
+                input.Background,
+                input.Font,
+                input.ZoomScale * ExtensionSettings.Instance.CustomZoomScale,
                 CacheVersion);
             if (cache.TryGetImage(cacheInfo, out resultImage))
             {
@@ -93,8 +69,8 @@ namespace VsTeXCommentsExtension.View
             documentCompleted = false;
             mathJaxRenderingDone = false;
             resultImage = null;
-            webBrowser.DocumentText = GetHtmlSource(content);
-            currentContent = content;
+            webBrowser.DocumentText = GetHtmlSource(input);
+            currentContent = input.Content;
 
             //wait until document is loaded
             while (!documentCompleted)
@@ -102,7 +78,7 @@ namespace VsTeXCommentsExtension.View
                 Thread.Sleep(WaitingIntervalMs);
             }
 
-            RenderInternal();
+            RenderInternal(input);
 
             //wait until result image is ready
             while (!resultImage.HasValue)
@@ -113,7 +89,7 @@ namespace VsTeXCommentsExtension.View
             return resultImage.Value;
         }
 
-        private unsafe void RenderInternal()
+        private unsafe void RenderInternal(Input input)
         {
             if (webBrowser.InvokeRequired)
             {
@@ -122,12 +98,12 @@ namespace VsTeXCommentsExtension.View
                 {
                     Thread.Sleep(WaitingIntervalMs);
                 }
-                webBrowser.Invoke(new Action(RenderInternal));
+                webBrowser.Invoke(new Action<Input>(RenderInternal), input);
             }
             else
             {
-                webBrowser.Width = (int)(ZoomScale * ExtensionSettings.Instance.CustomZoomScale * DefaultBrowserWidth);
-                webBrowser.Height = (int)(ZoomScale * ExtensionSettings.Instance.CustomZoomScale * DefaultBrowserHeight);
+                webBrowser.Width = (int)(input.ZoomScale * ExtensionSettings.Instance.CustomZoomScale * DefaultBrowserWidth);
+                webBrowser.Height = (int)(input.ZoomScale * ExtensionSettings.Instance.CustomZoomScale * DefaultBrowserHeight);
 
                 const int ExtraMargin = 4;
                 var myDiv = webBrowser.Document.GetElementById("myDiv");
@@ -181,9 +157,10 @@ namespace VsTeXCommentsExtension.View
                             }
                         }
 
-                        using (var croppedBitmap = CropToContent(bitmap, backgroundBgra))
+                        var background = BGRA.From(input.Background);
+                        using (var croppedBitmap = CropToContent(bitmap, background))
                         {
-                            MakeBackgroundTransparent(croppedBitmap, backgroundBgra);
+                            MakeBackgroundTransparent(croppedBitmap, background);
                             var croppedBitmapData = croppedBitmap.LockBits(new Rectangle(0, 0, croppedBitmap.Width, croppedBitmap.Height), ImageLockMode.ReadOnly, croppedBitmap.PixelFormat);
                             try
                             {
@@ -197,10 +174,10 @@ namespace VsTeXCommentsExtension.View
 
                                 var cacheInfo = new HtmlRendererCache.Info(
                                     currentContent,
-                                    Foreground,
-                                    Background,
-                                    font,
-                                    ZoomScale * ExtensionSettings.Instance.CustomZoomScale,
+                                    input.Foreground,
+                                    input.Background,
+                                    input.Font,
+                                    input.ZoomScale * ExtensionSettings.Instance.CustomZoomScale,
                                     CacheVersion);
 
                                 var cachedImagePath = cache.Add(cacheInfo, croppedBitmap);
@@ -311,6 +288,26 @@ namespace VsTeXCommentsExtension.View
             }
         }
 
+        private string GetHtmlSource(Input input)
+        {
+            var template = new TeXCommentHtmlTemplate()
+            {
+                BackgroundColor = input.Background,
+                ForegroundColor = input.Foreground,
+                FontFamily = input.Font.FontFamily.Name,
+                FontSize = input.ZoomScale * ExtensionSettings.Instance.CustomZoomScale * input.Font.Size,
+                Source = input.Content
+            };
+
+            return template.TransformText();
+        }
+
+        public void Dispose()
+        {
+            webBrowser?.Dispose();
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 0)]
         private struct BGRA
         {
             public byte B, G, R, A;
@@ -326,25 +323,16 @@ namespace VsTeXCommentsExtension.View
             }
 
             public override int GetHashCode() => B ^ G ^ R ^ A;
-        }
 
-        private string GetHtmlSource(string content)
-        {
-            var template = new TeXCommentHtmlTemplate()
+            public static unsafe BGRA From(wpf.Color color)
             {
-                BackgroundColor = background,
-                ForegroundColor = Foreground,
-                FontFamily = font.FontFamily.Name,
-                FontSize = ZoomScale * ExtensionSettings.Instance.CustomZoomScale * font.Size,
-                Source = content
-            };
-
-            return template.TransformText();
-        }
-
-        public void Dispose()
-        {
-            webBrowser?.Dispose();
+                var p = stackalloc byte[4];
+                p[0] = color.B;
+                p[1] = color.G;
+                p[2] = color.R;
+                p[3] = color.A;
+                return *(BGRA*)p;
+            }
         }
 
         [ComImport]
@@ -430,6 +418,24 @@ namespace VsTeXCommentsExtension.View
                     Init();
                     return dpiY;
                 }
+            }
+        }
+
+        public struct Input
+        {
+            public readonly string Content;
+            public readonly double ZoomScale;
+            public readonly wpf.Color Foreground;
+            public readonly wpf.Color Background;
+            public readonly Font Font;
+
+            public Input(string content, double zoomScale, wpf.Color foreground, wpf.Color background, Font font)
+            {
+                Content = content;
+                ZoomScale = zoomScale;
+                Foreground = foreground;
+                Background = background;
+                Font = font;
             }
         }
     }

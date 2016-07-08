@@ -5,21 +5,21 @@ using System.Threading;
 
 namespace VsTeXCommentsExtension.View
 {
-    public class RenderingManager : RenderingManager<RendererResult>, IRenderingManager
+    public class RenderingManager : RenderingManager<HtmlRenderer.Input, RendererResult>, IRenderingManager
     {
-        public RenderingManager(IRenderer<RendererResult> renderer)
+        public RenderingManager(IRenderer<HtmlRenderer.Input, RendererResult> renderer)
             : base(renderer)
         {
         }
     }
 
-    public class RenderingManager<TResult> : IRenderingManager<TResult>
+    public class RenderingManager<TInput, TResult> : IRenderingManager<TInput, TResult>
     {
-        private readonly IRenderer<TResult> renderer;
+        private readonly IRenderer<TInput, TResult> renderer;
         private readonly Queue<Request> requests = new Queue<Request>();
         private readonly ManualResetEvent manualResetEvent = new ManualResetEvent(false);
 
-        public RenderingManager(IRenderer<TResult> renderer)
+        public RenderingManager(IRenderer<TInput, TResult> renderer)
         {
             this.renderer = renderer;
 
@@ -28,12 +28,12 @@ namespace VsTeXCommentsExtension.View
             thread.Start();
         }
 
-        public void LoadContentAsync(string content, Action<TResult> renderingDoneCallback)
+        public void RenderAsync(TInput input, Action<TResult> renderingDoneCallback)
         {
             lock (requests)
             {
-                Debug.WriteLine(nameof(LoadContentAsync));
-                requests.Enqueue(new Request(content, renderingDoneCallback));
+                Debug.WriteLine(nameof(RenderAsync));
+                requests.Enqueue(new Request(input, renderingDoneCallback));
                 manualResetEvent.Set();
             }
         }
@@ -51,7 +51,7 @@ namespace VsTeXCommentsExtension.View
                         if (requests.Count == 0) manualResetEvent.Reset();
                     }
 
-                    var result = renderer.Render(request.Content);
+                    var result = renderer.Render(request.Input);
                     request.ResultCallback(result);
                 }
 
@@ -61,12 +61,12 @@ namespace VsTeXCommentsExtension.View
 
         private struct Request
         {
-            public readonly string Content;
+            public readonly TInput Input;
             public readonly Action<TResult> ResultCallback;
 
-            public Request(string content, Action<TResult> resultCallback)
+            public Request(TInput input, Action<TResult> resultCallback)
             {
-                Content = content;
+                Input = input;
                 ResultCallback = resultCallback;
             }
         }

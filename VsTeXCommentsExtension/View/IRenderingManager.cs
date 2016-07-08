@@ -2,12 +2,12 @@
 
 namespace VsTeXCommentsExtension.View
 {
-    public interface IRenderingManager : IRenderingManager<RendererResult>
+    public interface IRenderingManager : IRenderingManager<HtmlRenderer.Input, RendererResult>
     {
     }
 
-    public interface IRenderingManager<TResult>
+    public interface IRenderingManager<TInput, TResult>
     {
-        void LoadContentAsync(string content, Action<TResult> renderingDoneCallback);
+        void RenderAsync(TInput input, Action<TResult> renderingDoneCallback);
     }
 }

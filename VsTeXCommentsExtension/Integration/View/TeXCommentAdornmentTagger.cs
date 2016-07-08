@@ -17,27 +17,22 @@ namespace VsTeXCommentsExtension.Integration.View
         private readonly List<TeXCommentAdornment> linesWithAdornments = new List<TeXCommentAdornment>();
         private readonly VsSettings vsSettings;
 
-        public SolidColorBrush CommentsForegroundBrush { get; set; }
-
         internal static TeXCommentAdornmentTagger GetTagger(
             IWpfTextView view,
             Lazy<ITagAggregator<TeXCommentTag>> texCommentTagger,
-            IRenderingManager renderingManager,
-            SolidColorBrush commentsForegroundBrush)
+            IRenderingManager renderingManager)
         {
             return view.Properties.GetOrCreateSingletonProperty(
-                () => new TeXCommentAdornmentTagger(view, renderingManager, texCommentTagger.Value, commentsForegroundBrush));
+                () => new TeXCommentAdornmentTagger(view, renderingManager, texCommentTagger.Value));
         }
 
         private TeXCommentAdornmentTagger(
             IWpfTextView textView,
             IRenderingManager renderingManager,
-            ITagAggregator<TeXCommentTag> texCommentTagger,
-            SolidColorBrush commentsForegroundBrush)
+            ITagAggregator<TeXCommentTag> texCommentTagger)
             : base(textView, texCommentTagger, IntraTextAdornmentTaggerDisplayMode.DoNotHideOriginalText)
         {
             this.renderingManager = renderingManager;
-            CommentsForegroundBrush = commentsForegroundBrush;
             textView.TextBuffer.Changed += TextBuffer_Changed;
 
             vsSettings = VsSettings.GetOrCreate(textView);
@@ -137,7 +132,6 @@ namespace VsTeXCommentsExtension.Integration.View
 
         private void ColorsChanged(IWpfTextView textView, SolidColorBrush foreground, SolidColorBrush background)
         {
-            CommentsForegroundBrush = foreground;
             ForAllCurrentlyUsedAdornments(a => a.Invalidate(), false);
         }
 
@@ -158,9 +152,9 @@ namespace VsTeXCommentsExtension.Integration.View
             var lineSpan = new LineSpan(firstLine, lastLine);
 
             var adornment = new TeXCommentAdornment(
+                TextView,
                 dataTag,
                 lineSpan,
-                CommentsForegroundBrush,
                 span =>
                 {
                     //var blockSpans = texCommentBlocks.GetBlockSpansWithLastLineBreakIntersectedBy(Snapshot, span);
@@ -178,7 +172,7 @@ namespace VsTeXCommentsExtension.Integration.View
                     ForAllCurrentlyUsedAdornments(a => a.CurrentState = isInEditMode ? TeXCommentAdornmentState.Editing : TeXCommentAdornmentState.Shown, false);
                 },
                 renderingManager,
-                TextView);
+                vsSettings);
             TextView.TextBuffer.Changed += adornment.HandleTextBufferChanged;
 
             MarkAdornmentLines(lineSpan, adornment);
@@ -195,7 +189,6 @@ namespace VsTeXCommentsExtension.Integration.View
             MarkAdornmentLines(adornment.LineSpan, null); //remove old
             MarkAdornmentLines(lineSpan, adornment); //add new
 
-            adornment.CommentsForegroundBrush = CommentsForegroundBrush;
             adornment.Update(dataTag, lineSpan);
         }
 

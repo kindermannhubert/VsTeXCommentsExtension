@@ -57,7 +57,7 @@ namespace VsTeXCommentsExtension.View
         private ResourcesManager(IWpfTextView textView)
         {
             vsSettings = VsSettings.GetOrCreate(textView);
-            OnEditorBackgroundColorChange(vsSettings.GetCommentsBackground().Color);
+            OnEditorBackgroundColorChange(vsSettings.CommentsBackground.Color);
             vsSettings.CommentsColorChanged += CommentsColorChanged;
         }
 

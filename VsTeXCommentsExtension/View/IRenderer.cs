@@ -1,7 +1,7 @@
 ﻿namespace VsTeXCommentsExtension.View
 {
-    public interface IRenderer<TResult>
+    public interface IRenderer<TInput, TResult>
     {
-        TResult Render(string content);
+        TResult Render(TInput input);
     }
 }
