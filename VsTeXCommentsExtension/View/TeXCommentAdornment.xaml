@@ -13,7 +13,7 @@
             <StackPanel x:Name="leftBorderPanel2" Width="1" Margin="0,0,4,0"/>
         </StackPanel>
 
-        <Image x:Name="imageControl" Margin="0,2,0,0" RenderOptions.BitmapScalingMode="HighQuality" />
+        <Image x:Name="imageControl" Margin="0,2,0,0" UseLayoutRounding="True" SnapsToDevicePixels="True" RenderOptions.BitmapScalingMode="NearestNeighbor" />
 
         <local:DropDownImageButton x:Name="btnEdit" 
                                    ImageSource="{Binding ResourcesManager.Edit, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TeXCommentAdornment}}}" 
@@ -43,7 +43,7 @@
                                    ResourcesManager="{Binding ResourcesManager, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TeXCommentAdornment}}}" 
                                    Click="ButtonShow_Click" Margin="12,0,0,0">
             <local:DropDownImageButton.Resources>
-                <Image Source="{Binding Path=Icon}" x:Key="SnippetsMenuItemIcon" x:Shared="false" Margin="0,4,0,4" RenderOptions.BitmapScalingMode="HighQuality">
+                <Image Source="{Binding Path=Icon}" x:Key="SnippetsMenuItemIcon" x:Shared="false" Margin="0,4,0,4" UseLayoutRounding="True" SnapsToDevicePixels="True" >
                     <!--<Image.LayoutTransform>
                         <ScaleTransform ScaleX="0.5" ScaleY="0.5" />
                     </Image.LayoutTransform>-->
