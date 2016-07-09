@@ -23,6 +23,13 @@ MathJax.Hub.Config({
 		</script>
 
 		<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+MathJax.Hub.Register.MessageHook("TeX Jax - parse error",function (message) {
+	window.external.AddError(message[1]);
+});
+
+MathJax.Hub.Register.MessageHook("Math Processing Error",function (message) {
+	window.external.AddError(message[2]);
+});
 MathJax.Hub.Queue(function () {
 	window.external.RaiseRenderingDone();
 });

@@ -23,6 +23,9 @@ namespace VsTeXCommentsExtension.View
         private static readonly ImageSource show_Light = new BitmapImage(GetAssemblyResourceUri("Show_Light.png"));
         private static readonly ImageSource show_Dark = new BitmapImage(GetAssemblyResourceUri("Show_Dark.png"));
 
+        private static readonly ImageSource warning_Light = new BitmapImage(GetAssemblyResourceUri("Warning_Light.png"));
+        private static readonly ImageSource warning_Dark = new BitmapImage(GetAssemblyResourceUri("Warning_Dark.png"));
+
         private static readonly Dictionary<IWpfTextView, ResourcesManager> instances = new Dictionary<IWpfTextView, ResourcesManager>();
 
         public static ResourcesManager GetOrCreate(IWpfTextView textView)
@@ -47,6 +50,8 @@ namespace VsTeXCommentsExtension.View
         public ImageSource Edit => useDark ? edit_Dark : edit_Light;
 
         public ImageSource Show => useDark ? show_Dark : show_Light;
+
+        public ImageSource Warning => useDark ? warning_Dark : warning_Light;
 
         public Color ForegroundUIColor => useDark ? ForegroundUIColor_Dark : ForegroundUIColor_Light;
 
@@ -80,6 +85,7 @@ namespace VsTeXCommentsExtension.View
                     OnPropertyChanged(nameof(DropDown));
                     OnPropertyChanged(nameof(Edit));
                     OnPropertyChanged(nameof(Show));
+                    OnPropertyChanged(nameof(Warning));
                     OnPropertyChanged(nameof(ForegroundUIColor));
                     OnPropertyChanged(nameof(BackgroundUIColor));
                 }

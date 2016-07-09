@@ -48,6 +48,13 @@ MathJax.Hub.Config({
 		</script>
 
 		<script type=""text/javascript"" async src=""https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML"">
+MathJax.Hub.Register.MessageHook(""TeX Jax - parse error"",function (message) {
+	window.external.AddError(message[1]);
+});
+
+MathJax.Hub.Register.MessageHook(""Math Processing Error"",function (message) {
+	window.external.AddError(message[2]);
+});
 MathJax.Hub.Queue(function () {
 	window.external.RaiseRenderingDone();
 });
@@ -56,35 +63,35 @@ MathJax.Hub.Queue(function () {
 
 	<body style=""color:");
             
-            #line 32 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
+            #line 39 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(ColorToString(ForegroundColor)));
             
             #line default
             #line hidden
             this.Write(";background:");
             
-            #line 32 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
+            #line 39 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(ColorToString(BackgroundColor)));
             
             #line default
             #line hidden
             this.Write(";font-family:");
             
-            #line 32 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
+            #line 39 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FontFamily));
             
             #line default
             #line hidden
             this.Write(";font-size:");
             
-            #line 32 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
+            #line 39 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(FontSize));
             
             #line default
             #line hidden
             this.Write("px\">\r\n\t\t<div id=\"myDiv\">\r\n$\\newcommand{\\var}[1]{\\mathord{\\mathit{#1}}}$\r\n");
             
-            #line 35 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
+            #line 42 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Source));
             
             #line default
@@ -93,7 +100,7 @@ MathJax.Hub.Queue(function () {
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 39 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
+        #line 46 "D:\Source\GitHub\VsTeXCommentsExtension\VsTeXCommentsExtension\View\TeXCommentHtmlTemplate.tt"
  
 public Color ForegroundColor { get; set; }
 public Color BackgroundColor { get; set; }

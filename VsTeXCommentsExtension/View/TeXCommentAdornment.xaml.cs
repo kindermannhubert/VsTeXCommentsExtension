@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.Text.Editor;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,7 +15,7 @@ namespace VsTeXCommentsExtension.View
     /// <summary>
     /// Interaction logic for TexCommentAdornment.xaml
     /// </summary>
-    internal partial class TeXCommentAdornment : UserControl, ITagAdornment, IDisposable
+    internal partial class TeXCommentAdornment : UserControl, ITagAdornment, IDisposable, INotifyPropertyChanged
     {
         private readonly List<Span> spansOfChangesFromEditing = new List<Span>();
         private readonly Action<Span> refreshTags;
@@ -29,6 +30,22 @@ namespace VsTeXCommentsExtension.View
         private bool isInvalidated;
 
         private bool IsInEditMode => currentState == TeXCommentAdornmentState.Editing;
+
+        private RendererResult? renderedResult;
+        public RendererResult? RenderedResult
+        {
+            get { return renderedResult; }
+            set
+            {
+                renderedResult = value;
+                OnPropertyChanged(nameof(ErrorsSummary));
+                OnPropertyChanged(nameof(AnyRenderingErrors));
+            }
+        }
+
+        public bool AnyRenderingErrors => renderedResult.HasValue && renderedResult.Value.HasErrors;
+
+        public string ErrorsSummary => renderedResult?.ErrorsSummary ?? string.Empty;
 
         private TeXCommentAdornmentState currentState;
         public TeXCommentAdornmentState CurrentState
@@ -45,8 +62,8 @@ namespace VsTeXCommentsExtension.View
                         throw new InvalidOperationException($"Setting invalid state '{value}'.");
                 }
 
-                if (changeMadeWhileInEditMode) imageControl.Source = null;
-                if (value == TeXCommentAdornmentState.Shown && imageControl.Source == null) value = TeXCommentAdornmentState.Rendering;
+                if (changeMadeWhileInEditMode) RemoveRenderedResult();
+                if (value == TeXCommentAdornmentState.Shown && !renderedResult.HasValue) value = TeXCommentAdornmentState.Rendering;
 
                 Debug.WriteLine($"Adornment {DebugIndex}: changing state from '{currentState}' to '{value}'");
 
@@ -91,6 +108,9 @@ namespace VsTeXCommentsExtension.View
         }
 
         private static int debugIndexer;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public int DebugIndex { get; } = debugIndexer++;
 
         public LineSpan LineSpan { get; private set; }
@@ -148,7 +168,7 @@ namespace VsTeXCommentsExtension.View
         public void Invalidate()
         {
             isInvalidated = true;
-            imageControl.Source = null;
+            RemoveRenderedResult();
             if (CurrentState != TeXCommentAdornmentState.Editing)
             {
                 CurrentState = TeXCommentAdornmentState.Shown;
@@ -174,7 +194,7 @@ namespace VsTeXCommentsExtension.View
 
         private void UpdateImageAsync()
         {
-            imageControl.Source = null;
+            RemoveRenderedResult();
 
             var input = new HtmlRenderer.Input(
                 tag.GetTextWithoutCommentMarks(),
@@ -198,7 +218,7 @@ namespace VsTeXCommentsExtension.View
                 imageControl.Source = img;
                 imageControl.Width = img.Width / (textView.ZoomLevel * 0.01);
                 imageControl.Height = img.Height / (textView.ZoomLevel * 0.01);
-                imageControl.Tag = result.CachePath;
+                RenderedResult = result;
 
                 if (CurrentState == TeXCommentAdornmentState.Rendering) CurrentState = TeXCommentAdornmentState.Shown;
             }
@@ -234,6 +254,12 @@ namespace VsTeXCommentsExtension.View
             }
         }
 
+        private void RemoveRenderedResult()
+        {
+            RenderedResult = null;
+            imageControl.Source = null;
+        }
+
         private void ReloadColors()
         {
             leftBorderPanel1.Background = vsSettings.CommentsForeground;
@@ -243,6 +269,11 @@ namespace VsTeXCommentsExtension.View
         private void VsSettings_CommentsColorChanged(IWpfTextView textView, SolidColorBrush foreground, SolidColorBrush background)
         {
             ReloadColors();
+        }
+
+        private void OnPropertyChanged(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }

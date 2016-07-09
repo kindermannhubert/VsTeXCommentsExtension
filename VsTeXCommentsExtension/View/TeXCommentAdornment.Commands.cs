@@ -174,11 +174,13 @@ namespace VsTeXCommentsExtension.View
 
         private void MenuItem_OpenImageCache_Click(object sender, RoutedEventArgs e)
         {
-            if (imageControl.Source == null || imageControl.Tag == null) return;
+            if (!renderedResult.HasValue) return;
 
             try
             {
-                var path = (string)imageControl.Tag;
+                var result = renderedResult.Value;
+                var path = result.CachePath;
+                if (path == null) return;
                 var processArgs = $"/e, /select,\"{path}\"";
                 Process.Start(new ProcessStartInfo("explorer", processArgs));
             }

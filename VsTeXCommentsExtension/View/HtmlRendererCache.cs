@@ -48,7 +48,7 @@ namespace VsTeXCommentsExtension.View
                     bmp.EndInit();
                     bmp.Freeze();
 
-                    result = new RendererResult(bmp, filePathPng);
+                    result = new RendererResult(bmp, filePathPng, Array.Empty<string>());
                     return true;
                 }
             }

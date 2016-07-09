@@ -1,8 +1,10 @@
 ﻿using Microsoft.VisualStudio.Text.Editor;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
@@ -23,7 +25,7 @@ namespace VsTeXCommentsExtension.View
         private readonly WebBrowser webBrowser;
         private readonly ObjectForScripting objectForScripting = new ObjectForScripting();
 
-        private RendererResult? resultImage;
+        private RendererResult? rendererResult;
         private volatile bool documentCompleted;
         private volatile bool mathJaxRenderingDone;
         private volatile string currentContent;
@@ -61,15 +63,16 @@ namespace VsTeXCommentsExtension.View
                 input.Font,
                 input.ZoomScale * ExtensionSettings.Instance.CustomZoomScale,
                 CacheVersion);
-            if (cache.TryGetImage(cacheInfo, out resultImage))
+            if (cache.TryGetImage(cacheInfo, out rendererResult))
             {
-                return resultImage.Value;
+                return rendererResult.Value;
             }
 #pragma warning restore CS0420 // A reference to a volatile field will not be treated as volatile
 
             documentCompleted = false;
             mathJaxRenderingDone = false;
-            resultImage = null;
+            objectForScripting.ClearErrors();
+            rendererResult = null;
             webBrowser.DocumentText = GetHtmlSource(input);
             currentContent = input.Content;
 
@@ -82,12 +85,12 @@ namespace VsTeXCommentsExtension.View
             RenderInternal(input);
 
             //wait until result image is ready
-            while (!resultImage.HasValue)
+            while (!rendererResult.HasValue)
             {
                 Thread.Sleep(WaitingIntervalMs);
             }
 
-            return resultImage.Value;
+            return rendererResult.Value;
         }
 
         private unsafe void RenderInternal(Input input)
@@ -181,8 +184,9 @@ namespace VsTeXCommentsExtension.View
                                     input.ZoomScale * ExtensionSettings.Instance.CustomZoomScale,
                                     CacheVersion);
 
-                                var cachedImagePath = cache.Add(cacheInfo, croppedBitmap);
-                                resultImage = new RendererResult(bitmapSource, cachedImagePath);
+                                var errors = objectForScripting.Errors.Count == 0 ? Array.Empty<string>() : objectForScripting.Errors.ToArray();
+                                var cachedImagePath = errors.Length == 0 ? cache.Add(cacheInfo, croppedBitmap) : null;
+                                rendererResult = new RendererResult(bitmapSource, cachedImagePath, errors);
                             }
                             finally
                             {
@@ -367,12 +371,26 @@ namespace VsTeXCommentsExtension.View
         [ComVisible(true)]
         public class ObjectForScripting
         {
+            private readonly List<string> errors = new List<string>();
+
+            public void AddError(string message)
+            {
+                errors.Add(message);
+            }
+
+            public void ClearErrors()
+            {
+                errors.Clear();
+            }
+
             public void RaiseRenderingDone()
             {
                 RenderingDone?.Invoke();
             }
 
             public event Action RenderingDone;
+
+            public IReadOnlyList<string> Errors => errors;
         }
 
         private class Native
