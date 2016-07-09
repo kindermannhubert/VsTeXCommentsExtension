@@ -22,8 +22,6 @@ namespace VsTeXCommentsExtension.View
         private readonly Action<bool> setIsInEditModeForAllAdornmentsInDocument;
         private readonly IWpfTextView textView;
         private readonly IRenderingManager renderingManager;
-        private readonly ResourcesManager resourcesManager;
-        private readonly VsSettings vsSettings;
 
         private TeXCommentTag tag;
         private bool changeMadeWhileInEditMode;
@@ -40,12 +38,13 @@ namespace VsTeXCommentsExtension.View
                 renderedResult = value;
                 OnPropertyChanged(nameof(ErrorsSummary));
                 OnPropertyChanged(nameof(AnyRenderingErrors));
+                OnPropertyChanged(nameof(RenderedImage));
             }
         }
 
         public bool AnyRenderingErrors => renderedResult.HasValue && renderedResult.Value.HasErrors;
-
         public string ErrorsSummary => renderedResult?.ErrorsSummary ?? string.Empty;
+        public ImageSource RenderedImage => renderedResult?.Image;
 
         private TeXCommentAdornmentState currentState;
         public TeXCommentAdornmentState CurrentState
@@ -62,7 +61,7 @@ namespace VsTeXCommentsExtension.View
                         throw new InvalidOperationException($"Setting invalid state '{value}'.");
                 }
 
-                if (changeMadeWhileInEditMode) RemoveRenderedResult();
+                if (changeMadeWhileInEditMode) RenderedResult = null;
                 if (value == TeXCommentAdornmentState.Shown && !renderedResult.HasValue) value = TeXCommentAdornmentState.Rendering;
 
                 Debug.WriteLine($"Adornment {DebugIndex}: changing state from '{currentState}' to '{value}'");
@@ -115,7 +114,9 @@ namespace VsTeXCommentsExtension.View
 
         public LineSpan LineSpan { get; private set; }
 
-        public ResourcesManager ResourcesManager => resourcesManager;
+        public ResourcesManager ResourcesManager { get; }
+
+        public VsSettings VsSettings { get; }
 
         public TeXCommentAdornment(
             IWpfTextView textView,
@@ -133,16 +134,11 @@ namespace VsTeXCommentsExtension.View
             this.setIsInEditModeForAllAdornmentsInDocument = setIsInEditModeForAllAdornmentsInDocument;
             this.textView = textView;
             this.renderingManager = renderingManager;
-            this.vsSettings = vsSettings;
-            this.resourcesManager = View.ResourcesManager.GetOrCreate(textView);
-
+            VsSettings = vsSettings;
+            ResourcesManager = ResourcesManager.GetOrCreate(textView);
             LineSpan = lineSpan;
-            DataContext = this;
 
             InitializeComponent();
-
-            ReloadColors();
-            vsSettings.CommentsColorChanged += VsSettings_CommentsColorChanged;
 
             CurrentState = TeXCommentAdornmentState.Shown;
             UpdateImageAsync();
@@ -168,7 +164,7 @@ namespace VsTeXCommentsExtension.View
         public void Invalidate()
         {
             isInvalidated = true;
-            RemoveRenderedResult();
+            RenderedResult = null;
             if (CurrentState != TeXCommentAdornmentState.Editing)
             {
                 CurrentState = TeXCommentAdornmentState.Shown;
@@ -188,20 +184,19 @@ namespace VsTeXCommentsExtension.View
         public void Dispose()
         {
             ExtensionSettings.Instance.CustomZoomChanged -= CustomZoomChanged;
-            vsSettings.CommentsColorChanged -= VsSettings_CommentsColorChanged;
-            resourcesManager?.Dispose();
+            ResourcesManager?.Dispose();
         }
 
         private void UpdateImageAsync()
         {
-            RemoveRenderedResult();
+            RenderedResult = null;
 
             var input = new HtmlRenderer.Input(
                 tag.GetTextWithoutCommentMarks(),
-                0.01 * vsSettings.ZoomPercentage,
-                vsSettings.CommentsForeground.Color,
-                vsSettings.CommentsBackground.Color,
-                vsSettings.CommentsFont,
+                0.01 * VsSettings.ZoomPercentage,
+                VsSettings.CommentsForeground.Color,
+                VsSettings.CommentsBackground.Color,
+                VsSettings.CommentsFont,
                 textView);
             renderingManager.RenderAsync(input, ImageIsReady);
         }
@@ -215,7 +210,6 @@ namespace VsTeXCommentsExtension.View
             else
             {
                 var img = result.Image;
-                imageControl.Source = img;
                 imageControl.Width = img.Width / (textView.ZoomLevel * 0.01);
                 imageControl.Height = img.Height / (textView.ZoomLevel * 0.01);
                 RenderedResult = result;
@@ -252,23 +246,6 @@ namespace VsTeXCommentsExtension.View
                 default:
                     throw new InvalidOperationException($"Unknown state '{currentState}'.");
             }
-        }
-
-        private void RemoveRenderedResult()
-        {
-            RenderedResult = null;
-            imageControl.Source = null;
-        }
-
-        private void ReloadColors()
-        {
-            leftBorderPanel1.Background = vsSettings.CommentsForeground;
-            leftBorderPanel2.Background = vsSettings.CommentsForeground;
-        }
-
-        private void VsSettings_CommentsColorChanged(IWpfTextView textView, SolidColorBrush foreground, SolidColorBrush background)
-        {
-            ReloadColors();
         }
 
         private void OnPropertyChanged(string name)

@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
@@ -12,7 +13,7 @@ using wpf = System.Windows.Media;
 
 namespace VsTeXCommentsExtension
 {
-    public class VsSettings : IDisposable
+    public class VsSettings : IDisposable, INotifyPropertyChanged
     {
         private static readonly SolidColorBrush DefaultForegroundBrush = new SolidColorBrush(wpf.Color.FromRgb(0, 128, 0));
         private static readonly SolidColorBrush DefaultBackgroundBrush = new SolidColorBrush(Colors.White);
@@ -27,12 +28,33 @@ namespace VsTeXCommentsExtension
 
         public Font CommentsFont { get; }
 
-        public SolidColorBrush CommentsForeground { get; private set; }
-        public SolidColorBrush CommentsBackground { get; private set; }
+        private SolidColorBrush commentsForeground;
+        public SolidColorBrush CommentsForeground
+        {
+            get { return commentsForeground; }
+            set
+            {
+                commentsForeground = value;
+                OnPropertyChanged(nameof(CommentsForeground));
+            }
+        }
+
+        private SolidColorBrush commentsBackground;
+        public SolidColorBrush CommentsBackground
+        {
+            get { return commentsBackground; }
+            set
+            {
+                commentsBackground = value;
+                OnPropertyChanged(nameof(CommentsBackground));
+            }
+        }
+
         public double ZoomPercentage => textView.ZoomLevel;
 
         public event CommentsColorChangedHandler CommentsColorChanged;
         public event ZoomChangedHandler ZoomChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public static VsSettings GetOrCreate(IWpfTextView textView)
         {
@@ -157,6 +179,11 @@ namespace VsTeXCommentsExtension
             {
                 return SystemFonts.DefaultFont;
             }
+        }
+
+        private void OnPropertyChanged(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
         public void Dispose()

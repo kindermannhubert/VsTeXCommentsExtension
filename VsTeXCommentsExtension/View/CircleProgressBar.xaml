@@ -8,13 +8,15 @@
              d:DesignHeight="100" d:DesignWidth="100">
     <UserControl.Resources>
         <Storyboard x:Key="MainStoryboard" RepeatBehavior="Forever">
-            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="ellipse" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" Timeline.DesiredFrameRate="60">
+            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="ellipse"
+                                           Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" 
+                                           Timeline.DesiredFrameRate="60">
                 <SplineDoubleKeyFrame KeyTime="00:00:02" Value="360"/>
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
     </UserControl.Resources>
 
-    <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center">
+    <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:CircleProgressBar}}}">
         <Canvas Width="100" Height="100">
             <Ellipse x:Name="ellipse" StrokeThickness="15" RenderTransformOrigin="0.5,0.5" Height="100" Width="100">
                 <Ellipse.RenderTransform>
@@ -26,8 +28,8 @@
                 </Ellipse.RenderTransform>
                 <Ellipse.Stroke>
                     <LinearGradientBrush StartPoint="0.2,0.2" EndPoint="0.5,0.5">
-                        <GradientStop Color="{Binding ResourcesManager.BackgroundUIColor, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:CircleProgressBar}}}" Offset="0"/>
-                        <GradientStop Color="{Binding ResourcesManager.ForegroundUIColor, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:CircleProgressBar}}}" Offset="1"/>
+                        <GradientStop Color="{Binding ResourcesManager.BackgroundUIColor}" Offset="0"/>
+                        <GradientStop Color="{Binding ResourcesManager.ForegroundUIColor}" Offset="1"/>
                     </LinearGradientBrush>
                 </Ellipse.Stroke>
             </Ellipse>

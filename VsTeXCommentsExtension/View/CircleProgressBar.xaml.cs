@@ -16,8 +16,8 @@ namespace VsTeXCommentsExtension.View
 
         public CircleProgressBar()
         {
-            this.Unloaded += CircleProgressBar_Unloaded;
-            this.Loaded += CircleProgressBar_Loaded;
+            Unloaded += CircleProgressBar_Unloaded;
+            Loaded += CircleProgressBar_Loaded;
 
             InitializeComponent();
         }
