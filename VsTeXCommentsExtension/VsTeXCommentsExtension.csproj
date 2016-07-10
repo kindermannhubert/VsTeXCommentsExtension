@@ -87,6 +87,10 @@
       <DependentUpon>CircleProgressBar.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="View\DesignTimeContexts\DropDownImageButtonDesignContext.cs" />
+    <Compile Include="View\DesignTimeContexts\DesignResourcesManager.cs" />
+    <Compile Include="View\DesignTimeContexts\DesignVsSettings.cs" />
+    <Compile Include="View\DesignTimeContexts\CircleProgressBarDesignContext.cs" />
     <Compile Include="View\DropDownImageButton.xaml.cs">
       <DependentUpon>DropDownImageButton.xaml</DependentUpon>
     </Compile>
@@ -97,7 +101,7 @@
     <Compile Include="View\IResourcesManager.cs" />
     <Compile Include="View\RendererResult.cs" />
     <Compile Include="View\RenderingManager.cs" />
-    <Compile Include="View\TeXCommentAdornmentDesignDataContext.cs" />
+    <Compile Include="View\DesignTimeContexts\TeXCommentAdornmentDesignContext.cs" />
     <Compile Include="View\TeXCommentAdornment.Commands.cs" />
     <Compile Include="View\ResourcesManager.cs" />
     <Compile Include="Integration\View\TeXCommentAdornmentState.cs" />
@@ -158,6 +162,7 @@
     </Content>
     <Resource Include="Resources\DropDown_Light.png" />
     <Resource Include="Resources\Edit_Light.png" />
+    <Resource Include="Resources\DesignPreview.png" Condition=" '$(Configuration)' == 'Debug' " />
     <Content Include="Resources\Preview.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

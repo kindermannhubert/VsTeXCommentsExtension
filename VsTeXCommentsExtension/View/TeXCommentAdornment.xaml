@@ -5,19 +5,31 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:VsTeXCommentsExtension.View"
              xmlns:local2="clr-namespace:VsTeXCommentsExtension.Integration.View"
+             xmlns:local3="clr-namespace:VsTeXCommentsExtension.View.DesignTimeContexts"
              xmlns:wpf="clr-namespace:System.Windows;assembly=PresentationCore"
              xmlns:converters="clr-namespace:VsTeXCommentsExtension.View.Converters"
              x:ClassModifier="internal"
              mc:Ignorable="d"
-             d:DesignHeight="24" d:DesignWidth="300">
+             d:DesignHeight="32" d:DesignWidth="500">
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter" />
     </UserControl.Resources>
-
-    <StackPanel Orientation="Horizontal" 
+    
+    <StackPanel Orientation="Horizontal"
                 DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TeXCommentAdornment}}}"
-                d:DataContext ="{d:DesignInstance d:Type=local:TeXCommentAdornmentDesignDataContext, IsDesignTimeCreatable=True}">
-        <StackPanel x:Name="leftBorderGroupPanel" Orientation="Horizontal">
+                d:DataContext ="{d:DesignInstance d:Type=local3:TeXCommentAdornmentDesignContext, IsDesignTimeCreatable=True}">
+        <Label Content="{Binding RecourcesManager}"/>
+        <StackPanel Orientation="Horizontal">
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static local2:TeXCommentAdornmentState.Shown}">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
             <StackPanel Width="1" Margin="0,0,2,0" Background="{Binding VsSettings.CommentsForeground}" />
             <StackPanel Width="1" Margin="0,0,4,0" Background="{Binding VsSettings.CommentsForeground}" />
         </StackPanel>
@@ -36,10 +48,19 @@
             </Image.Style>
         </Image>
 
-        <local:DropDownImageButton x:Name="btnEdit" 
-                                   ImageSource="{Binding ResourcesManager.Edit}" 
-                                   ResourcesManager="{Binding ResourcesManager}" 
+        <local:DropDownImageButton ImageSource="{Binding ResourcesManager.Edit}"
+                                   ResourcesManager="{Binding ResourcesManager}"
                                    Click="ButtonEdit_Click" Margin="12,0,0,0">
+            <local:DropDownImageButton.Style>
+                <Style TargetType="local:DropDownImageButton">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static local2:TeXCommentAdornmentState.Editing}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </local:DropDownImageButton.Style>
             <local:DropDownImageButton.ContextMenu>
                 <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
                     <MenuItem Header="Edit All" Click="MenuItem_EditAll_Click" />
@@ -59,8 +80,7 @@
             </local:DropDownImageButton.ContextMenu>
         </local:DropDownImageButton>
 
-        <local:DropDownImageButton x:Name="btnShow"
-                                   ImageSource="{Binding ResourcesManager.Show}" 
+        <local:DropDownImageButton ImageSource="{Binding ResourcesManager.Show}" 
                                    ResourcesManager="{Binding ResourcesManager}" 
                                    Click="ButtonShow_Click" Margin="12,0,0,0">
             <local:DropDownImageButton.Resources>
@@ -71,7 +91,16 @@
                     <EventSetter Event="Click" Handler="MenuItem_InsertSnippet_Click"/>
                 </Style>
             </local:DropDownImageButton.Resources>
-
+            <local:DropDownImageButton.Style>
+                <Style TargetType="local:DropDownImageButton">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static local2:TeXCommentAdornmentState.Editing}">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </local:DropDownImageButton.Style>
             <local:DropDownImageButton.ContextMenu>
                 <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
                     <MenuItem Header="Show All" Click="MenuItem_ShowAll_Click" />
@@ -98,7 +127,17 @@
             </Image.ToolTip>
         </Image>
 
-        <local:CircleProgressBar x:Name="progressBar" Width="14" Height="14"
-                                 ResourcesManager="{Binding ResourcesManager}"/>
+        <local:CircleProgressBar Width="14" Height="14" ResourcesManager="{Binding ResourcesManager}">
+            <local:CircleProgressBar.Style>
+                <Style TargetType="local:CircleProgressBar">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static local2:TeXCommentAdornmentState.Rendering}">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </local:CircleProgressBar.Style>
+        </local:CircleProgressBar>
     </StackPanel>
 </UserControl>

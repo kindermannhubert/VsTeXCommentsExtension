@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using VsTeXCommentsExtension.Integration.Data;
@@ -69,8 +68,6 @@ namespace VsTeXCommentsExtension.View
                 currentState = value;
                 if (IsInEditMode) spansOfChangesFromEditing.Clear();
                 changeMadeWhileInEditMode = false;
-
-                SetUpControlsVisibility();
 
                 if (spansOfChangesFromEditing.Count > 0)
                 {
@@ -217,33 +214,6 @@ namespace VsTeXCommentsExtension.View
                 RenderedResult = result;
 
                 if (CurrentState == TeXCommentAdornmentState.Rendering) CurrentState = TeXCommentAdornmentState.Shown;
-            }
-        }
-
-        private void SetUpControlsVisibility()
-        {
-            switch (currentState)
-            {
-                case TeXCommentAdornmentState.Rendering:
-                    progressBar.Visibility = Visibility.Visible;
-                    btnEdit.Visibility = Visibility.Visible;
-                    btnShow.Visibility = Visibility.Collapsed;
-                    leftBorderGroupPanel.Visibility = Visibility.Collapsed;
-                    break;
-                case TeXCommentAdornmentState.Shown:
-                    progressBar.Visibility = Visibility.Collapsed;
-                    btnEdit.Visibility = Visibility.Visible;
-                    btnShow.Visibility = Visibility.Collapsed;
-                    leftBorderGroupPanel.Visibility = Visibility.Visible;
-                    break;
-                case TeXCommentAdornmentState.Editing:
-                    progressBar.Visibility = Visibility.Collapsed;
-                    btnEdit.Visibility = Visibility.Collapsed;
-                    btnShow.Visibility = Visibility.Visible;
-                    leftBorderGroupPanel.Visibility = Visibility.Collapsed;
-                    break;
-                default:
-                    throw new InvalidOperationException($"Unknown state '{currentState}'.");
             }
         }
 

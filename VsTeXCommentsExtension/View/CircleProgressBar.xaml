@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:VsTeXCommentsExtension.View"
+             xmlns:local2="clr-namespace:VsTeXCommentsExtension.View.DesignTimeContexts"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="100">
     <UserControl.Resources>
@@ -16,7 +17,9 @@
         </Storyboard>
     </UserControl.Resources>
 
-    <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:CircleProgressBar}}}">
+    <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" 
+             DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:CircleProgressBar}}}"
+             d:DataContext ="{d:DesignInstance d:Type=local2:CircleProgressBarDesignContext, IsDesignTimeCreatable=True}">
         <Canvas Width="100" Height="100">
             <Ellipse x:Name="ellipse" StrokeThickness="15" RenderTransformOrigin="0.5,0.5" Height="100" Width="100">
                 <Ellipse.RenderTransform>
