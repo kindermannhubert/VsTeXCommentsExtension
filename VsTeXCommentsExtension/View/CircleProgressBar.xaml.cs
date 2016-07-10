@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
@@ -20,6 +21,12 @@ namespace VsTeXCommentsExtension.View
             Loaded += CircleProgressBar_Loaded;
 
             InitializeComponent();
+
+            if (DesignerProperties.GetIsInDesignMode(this))
+            {
+                //this is necessary for designer when using this control from another one
+                root.DataContext = new DesignTimeContexts.CircleProgressBarDesignContext();
+            }
         }
 
         public ResourcesManager ResourcesManager

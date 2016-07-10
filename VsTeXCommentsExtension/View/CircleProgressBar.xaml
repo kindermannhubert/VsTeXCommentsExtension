@@ -17,7 +17,7 @@
         </Storyboard>
     </UserControl.Resources>
 
-    <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" 
+    <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="root"
              DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:CircleProgressBar}}}"
              d:DataContext ="{d:DesignInstance d:Type=local2:CircleProgressBarDesignContext, IsDesignTimeCreatable=True}">
         <Canvas Width="100" Height="100">

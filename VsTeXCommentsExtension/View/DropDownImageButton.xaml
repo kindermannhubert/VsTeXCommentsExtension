@@ -7,7 +7,7 @@
              xmlns:local2="clr-namespace:VsTeXCommentsExtension.View.DesignTimeContexts"
              mc:Ignorable="d" 
              d:DesignHeight="32" d:DesignWidth="50">
-    <StackPanel Orientation="Horizontal" 
+    <StackPanel Orientation="Horizontal" x:Name="root"
                 DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:DropDownImageButton}}}"
                 d:DataContext ="{d:DesignInstance d:Type=local2:DropDownImageButtonDesignContext, IsDesignTimeCreatable=True}">
         <Button BorderThickness="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="MainButton_Click" >

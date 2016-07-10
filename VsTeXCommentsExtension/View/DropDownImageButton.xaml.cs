@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,6 +22,12 @@ namespace VsTeXCommentsExtension.View
         public DropDownImageButton()
         {
             InitializeComponent();
+
+            if (DesignerProperties.GetIsInDesignMode(this))
+            {
+                //this is necessary for designer when using this control from another one
+                root.DataContext = new DesignTimeContexts.DropDownImageButtonDesignContext();
+            }
         }
 
         public event RoutedEventHandler Click;
