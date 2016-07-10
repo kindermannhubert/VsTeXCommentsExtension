@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using VsTeXCommentsExtension.Integration.Data;
 using VsTeXCommentsExtension.Integration.View;
 
@@ -27,23 +27,6 @@ namespace VsTeXCommentsExtension.View
         private bool isInvalidated;
 
         private bool IsInEditMode => currentState == TeXCommentAdornmentState.Editing;
-
-        private RendererResult? renderedResult;
-        public RendererResult? RenderedResult
-        {
-            get { return renderedResult; }
-            set
-            {
-                renderedResult = value;
-                OnPropertyChanged(nameof(ErrorsSummary));
-                OnPropertyChanged(nameof(AnyRenderingErrors));
-                OnPropertyChanged(nameof(RenderedImage));
-            }
-        }
-
-        public bool AnyRenderingErrors => renderedResult.HasValue && renderedResult.Value.HasErrors;
-        public string ErrorsSummary => renderedResult?.ErrorsSummary ?? string.Empty;
-        public ImageSource RenderedImage => renderedResult?.Image;
 
         private TeXCommentAdornmentState currentState;
         public TeXCommentAdornmentState CurrentState
@@ -113,10 +96,6 @@ namespace VsTeXCommentsExtension.View
 
         public LineSpan LineSpan { get; private set; }
 
-        public ResourcesManager ResourcesManager { get; }
-
-        public VsSettings VsSettings { get; }
-
         public TeXCommentAdornment(
             IWpfTextView textView,
             TeXCommentTag tag,
@@ -138,6 +117,11 @@ namespace VsTeXCommentsExtension.View
             LineSpan = lineSpan;
 
             InitializeComponent();
+
+            //for correctly working binding
+            NameScope.SetNameScope(btnShow.ContextMenu, NameScope.GetNameScope(this));
+            NameScope.SetNameScope(btnEdit.ContextMenu, NameScope.GetNameScope(this));
+            NameScope.SetNameScope((ToolTip)imgError.ToolTip, NameScope.GetNameScope(this));
 
             CurrentState = TeXCommentAdornmentState.Shown;
             UpdateImageAsync();
@@ -208,18 +192,9 @@ namespace VsTeXCommentsExtension.View
             }
             else
             {
-                var img = result.Image;
-                imageControl.Width = img.Width / (textView.ZoomLevel * 0.01);
-                imageControl.Height = img.Height / (textView.ZoomLevel * 0.01);
                 RenderedResult = result;
-
                 if (CurrentState == TeXCommentAdornmentState.Rendering) CurrentState = TeXCommentAdornmentState.Shown;
             }
-        }
-
-        private void OnPropertyChanged(string name)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }
