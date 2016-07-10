@@ -15,11 +15,14 @@ namespace VsTeXCommentsExtension.Integration.Data
     /// This separation provides the potential for other extensions to consume tags
     /// and provide alternative UI or other derived functionality over this data.
     /// </remarks>
-    public struct TeXCommentTag : ITag
+    public struct TeXCommentTag : ITag, ITagSpan
     {
         private string textTrimmed;
         public readonly string Text;
         public readonly TeXCommentBlockSpan TeXBlock;
+
+        public Span Span => TeXBlock.Span;
+        public Span SpanWithLastLineBreak => TeXBlock.SpanWithLastLineBreak;
 
         public TeXCommentTag(string text, TeXCommentBlockSpan span)
         {
