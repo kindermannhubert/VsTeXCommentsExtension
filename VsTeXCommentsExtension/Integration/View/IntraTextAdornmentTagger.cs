@@ -20,6 +20,7 @@ namespace VsTeXCommentsExtension.Integration.View
     /// and using it to query for the data tags.
     /// </remarks>
     internal abstract class IntraTextAdornmentTagger<TDataTag, TAdornment> : ITagger<IntraTextAdornmentTag>
+        where TDataTag : ITag, ITagSpan
         where TAdornment : UIElement, ITagAdornment
     {
         private const int MaxAdornmentPoolSize = 128;

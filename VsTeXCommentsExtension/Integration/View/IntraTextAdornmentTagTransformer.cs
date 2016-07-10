@@ -16,7 +16,7 @@ namespace VsTeXCommentsExtension.Integration.View
     /// </remarks>
     internal abstract class IntraTextAdornmentTagTransformer<TDataTag, TAdornment>
         : IntraTextAdornmentTagger<TDataTag, TAdornment>, IDisposable
-        where TDataTag : ITag
+        where TDataTag : ITag, ITagSpan
         where TAdornment : UIElement, ITagAdornment
     {
         protected readonly ITagAggregator<TDataTag> DataTagger;
