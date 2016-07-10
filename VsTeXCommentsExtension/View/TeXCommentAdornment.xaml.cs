@@ -26,7 +26,7 @@ namespace VsTeXCommentsExtension.View
         private bool changeMadeWhileInEditMode;
         private bool isInvalidated;
 
-        private bool IsInEditMode => currentState == TeXCommentAdornmentState.Editing;
+        public bool IsInEditMode => currentState == TeXCommentAdornmentState.EditingAndRenderingPreview || currentState == TeXCommentAdornmentState.EditingWithPreview;
 
         private TeXCommentAdornmentState currentState;
         public TeXCommentAdornmentState CurrentState
@@ -36,17 +36,19 @@ namespace VsTeXCommentsExtension.View
             {
                 switch (value)
                 {
-                    case TeXCommentAdornmentState.Shown:
-                    case TeXCommentAdornmentState.Editing:
+                    case TeXCommentAdornmentState.Rendered:
+                    case TeXCommentAdornmentState.EditingWithPreview:
                         break;
                     case TeXCommentAdornmentState.Rendering:
+                    case TeXCommentAdornmentState.EditingAndRenderingPreview:
                         throw new InvalidOperationException($"Setting invalid state '{value}'.");
                 }
 
                 if (changeMadeWhileInEditMode) RenderedResult = null;
-                if (value == TeXCommentAdornmentState.Shown && !renderedResult.HasValue) value = TeXCommentAdornmentState.Rendering;
+                if (value == TeXCommentAdornmentState.Rendered && !renderedResult.HasValue) value = TeXCommentAdornmentState.Rendering;
+                if (value == TeXCommentAdornmentState.EditingWithPreview && !renderedResult.HasValue) value = TeXCommentAdornmentState.EditingAndRenderingPreview;
 
-                Debug.WriteLine($"Adornment {DebugIndex}: changing state from '{currentState}' to '{value}'");
+                Debug.WriteLine($"Adornment {Index}: changing state from '{currentState}' to '{value}'");
 
                 currentState = value;
                 if (IsInEditMode) spansOfChangesFromEditing.Clear();
@@ -78,10 +80,12 @@ namespace VsTeXCommentsExtension.View
                 switch (currentState)
                 {
                     case TeXCommentAdornmentState.Rendering:
-                    case TeXCommentAdornmentState.Editing:
-                        return IntraTextAdornmentTaggerDisplayMode.DoNotHideOriginalText;
-                    case TeXCommentAdornmentState.Shown:
-                        return IntraTextAdornmentTaggerDisplayMode.HideOriginalText;
+                    case TeXCommentAdornmentState.EditingAndRenderingPreview:
+                        return IntraTextAdornmentTaggerDisplayMode.DoNotHideOriginalText_BeforeLastLineBreak;
+                    case TeXCommentAdornmentState.EditingWithPreview:
+                        return IntraTextAdornmentTaggerDisplayMode.DoNotHideOriginalText_AfterLastLineBreak;
+                    case TeXCommentAdornmentState.Rendered:
+                        return IntraTextAdornmentTaggerDisplayMode.HideOriginalText_WithoutLastLineBreak;
                     default:
                         throw new InvalidOperationException($"Unknown state: {currentState}.");
                 }
@@ -92,7 +96,7 @@ namespace VsTeXCommentsExtension.View
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public int DebugIndex { get; } = debugIndexer++;
+        public int Index { get; } = debugIndexer++;
 
         public LineSpan LineSpan { get; private set; }
 
@@ -123,7 +127,7 @@ namespace VsTeXCommentsExtension.View
             NameScope.SetNameScope(btnEdit.ContextMenu, NameScope.GetNameScope(this));
             NameScope.SetNameScope((ToolTip)imgError.ToolTip, NameScope.GetNameScope(this));
 
-            CurrentState = TeXCommentAdornmentState.Shown;
+            CurrentState = TeXCommentAdornmentState.Rendered;
             UpdateImageAsync();
         }
 
@@ -136,7 +140,8 @@ namespace VsTeXCommentsExtension.View
             {
                 changeMadeWhileInEditMode = changed;
             }
-            else if (changed || isInvalidated)
+
+            if (changed || isInvalidated)
             {
                 this.tag = tag;
                 isInvalidated = false;
@@ -148,10 +153,8 @@ namespace VsTeXCommentsExtension.View
         {
             isInvalidated = true;
             RenderedResult = null;
-            if (CurrentState != TeXCommentAdornmentState.Editing)
-            {
-                CurrentState = TeXCommentAdornmentState.Shown;
-            }
+            if (CurrentState == TeXCommentAdornmentState.Rendered) CurrentState = TeXCommentAdornmentState.Rendered;
+            else if (CurrentState == TeXCommentAdornmentState.EditingWithPreview) CurrentState = TeXCommentAdornmentState.EditingWithPreview;
         }
 
         public void HandleTextBufferChanged(object sender, TextContentChangedEventArgs args)
@@ -180,7 +183,8 @@ namespace VsTeXCommentsExtension.View
                 VsSettings.CommentsForeground.Color,
                 VsSettings.CommentsBackground.Color,
                 VsSettings.CommentsFont,
-                textView);
+                textView,
+                this);
             renderingManager.RenderAsync(input, ImageIsReady);
         }
 
@@ -193,7 +197,8 @@ namespace VsTeXCommentsExtension.View
             else
             {
                 RenderedResult = result;
-                if (CurrentState == TeXCommentAdornmentState.Rendering) CurrentState = TeXCommentAdornmentState.Shown;
+                if (CurrentState == TeXCommentAdornmentState.Rendering) CurrentState = TeXCommentAdornmentState.Rendered;
+                else if (CurrentState == TeXCommentAdornmentState.EditingAndRenderingPreview) CurrentState = TeXCommentAdornmentState.EditingWithPreview;
             }
         }
     }

@@ -260,7 +260,7 @@ namespace VsTeXCommentsExtension.Integration.View
                         UpdateAdornment(adornment, tagData.Tag, adornmentInfo.Span.Span);
                         toRemove.Remove(key);
 
-                        Debug.WriteLine($"Updating adornment {adornment.DebugIndex}");
+                        Debug.WriteLine($"Updating adornment {adornment.Index}");
                     }
                     else
                     {
@@ -271,13 +271,13 @@ namespace VsTeXCommentsExtension.Integration.View
                             adornment = adornmentsPool[adornmentsPool.Count - 1];
                             adornmentsPool.RemoveAt(adornmentsPool.Count - 1);
                             UpdateAdornment(adornment, tagData.Tag, adornmentInfo.Span.Span);
-                            adornment.CurrentState = TeXCommentAdornmentState.Shown;
-                            Debug.WriteLine($"Reusing adornment {adornment.DebugIndex} from pool");
+                            adornment.CurrentState = TeXCommentAdornmentState.Rendered;
+                            Debug.WriteLine($"Reusing adornment {adornment.Index} from pool");
                         }
                         else
                         {
                             adornment = CreateAdornment(tagData.Tag, adornmentInfo.Span);
-                            Debug.WriteLine($"Creating adornment {adornment.DebugIndex}");
+                            Debug.WriteLine($"Creating adornment {adornment.Index}");
                         }
 
                         if (adornment == null) continue;
@@ -301,7 +301,7 @@ namespace VsTeXCommentsExtension.Integration.View
                     //        Debug.WriteLine($"Removing adornment {adornment.DebugIndex}");
                     //    };
 
-                    Debug.WriteLine($"Yielding adornment {adornment.DebugIndex} with span {adornmentInfo.Span}");
+                    Debug.WriteLine($"Yielding adornment {adornment.Index} with span {adornmentInfo.Span}");
                     yield return new TagSpan<IntraTextAdornmentTag>(adornmentInfo.Span, new IntraTextAdornmentTag(adornment, null, adornmentInfo.Affinity));
                 }
 
@@ -357,12 +357,12 @@ namespace VsTeXCommentsExtension.Integration.View
             {
                 switch (mode)
                 {
-                    case IntraTextAdornmentTaggerDisplayMode.HideOriginalText:
+                    case IntraTextAdornmentTaggerDisplayMode.HideOriginalText_WithoutLastLineBreak:
                         {
                             var affinity = Span.Length > 0 ? null : Affinity;
                             return new AdornmentInfo(Span, affinity);
                         }
-                    case IntraTextAdornmentTaggerDisplayMode.DoNotHideOriginalText:
+                    case IntraTextAdornmentTaggerDisplayMode.DoNotHideOriginalText_BeforeLastLineBreak:
                         {
                             SnapshotPoint start;
                             if (!Affinity.HasValue || Affinity.Value == PositionAffinity.Predecessor)
@@ -403,7 +403,8 @@ namespace VsTeXCommentsExtension.Integration.View
 
     public enum IntraTextAdornmentTaggerDisplayMode
     {
-        HideOriginalText,
-        DoNotHideOriginalText,
+        HideOriginalText_WithoutLastLineBreak,
+        DoNotHideOriginalText_BeforeLastLineBreak,
+        DoNotHideOriginalText_AfterLastLineBreak,
     }
 }

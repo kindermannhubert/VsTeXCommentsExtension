@@ -30,7 +30,7 @@ namespace VsTeXCommentsExtension.Integration.View
             IWpfTextView textView,
             IRenderingManager renderingManager,
             ITagAggregator<TeXCommentTag> texCommentTagger)
-            : base(textView, texCommentTagger, IntraTextAdornmentTaggerDisplayMode.DoNotHideOriginalText)
+            : base(textView, texCommentTagger, IntraTextAdornmentTaggerDisplayMode.DoNotHideOriginalText_BeforeLastLineBreak)
         {
             this.renderingManager = renderingManager;
             textView.TextBuffer.Changed += TextBuffer_Changed;
@@ -91,9 +91,9 @@ namespace VsTeXCommentsExtension.Integration.View
                             !firstLineNewText.ConsistOnlyFromLineBreaks(firstLineNewChangeStart, Math.Min(firstLineNewText.Length - firstLineNewChangeStart, change.NewLength)))
                         {
                             var adornmentOnLine = GetAdornmentOnLine(firstLineOld.LineNumber);
-                            if (adornmentOnLine != null && adornmentOnLine.CurrentState != TeXCommentAdornmentState.Editing)
+                            if (adornmentOnLine != null && !adornmentOnLine.IsInEditMode)
                             {
-                                adornmentOnLine.CurrentState = TeXCommentAdornmentState.Editing;
+                                adornmentOnLine.CurrentState = TeXCommentAdornmentState.EditingWithPreview;
                             }
                         }
                     }
@@ -169,7 +169,7 @@ namespace VsTeXCommentsExtension.Integration.View
                 },
                 isInEditMode =>
                 {
-                    ForAllCurrentlyUsedAdornments(a => a.CurrentState = isInEditMode ? TeXCommentAdornmentState.Editing : TeXCommentAdornmentState.Shown, false);
+                    ForAllCurrentlyUsedAdornments(a => a.CurrentState = isInEditMode ? TeXCommentAdornmentState.EditingWithPreview : TeXCommentAdornmentState.Rendered, false);
                 },
                 renderingManager,
                 vsSettings);

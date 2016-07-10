@@ -3,7 +3,8 @@
     public enum TeXCommentAdornmentState
     {
         Rendering,
-        Shown,
-        Editing
+        Rendered,
+        EditingAndRenderingPreview,
+        EditingWithPreview
     }
 }

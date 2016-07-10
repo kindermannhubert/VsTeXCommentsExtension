@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
-
+using VsTeXCommentsExtension.Integration.View;
 using wpf = System.Windows.Media;
 
 namespace VsTeXCommentsExtension.View
@@ -448,8 +448,9 @@ namespace VsTeXCommentsExtension.View
             public readonly wpf.Color Background;
             public readonly Font Font;
             public ITextView TextView { get; }
+            public ITagAdornment TagAdornment { get; }
 
-            public Input(string content, double zoomScale, wpf.Color foreground, wpf.Color background, Font font, ITextView textView)
+            public Input(string content, double zoomScale, wpf.Color foreground, wpf.Color background, Font font, ITextView textView, ITagAdornment tagAdornment)
             {
                 Content = content;
                 ZoomScale = zoomScale;
@@ -457,6 +458,7 @@ namespace VsTeXCommentsExtension.View
                 Background = background;
                 Font = font;
                 TextView = textView;
+                TagAdornment = tagAdornment;
             }
         }
     }
