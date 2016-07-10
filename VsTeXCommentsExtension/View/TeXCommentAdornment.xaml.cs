@@ -86,6 +86,8 @@ namespace VsTeXCommentsExtension.View
                 {
                     refreshTags(tag.TeXBlock.Span);
                 }
+
+                OnPropertyChanged(nameof(CurrentState));
             }
         }
 
@@ -223,21 +225,18 @@ namespace VsTeXCommentsExtension.View
             switch (currentState)
             {
                 case TeXCommentAdornmentState.Rendering:
-                    imageControl.Visibility = Visibility.Collapsed;
                     progressBar.Visibility = Visibility.Visible;
                     btnEdit.Visibility = Visibility.Visible;
                     btnShow.Visibility = Visibility.Collapsed;
                     leftBorderGroupPanel.Visibility = Visibility.Collapsed;
                     break;
                 case TeXCommentAdornmentState.Shown:
-                    imageControl.Visibility = Visibility.Visible;
                     progressBar.Visibility = Visibility.Collapsed;
                     btnEdit.Visibility = Visibility.Visible;
                     btnShow.Visibility = Visibility.Collapsed;
                     leftBorderGroupPanel.Visibility = Visibility.Visible;
                     break;
                 case TeXCommentAdornmentState.Editing:
-                    imageControl.Visibility = Visibility.Collapsed;
                     progressBar.Visibility = Visibility.Collapsed;
                     btnEdit.Visibility = Visibility.Collapsed;
                     btnShow.Visibility = Visibility.Visible;

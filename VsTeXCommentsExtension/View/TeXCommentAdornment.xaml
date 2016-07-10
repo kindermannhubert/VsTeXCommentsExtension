@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:VsTeXCommentsExtension.View"
+             xmlns:local2="clr-namespace:VsTeXCommentsExtension.Integration.View"
+             xmlns:wpf="clr-namespace:System.Windows;assembly=PresentationCore"
              xmlns:converters="clr-namespace:VsTeXCommentsExtension.View.Converters"
              x:ClassModifier="internal"
              mc:Ignorable="d"
@@ -18,8 +20,19 @@
             <StackPanel Width="1" Margin="0,0,4,0" Background="{Binding VsSettings.CommentsForeground}" />
         </StackPanel>
 
-        <Image x:Name="imageControl" Margin="0,2,0,0" UseLayoutRounding="True" SnapsToDevicePixels="True" RenderOptions.BitmapScalingMode="NearestNeighbor"
-               Source="{Binding RenderedImage}"/>
+        <Image x:Name="imageControl" Margin="0,2,0,0" Source="{Binding RenderedImage}"
+               UseLayoutRounding="True" SnapsToDevicePixels="True" RenderOptions.BitmapScalingMode="NearestNeighbor">
+            <Image.Style>
+                <Style TargetType="Image">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static local2:TeXCommentAdornmentState.Shown}">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Image.Style>
+        </Image>
 
         <local:DropDownImageButton x:Name="btnEdit" 
                                    ImageSource="{Binding ResourcesManager.Edit}" 
