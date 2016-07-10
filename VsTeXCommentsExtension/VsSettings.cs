@@ -13,7 +13,7 @@ using wpf = System.Windows.Media;
 
 namespace VsTeXCommentsExtension
 {
-    public class VsSettings : IDisposable, INotifyPropertyChanged
+    public class VsSettings : IDisposable, INotifyPropertyChanged, IVsSettings
     {
         private static readonly SolidColorBrush DefaultForegroundBrush = new SolidColorBrush(wpf.Color.FromRgb(0, 128, 0));
         private static readonly SolidColorBrush DefaultBackgroundBrush = new SolidColorBrush(Colors.White);
@@ -32,7 +32,7 @@ namespace VsTeXCommentsExtension
         public SolidColorBrush CommentsForeground
         {
             get { return commentsForeground; }
-            set
+            private set
             {
                 commentsForeground = value;
                 OnPropertyChanged(nameof(CommentsForeground));
@@ -43,7 +43,7 @@ namespace VsTeXCommentsExtension
         public SolidColorBrush CommentsBackground
         {
             get { return commentsBackground; }
-            set
+            private set
             {
                 commentsBackground = value;
                 OnPropertyChanged(nameof(CommentsBackground));

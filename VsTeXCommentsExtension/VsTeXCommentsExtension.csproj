@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="Extensions.cs" />
     <Compile Include="Integration\TeXCommentBlockSpanBuilder.cs" />
+    <Compile Include="IVsSettings.cs" />
     <Compile Include="LineSpan.cs" />
     <Compile Include="Integration\TeXCommentBlockSpan.cs" />
     <Compile Include="ObjectEventHandlerTuple.cs" />
@@ -93,8 +94,10 @@
     <Compile Include="View\IRendererInput.cs" />
     <Compile Include="View\IRenderingManager.cs" />
     <Compile Include="View\IRenderer.cs" />
+    <Compile Include="View\IResourcesManager.cs" />
     <Compile Include="View\RendererResult.cs" />
     <Compile Include="View\RenderingManager.cs" />
+    <Compile Include="View\TeXCommentAdornmentDesignDataContext.cs" />
     <Compile Include="View\TeXCommentAdornment.Commands.cs" />
     <Compile Include="View\ResourcesManager.cs" />
     <Compile Include="Integration\View\TeXCommentAdornmentState.cs" />

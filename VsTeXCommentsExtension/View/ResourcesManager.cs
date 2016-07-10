@@ -7,7 +7,7 @@ using System.Windows.Media.Imaging;
 
 namespace VsTeXCommentsExtension.View
 {
-    public class ResourcesManager : INotifyPropertyChanged, IDisposable
+    public class ResourcesManager : INotifyPropertyChanged, IDisposable, IResourcesManager
     {
         private static readonly Color ForegroundUIColor_Dark = Color.FromRgb(64, 64, 64);
         private static readonly Color ForegroundUIColor_Light = Color.FromRgb(243, 243, 243);

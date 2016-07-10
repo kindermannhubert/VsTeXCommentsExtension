@@ -14,7 +14,9 @@
         <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter" />
     </UserControl.Resources>
 
-    <StackPanel Orientation="Horizontal" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TeXCommentAdornment}}}">
+    <StackPanel Orientation="Horizontal" 
+                DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TeXCommentAdornment}}}"
+                d:DataContext ="{d:DesignInstance d:Type=local:TeXCommentAdornmentDesignDataContext, IsDesignTimeCreatable=True}">
         <StackPanel x:Name="leftBorderGroupPanel" Orientation="Horizontal">
             <StackPanel Width="1" Margin="0,0,2,0" Background="{Binding VsSettings.CommentsForeground}" />
             <StackPanel Width="1" Margin="0,0,4,0" Background="{Binding VsSettings.CommentsForeground}" />
@@ -62,11 +64,7 @@
                                    ResourcesManager="{Binding ResourcesManager}" 
                                    Click="ButtonShow_Click" Margin="12,0,0,0">
             <local:DropDownImageButton.Resources>
-                <Image Source="{Binding Path=Icon}" x:Key="SnippetsMenuItemIcon" x:Shared="false" Margin="0,4,0,4" UseLayoutRounding="True" SnapsToDevicePixels="True" >
-                    <!--<Image.LayoutTransform>
-                        <ScaleTransform ScaleX="0.5" ScaleY="0.5" />
-                    </Image.LayoutTransform>-->
-                </Image>
+                <Image Source="{Binding Path=Icon}" x:Key="SnippetsMenuItemIcon" x:Shared="false" Margin="0,4,0,4" UseLayoutRounding="True" SnapsToDevicePixels="True" />
 
                 <Style x:Key="SnippetsMenuItemStyle" TargetType="MenuItem">
                     <Setter Property="Header" Value="{StaticResource SnippetsMenuItemIcon}" />
