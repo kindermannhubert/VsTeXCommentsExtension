@@ -35,27 +35,27 @@ namespace VsTeXCommentsExtension.View
             set { SetValue(ResourcesManagerProperty, value); }
         }
 
-        private void CircleProgressBar_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        private void CircleProgressBar_Loaded(object sender, RoutedEventArgs e)
         {
             if (storyboard == null)
             {
                 storyboard = (Storyboard)FindResource("MainStoryboard");
-                BeginStoryboard(storyboard);
+                storyboard.Begin(this, true);
             }
             else
             {
-                storyboard.Resume();
+                storyboard.Resume(this);
             }
         }
 
-        private void CircleProgressBar_Unloaded(object sender, System.Windows.RoutedEventArgs e)
+        private void CircleProgressBar_Unloaded(object sender, RoutedEventArgs e)
         {
-            storyboard?.Pause();
+            storyboard?.Pause(this);
         }
 
         public void Dispose()
         {
-            storyboard?.Stop();
+            storyboard?.Stop(this);
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
+using VsTeXCommentsExtension.Integration.Data;
 using VsTeXCommentsExtension.Integration.View;
 using wpf = System.Windows.Media;
 
@@ -83,6 +84,7 @@ namespace VsTeXCommentsExtension.View
             }
 
             RenderInternal(input);
+            Thread.Sleep(1000);
 
             //wait until result image is ready
             while (!rendererResult.HasValue)
@@ -442,17 +444,19 @@ namespace VsTeXCommentsExtension.View
 
         public struct Input : IRendererInput
         {
-            public readonly string Content;
+            private readonly TeXCommentTag dataTag;
+
             public readonly double ZoomScale;
             public readonly wpf.Color Foreground;
             public readonly wpf.Color Background;
             public readonly Font Font;
             public ITextView TextView { get; }
             public ITagAdornment TagAdornment { get; }
+            public string Content => dataTag.GetTextWithoutCommentMarks();
 
-            public Input(string content, double zoomScale, wpf.Color foreground, wpf.Color background, Font font, ITextView textView, ITagAdornment tagAdornment)
+            public Input(TeXCommentTag dataTag, double zoomScale, wpf.Color foreground, wpf.Color background, Font font, ITextView textView, ITagAdornment tagAdornment)
             {
-                Content = content;
+                this.dataTag = dataTag;
                 ZoomScale = zoomScale;
                 Foreground = foreground;
                 Background = background;

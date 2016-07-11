@@ -93,7 +93,7 @@ namespace VsTeXCommentsExtension.Integration.View
                             var adornmentOnLine = GetAdornmentOnLine(firstLineOld.LineNumber);
                             if (adornmentOnLine != null && !adornmentOnLine.IsInEditMode)
                             {
-                                adornmentOnLine.CurrentState = TeXCommentAdornmentState.EditingWithPreview;
+                                adornmentOnLine.CurrentState = TeXCommentAdornmentState.EditingAndRenderingPreview;
                             }
                         }
                     }
@@ -173,7 +173,7 @@ namespace VsTeXCommentsExtension.Integration.View
                 },
                 isInEditMode =>
                 {
-                    ForAllCurrentlyUsedAdornments(a => a.CurrentState = isInEditMode ? TeXCommentAdornmentState.EditingWithPreview : TeXCommentAdornmentState.Rendered, false);
+                    ForAllCurrentlyUsedAdornments(a => a.CurrentState = isInEditMode ? TeXCommentAdornmentState.EditingAndRenderingPreview : TeXCommentAdornmentState.Rendering, false);
                 },
                 renderingManager,
                 vsSettings);

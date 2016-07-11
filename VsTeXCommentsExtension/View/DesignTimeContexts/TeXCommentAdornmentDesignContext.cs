@@ -7,7 +7,7 @@ namespace VsTeXCommentsExtension.View.DesignTimeContexts
     public class TeXCommentAdornmentDesignContext
     {
         //Change and recompile to see change in designer.
-        public TeXCommentAdornmentState CurrentState => TeXCommentAdornmentState.EditingWithPreview;
+        public TeXCommentAdornmentState CurrentState => TeXCommentAdornmentState.EditingAndRenderingPreview;
 
         public IResourcesManager ResourcesManager { get; } = new DesignResourcesManager();
 
