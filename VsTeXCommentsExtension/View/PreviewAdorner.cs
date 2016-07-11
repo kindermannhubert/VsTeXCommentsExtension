@@ -47,10 +47,17 @@ namespace VsTeXCommentsExtension.View
             //content
             var panel = new StackPanel() { Orientation = Orientation.Vertical, Margin = new Thickness(6) };
 
-            var image = new Image() { Stretch = Stretch.None, SnapsToDevicePixels = true, UseLayoutRounding = true };
+            Binding binding;
+            var image = new Image() { SnapsToDevicePixels = true, UseLayoutRounding = true };
             RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.NearestNeighbor);
-            var imageBinding = new Binding(nameof(ImageSource)) { Source = this };
-            image.SetBinding(Image.SourceProperty, imageBinding);
+            binding = new Binding(nameof(ImageSource)) { Source = this };
+            image.SetBinding(Image.SourceProperty, binding);
+
+            binding = new Binding(nameof(TeXCommentAdornment.RenderedImageWidth)) { Source = adornedElement };
+            image.SetBinding(Image.WidthProperty, binding);
+
+            binding = new Binding(nameof(TeXCommentAdornment.RenderedImageHeight)) { Source = adornedElement };
+            image.SetBinding(Image.HeightProperty, binding);
 
             panel.Children.Add(new TextBlock() { Text = "Preview:", Margin = new Thickness(0, 0, 0, 2) });
             panel.Children.Add(image);
@@ -60,10 +67,10 @@ namespace VsTeXCommentsExtension.View
             //visibility setup
             var style = new Style(typeof(PreviewAdorner));
             style.Setters.Add(new Setter(VisibilityProperty, Visibility.Collapsed));
-            var currentStateBinding = new Binding(nameof(TeXCommentAdornment.CurrentState)) { Source = adornedElement };
+            binding = new Binding(nameof(TeXCommentAdornment.CurrentState)) { Source = adornedElement };
             var isCarretInsideTeXBlockBinding = new Binding(nameof(TeXCommentAdornment.IsCaretInsideTeXBlock)) { Source = adornedElement };
             var visibilityTrigger = new MultiDataTrigger();
-            visibilityTrigger.Conditions.Add(new Condition(currentStateBinding, TeXCommentAdornmentState.EditingWithPreview));
+            visibilityTrigger.Conditions.Add(new Condition(binding, TeXCommentAdornmentState.EditingWithPreview));
             visibilityTrigger.Conditions.Add(new Condition(isCarretInsideTeXBlockBinding, true));
             visibilityTrigger.Setters.Add(new Setter(VisibilityProperty, Visibility.Visible));
             style.Triggers.Add(visibilityTrigger);

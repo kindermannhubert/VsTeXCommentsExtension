@@ -2,7 +2,7 @@
 
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="D7EC21C7-846F-4E42-BFE8-E74CD47605F9" Version="0.2.3.4" Language="en-US" Publisher="Hubert Kindermann" />
+    <Identity Id="D7EC21C7-846F-4E42-BFE8-E74CD47605F9" Version="0.2.3.9" Language="en-US" Publisher="Hubert Kindermann" />
     <DisplayName>VsTeXCommentsExtension</DisplayName>
     <Description xml:space="preserve">Intra-text adornment extension to the Visual Studio Editor for rendering TeX math comments inside the editor.</Description>
     <MoreInfo>https://github.com/kindermannhubert/VsTeXCommentsExtension</MoreInfo>
