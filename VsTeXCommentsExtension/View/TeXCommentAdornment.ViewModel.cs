@@ -30,6 +30,20 @@ namespace VsTeXCommentsExtension.View
         public double RenderedImageWidth => (renderedResult?.Image.Width / (textView.ZoomLevel * 0.01)) ?? 0;
         public double RenderedImageHeight => (renderedResult?.Image.Height / (textView.ZoomLevel * 0.01)) ?? 0;
 
+        public bool IsCaretInsideTeXBlock
+        {
+            get
+            {
+                var spanWithLastLineBreak = tag.SpanWithLastLineBreak;
+                var caretPosition = textView.Caret.Position.BufferPosition;
+                if (tag.Span.Length == spanWithLastLineBreak.Length)
+                {
+                    return caretPosition >= spanWithLastLineBreak.Start && caretPosition <= spanWithLastLineBreak.End;
+                }
+                return spanWithLastLineBreak.Contains(caretPosition);
+            }
+        }
+
         private void OnPropertyChanged(string name)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));

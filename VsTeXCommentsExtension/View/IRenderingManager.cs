@@ -11,6 +11,6 @@ namespace VsTeXCommentsExtension.View
         where TInput : IRendererInput
     {
         void RenderAsync(TInput input, Action<TResult> renderingDoneCallback);
-        void RemoveRenderingRequestsForTextView(ITextView textView);
+        void DiscartRenderingRequestsForTextView(ITextView textView);
     }
 }

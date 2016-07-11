@@ -146,12 +146,12 @@ namespace VsTeXCommentsExtension.View
 
         private void ButtonEdit_Click(object sender, RoutedEventArgs e)
         {
-            CurrentState = TeXCommentAdornmentState.Editing;
+            CurrentState = TeXCommentAdornmentState.EditingAndRenderingPreview;
         }
 
         private void ButtonShow_Click(object sender, RoutedEventArgs e)
         {
-            CurrentState = TeXCommentAdornmentState.Shown;
+            CurrentState = TeXCommentAdornmentState.Rendering;
         }
 
         private void CustomZoomChanged(double zoomScale)

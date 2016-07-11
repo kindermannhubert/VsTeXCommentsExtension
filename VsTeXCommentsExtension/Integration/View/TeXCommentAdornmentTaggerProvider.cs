@@ -82,7 +82,7 @@ namespace VsTeXCommentsExtension.Integration.View
         {
             var textView = (ITextView)sender;
             textViews.Remove(textView);
-            renderingManager.RemoveRenderingRequestsForTextView(textView);
+            renderingManager.DiscartRenderingRequestsForTextView(textView);
         }
 
         public void Dispose()

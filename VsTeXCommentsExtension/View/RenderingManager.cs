@@ -17,15 +17,12 @@ namespace VsTeXCommentsExtension.View
 
         protected override void OnRequestAddition(Queue<Request> queue, HtmlRenderer.Input newRequest)
         {
-            //We want to remove already existing requests with same content as newRequest if it's for same textView.
-            //Example: We change zoom and everything is going to be rerendered. While rendering we change
-            //         zoom again and it is useless to finish rendering with old zoom.
+            //We want to remove already existing requests for same tag adornment (we are interested only in the last one).
 
             while (queue.Count > 0)
             {
                 var existingRequest = queue.Dequeue();
-                if (existingRequest.Input.Content != newRequest.Content ||
-                    existingRequest.Input.TextView != newRequest.TextView)
+                if (existingRequest.Input.TagAdornment.Index != newRequest.TagAdornment.Index)
                 {
                     tempQueue.Enqueue(existingRequest);
                 }
@@ -91,7 +88,7 @@ namespace VsTeXCommentsExtension.View
         {
         }
 
-        public void RemoveRenderingRequestsForTextView(ITextView textView)
+        public void DiscartRenderingRequestsForTextView(ITextView textView)
         {
             lock (requests)
             {

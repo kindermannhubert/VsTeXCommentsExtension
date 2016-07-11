@@ -23,7 +23,7 @@
                 <Style TargetType="StackPanel">
                     <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static local2:TeXCommentAdornmentState.Shown}">
+                        <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static local2:TeXCommentAdornmentState.Rendered}">
                             <Setter Property="Visibility" Value="Visible" />
                         </DataTrigger>
                     </Style.Triggers>
@@ -40,7 +40,7 @@
                 <Style TargetType="Image">
                     <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static local2:TeXCommentAdornmentState.Shown}">
+                        <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static local2:TeXCommentAdornmentState.Rendered}">
                             <Setter Property="Visibility" Value="Visible" />
                         </DataTrigger>
                     </Style.Triggers>
@@ -55,7 +55,10 @@
                 <Style TargetType="local:DropDownImageButton">
                     <Setter Property="Visibility" Value="Visible" />
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static local2:TeXCommentAdornmentState.Editing}">
+                        <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static local2:TeXCommentAdornmentState.EditingAndRenderingPreview}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static local2:TeXCommentAdornmentState.EditingWithPreview}">
                             <Setter Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
                     </Style.Triggers>
@@ -95,7 +98,10 @@
                 <Style TargetType="local:DropDownImageButton">
                     <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static local2:TeXCommentAdornmentState.Editing}">
+                        <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static local2:TeXCommentAdornmentState.EditingAndRenderingPreview}">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static local2:TeXCommentAdornmentState.EditingWithPreview}">
                             <Setter Property="Visibility" Value="Visible" />
                         </DataTrigger>
                     </Style.Triggers>
@@ -133,6 +139,9 @@
                     <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static local2:TeXCommentAdornmentState.Rendering}">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static local2:TeXCommentAdornmentState.EditingAndRenderingPreview}">
                             <Setter Property="Visibility" Value="Visible" />
                         </DataTrigger>
                     </Style.Triggers>

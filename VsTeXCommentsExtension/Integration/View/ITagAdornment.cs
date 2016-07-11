@@ -1,10 +1,11 @@
 ﻿namespace VsTeXCommentsExtension.Integration.View
 {
-    internal interface ITagAdornment
+    public interface ITagAdornment
     {
         IntraTextAdornmentTaggerDisplayMode DisplayMode { get; }
         TeXCommentAdornmentState CurrentState { get; set; }
+        bool IsInEditMode { get; }
         void Invalidate();
-        int DebugIndex { get; }
+        int Index { get; }
     }
 }
