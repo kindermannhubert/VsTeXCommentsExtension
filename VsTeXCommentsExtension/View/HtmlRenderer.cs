@@ -84,7 +84,6 @@ namespace VsTeXCommentsExtension.View
             }
 
             RenderInternal(input);
-            Thread.Sleep(1000);
 
             //wait until result image is ready
             while (!rendererResult.HasValue)
