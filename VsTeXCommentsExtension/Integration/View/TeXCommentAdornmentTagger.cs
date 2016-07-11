@@ -145,16 +145,20 @@ namespace VsTeXCommentsExtension.Integration.View
             TextView.Properties.RemoveProperty(typeof(TeXCommentAdornmentTagger));
         }
 
-        protected override TeXCommentAdornment CreateAdornment(TeXCommentTag dataTag, Span adornmentSpan)
+        protected override TeXCommentAdornment CreateAdornment(TeXCommentTag dataTag, Span adornmentSpan, ITextSnapshot snapshot)
         {
-            var firstLine = Snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.Start);
-            var lastLine = Snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.End);
-            var lineSpan = new LineSpan(firstLine, lastLine);
+            var lineSpan = new LineSpan(
+                Snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.Start),
+                Snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.End));
+
+            var lastLine = snapshot.GetLineFromLineNumber(lineSpan.LastLine);
+            var lastLineWidthWithoutStartWhiteSpaces = (lastLine.Extent.Length - dataTag.TeXBlock.LastLineWhiteSpacesAtStart) * TextView.FormattedLineSource?.ColumnWidth;
 
             var adornment = new TeXCommentAdornment(
                 TextView,
                 dataTag,
                 lineSpan,
+                lastLineWidthWithoutStartWhiteSpaces ?? 0,
                 span =>
                 {
                     //var blockSpans = texCommentBlocks.GetBlockSpansWithLastLineBreakIntersectedBy(Snapshot, span);
@@ -180,16 +184,19 @@ namespace VsTeXCommentsExtension.Integration.View
             return adornment;
         }
 
-        protected override void UpdateAdornment(TeXCommentAdornment adornment, TeXCommentTag dataTag, Span adornmentSpan)
+        protected override void UpdateAdornment(TeXCommentAdornment adornment, TeXCommentTag dataTag, Span adornmentSpan, ITextSnapshot snapshot)
         {
-            var firstLine = Snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.Start);
-            var lastLine = Snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.End);
-            var lineSpan = new LineSpan(firstLine, lastLine);
+            var lineSpan = new LineSpan(
+                Snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.Start),
+                Snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.End));
 
             MarkAdornmentLines(adornment.LineSpan, null); //remove old
             MarkAdornmentLines(lineSpan, adornment); //add new
 
-            adornment.Update(dataTag, lineSpan);
+            var lastLine = snapshot.GetLineFromLineNumber(lineSpan.LastLine);
+            var lastLineWidthWithoutStartWhiteSpaces = (lastLine.Extent.Length - dataTag.TeXBlock.LastLineWhiteSpacesAtStart) * TextView.FormattedLineSource?.ColumnWidth;
+
+            adornment.Update(dataTag, lineSpan, lastLineWidthWithoutStartWhiteSpaces ?? 0);
         }
 
         private void MarkAdornmentLines(LineSpan lineSpan, TeXCommentAdornment adornment)

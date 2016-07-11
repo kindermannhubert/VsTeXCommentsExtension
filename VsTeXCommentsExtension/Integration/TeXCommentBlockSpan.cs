@@ -15,20 +15,26 @@ namespace VsTeXCommentsExtension.Integration
         public Span SpanWithLastLineBreak { get; }
 
         /// <summary>
-        /// Number of white spaces before on first line before '//tex:' prefix.
+        /// Number of white spaces on first line before '//tex:' prefix.
         /// </summary>
         public int FirstLineWhiteSpacesAtStart { get; }
+
+        /// <summary>
+        /// Number of white spaces on last line before '//' prefix.
+        /// </summary>
+        public int LastLineWhiteSpacesAtStart { get; }
 
         /// <summary>
         /// Line break text used (should be "/r/n").
         /// </summary>
         public string LineBreakText { get; }
 
-        public TeXCommentBlockSpan(Span span, Span spanWithLastLineBreak, int firstLineWhiteSpacesAtStart, string lineBreakText)
+        public TeXCommentBlockSpan(Span span, Span spanWithLastLineBreak, int firstLineWhiteSpacesAtStart, int lastLineWhiteSpacesAtStart, string lineBreakText)
         {
             Span = span;
             SpanWithLastLineBreak = spanWithLastLineBreak;
             FirstLineWhiteSpacesAtStart = firstLineWhiteSpacesAtStart;
+            LastLineWhiteSpacesAtStart = lastLineWhiteSpacesAtStart;
             LineBreakText = lineBreakText;
         }
 
@@ -46,21 +52,11 @@ namespace VsTeXCommentsExtension.Integration
             for (int lineIndex = firstLineIndex; lineIndex <= lastLineIndex; lineIndex++)
             {
                 var line = snapshot.GetLineFromLineNumber(lineIndex);
-                int whitespaces = NumberOfWhiteSpaceCharsOnStartOfLine(line.GetText());
+                int whitespaces = line.GetText().NumberOfWhiteSpaceCharsOnStartOfLine();
                 if (whitespaces < min) min = whitespaces;
             }
 
             return min;
-        }
-
-        private int NumberOfWhiteSpaceCharsOnStartOfLine(string line)
-        {
-            for (int i = 0; i < line.Length; i++)
-            {
-                var ch = line[i];
-                if (ch != ' ' && ch != '\t') return i;
-            }
-            return 0;
         }
     }
 }

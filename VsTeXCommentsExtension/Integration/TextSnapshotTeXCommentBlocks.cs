@@ -54,7 +54,7 @@ namespace VsTeXCommentsExtension.Integration
             var texCommentBlocks = new List<TeXCommentBlockSpan>();
             var atTexBlock = false;
             var texBlockSpanBuilder = default(TeXCommentBlockSpanBuilder);
-            int lastBlockLineBreakLength = 0;
+            ITextSnapshotLine lastBlockLine = null;
             foreach (var line in snapshot.Lines)
             {
                 var lineText = line.GetText();
@@ -63,22 +63,22 @@ namespace VsTeXCommentsExtension.Integration
                 {
                     if (lineTextTrimmed.StartsWith(TeXCommentPrefix))
                     {
-                        texBlockSpanBuilder.RemoveLastLineBreak(lastBlockLineBreakLength);
+                        texBlockSpanBuilder.EndBlock(lastBlockLine);
                         texCommentBlocks.Add(texBlockSpanBuilder.Build(snapshot)); //end of current block
 
                         texBlockSpanBuilder = new TeXCommentBlockSpanBuilder(line.ExtentIncludingLineBreak, lineText.Length - lineTextTrimmed.Length, line.GetLineBreakText()); //start of new block
-                        lastBlockLineBreakLength = line.LineBreakLength;
+                        lastBlockLine = line;
                     }
                     else if (lineTextTrimmed.StartsWith(CommentPrefix))
                     {
                         //continuation of current block
                         texBlockSpanBuilder.Add(line.LengthIncludingLineBreak);
-                        lastBlockLineBreakLength = line.LineBreakLength;
+                        lastBlockLine = line;
                     }
                     else
                     {
                         //end of current block
-                        texBlockSpanBuilder.RemoveLastLineBreak(lastBlockLineBreakLength);
+                        texBlockSpanBuilder.EndBlock(lastBlockLine);
                         texCommentBlocks.Add(texBlockSpanBuilder.Build(snapshot));
                         atTexBlock = false;
                     }
@@ -88,12 +88,12 @@ namespace VsTeXCommentsExtension.Integration
                     //start of new block
                     atTexBlock = true;
                     texBlockSpanBuilder = new TeXCommentBlockSpanBuilder(line.ExtentIncludingLineBreak, lineText.Length - lineTextTrimmed.Length, line.GetLineBreakText());
-                    lastBlockLineBreakLength = line.LineBreakLength;
+                    lastBlockLine = line;
                 }
             }
             if (atTexBlock)
             {
-                texBlockSpanBuilder.RemoveLastLineBreak(lastBlockLineBreakLength);
+                texBlockSpanBuilder.EndBlock(lastBlockLine);
                 texCommentBlocks.Add(texBlockSpanBuilder.Build(snapshot));
             }
 

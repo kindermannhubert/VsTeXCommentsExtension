@@ -45,9 +45,9 @@ namespace VsTeXCommentsExtension.Integration.View
 
         /// <param name="span">The span of text that this adornment will elide.</param>
         /// <returns>Adornment corresponding to given data. May be null.</returns>
-        protected abstract TAdornment CreateAdornment(TDataTag data, Span adornmentSpan);
+        protected abstract TAdornment CreateAdornment(TDataTag data, Span adornmentSpan, ITextSnapshot snapshot);
 
-        protected abstract void UpdateAdornment(TAdornment adornment, TDataTag data, Span adornmentSpan);
+        protected abstract void UpdateAdornment(TAdornment adornment, TDataTag data, Span adornmentSpan, ITextSnapshot snapshot);
 
         /// <param name="spans">Spans to provide adornment data for. These spans do not necessarily correspond to text lines.</param>
         /// <remarks>
@@ -258,7 +258,7 @@ namespace VsTeXCommentsExtension.Integration.View
                     if (adornmentsCache.TryGetValue(key, out adornment))
                     {
                         adornmentInfo = tagData.GetAdornmentInfo(adornment.DisplayMode);
-                        UpdateAdornment(adornment, tagData.Tag, adornmentInfo.Span.Span);
+                        UpdateAdornment(adornment, tagData.Tag, adornmentInfo.Span.Span, snapshot);
                         toRemove.Remove(key);
 
                         Debug.WriteLine($"Updating adornment {adornment.Index}");
@@ -271,13 +271,13 @@ namespace VsTeXCommentsExtension.Integration.View
                         {
                             adornment = adornmentsPool[adornmentsPool.Count - 1];
                             adornmentsPool.RemoveAt(adornmentsPool.Count - 1);
-                            UpdateAdornment(adornment, tagData.Tag, adornmentInfo.Span.Span);
+                            UpdateAdornment(adornment, tagData.Tag, adornmentInfo.Span.Span, snapshot);
                             adornment.CurrentState = TeXCommentAdornmentState.Rendered;
                             Debug.WriteLine($"Reusing adornment {adornment.Index} from pool");
                         }
                         else
                         {
-                            adornment = CreateAdornment(tagData.Tag, adornmentInfo.Span);
+                            adornment = CreateAdornment(tagData.Tag, adornmentInfo.Span, snapshot);
                             Debug.WriteLine($"Creating adornment {adornment.Index}");
                         }
 
@@ -406,6 +406,5 @@ namespace VsTeXCommentsExtension.Integration.View
     {
         HideOriginalText_WithoutLastLineBreak,
         DoNotHideOriginalText_BeforeLastLineBreak,
-        DoNotHideOriginalText_AfterLastLineBreak,
     }
 }

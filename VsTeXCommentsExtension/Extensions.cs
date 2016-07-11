@@ -75,5 +75,15 @@ namespace VsTeXCommentsExtension
         public static Span AddToEnd(this Span span, int charactersCount) => new Span(span.Start, span.Length + charactersCount);
 
         public static Span RemoveFromEnd(this Span span, int charactersCount) => new Span(span.Start, span.Length - charactersCount);
+
+        public static int NumberOfWhiteSpaceCharsOnStartOfLine(this string line)
+        {
+            for (int i = 0; i < line.Length; i++)
+            {
+                var ch = line[i];
+                if (ch != ' ' && ch != '\t') return i;
+            }
+            return 0;
+        }
     }
 }

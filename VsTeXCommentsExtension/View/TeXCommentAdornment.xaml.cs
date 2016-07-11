@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using VsTeXCommentsExtension.Integration.Data;
 using VsTeXCommentsExtension.Integration.View;
 
@@ -20,11 +21,13 @@ namespace VsTeXCommentsExtension.View
         private readonly Action<Span> refreshTags;
         private readonly Action<bool> setIsInEditModeForAllAdornmentsInDocument;
         private readonly IWpfTextView textView;
+        private readonly PreviewAdorner previewAdorner;
         private readonly IRenderingManager renderingManager;
 
         private TeXCommentTag tag;
         private bool changeMadeWhileInEditMode;
         private bool isInvalidated;
+        private double lastLineWidthWithoutStartWhiteSpaces;
 
         public bool IsInEditMode => currentState == TeXCommentAdornmentState.EditingAndRenderingPreview || currentState == TeXCommentAdornmentState.EditingWithPreview;
 
@@ -81,9 +84,8 @@ namespace VsTeXCommentsExtension.View
                 {
                     case TeXCommentAdornmentState.Rendering:
                     case TeXCommentAdornmentState.EditingAndRenderingPreview:
-                        return IntraTextAdornmentTaggerDisplayMode.DoNotHideOriginalText_BeforeLastLineBreak;
                     case TeXCommentAdornmentState.EditingWithPreview:
-                        return IntraTextAdornmentTaggerDisplayMode.DoNotHideOriginalText_AfterLastLineBreak;
+                        return IntraTextAdornmentTaggerDisplayMode.DoNotHideOriginalText_BeforeLastLineBreak;
                     case TeXCommentAdornmentState.Rendered:
                         return IntraTextAdornmentTaggerDisplayMode.HideOriginalText_WithoutLastLineBreak;
                     default:
@@ -104,23 +106,38 @@ namespace VsTeXCommentsExtension.View
             IWpfTextView textView,
             TeXCommentTag tag,
             LineSpan lineSpan,
+            double lastLineWidthWithoutStartWhiteSpaces,
             Action<Span> refreshTags,
             Action<bool> setIsInEditModeForAllAdornmentsInDocument,
             IRenderingManager renderingManager,
             VsSettings vsSettings)
         {
             ExtensionSettings.Instance.CustomZoomChanged += CustomZoomChanged;
+            textView.Caret.PositionChanged += Caret_PositionChanged;
 
             this.tag = tag;
             this.refreshTags = refreshTags;
             this.setIsInEditModeForAllAdornmentsInDocument = setIsInEditModeForAllAdornmentsInDocument;
             this.textView = textView;
+            this.lastLineWidthWithoutStartWhiteSpaces = lastLineWidthWithoutStartWhiteSpaces;
             this.renderingManager = renderingManager;
             VsSettings = vsSettings;
             ResourcesManager = ResourcesManager.GetOrCreate(textView);
             LineSpan = lineSpan;
 
             InitializeComponent();
+
+            previewAdorner = new PreviewAdorner(this);
+            Loaded += (_, __) =>
+            {
+                if (previewAdorner.Parent == null)
+                {
+                    previewAdorner.OffsetX = -lastLineWidthWithoutStartWhiteSpaces;
+                    var imageBinding = new Binding(nameof(RenderedImage)) { Source = root.DataContext };
+                    previewAdorner.SetBinding(PreviewAdorner.ImageSourceProperty, imageBinding);
+                    System.Windows.Documents.AdornerLayer.GetAdornerLayer(this).Add(previewAdorner);
+                }
+            };
 
             //for correctly working binding
             NameScope.SetNameScope(btnShow.ContextMenu, NameScope.GetNameScope(this));
@@ -131,11 +148,15 @@ namespace VsTeXCommentsExtension.View
             UpdateImageAsync();
         }
 
-        public void Update(TeXCommentTag tag, LineSpan lineSpan)
+        public void Update(TeXCommentTag tag, LineSpan lineSpan, double lastLineWidthWithoutStartWhiteSpaces)
         {
-            LineSpan = lineSpan;
-
             bool changed = this.tag.Text != tag.Text;
+
+            this.tag = tag;
+            LineSpan = lineSpan;
+            this.lastLineWidthWithoutStartWhiteSpaces = lastLineWidthWithoutStartWhiteSpaces;
+            previewAdorner.OffsetX = -lastLineWidthWithoutStartWhiteSpaces;
+
             if (IsInEditMode)
             {
                 changeMadeWhileInEditMode = changed;
@@ -143,7 +164,7 @@ namespace VsTeXCommentsExtension.View
 
             if (changed || isInvalidated)
             {
-                this.tag = tag;
+                OnPropertyChanged(nameof(IsCaretInsideTeXBlock));
                 isInvalidated = false;
                 UpdateImageAsync();
             }
@@ -165,11 +186,15 @@ namespace VsTeXCommentsExtension.View
             var end = args.Changes[args.Changes.Count - 1].NewEnd;
 
             spansOfChangesFromEditing.Add(new Span(start, end - start));
+
+            //when caret is moving while typing the PositionChanged event is not send
+            OnPropertyChanged(nameof(IsCaretInsideTeXBlock));
         }
 
         public void Dispose()
         {
             ExtensionSettings.Instance.CustomZoomChanged -= CustomZoomChanged;
+            textView.Caret.PositionChanged -= Caret_PositionChanged;
             ResourcesManager?.Dispose();
         }
 
@@ -200,6 +225,11 @@ namespace VsTeXCommentsExtension.View
                 if (CurrentState == TeXCommentAdornmentState.Rendering) CurrentState = TeXCommentAdornmentState.Rendered;
                 else if (CurrentState == TeXCommentAdornmentState.EditingAndRenderingPreview) CurrentState = TeXCommentAdornmentState.EditingWithPreview;
             }
+        }
+
+        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(IsCaretInsideTeXBlock));
         }
     }
 }

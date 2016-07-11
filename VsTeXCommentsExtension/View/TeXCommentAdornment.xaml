@@ -26,9 +26,6 @@
                         <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static local2:TeXCommentAdornmentState.Rendered}">
                             <Setter Property="Visibility" Value="Visible" />
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static local2:TeXCommentAdornmentState.EditingWithPreview}">
-                            <Setter Property="Visibility" Value="Visible" />
-                        </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </StackPanel.Style>
@@ -44,9 +41,6 @@
                     <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static local2:TeXCommentAdornmentState.Rendered}">
-                            <Setter Property="Visibility" Value="Visible" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding CurrentState}" Value="{x:Static local2:TeXCommentAdornmentState.EditingWithPreview}">
                             <Setter Property="Visibility" Value="Visible" />
                         </DataTrigger>
                     </Style.Triggers>

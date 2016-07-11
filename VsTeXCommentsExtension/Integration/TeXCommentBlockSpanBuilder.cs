@@ -7,12 +7,14 @@ namespace VsTeXCommentsExtension.Integration
         private readonly string lineBreakText;
         private Span span;
         private int firstLineWhiteSpacesAtStart;
+        private int lastLineWhiteSpacesAtStart;
 
         public TeXCommentBlockSpanBuilder(Span firstLineSpanWithLineBreak, int firstLineWhiteSpacesAtStart, string lineBreakText)
         {
             span = firstLineSpanWithLineBreak;
             this.firstLineWhiteSpacesAtStart = firstLineWhiteSpacesAtStart;
             this.lineBreakText = lineBreakText;
+            lastLineWhiteSpacesAtStart = -1;
         }
 
         public void Add(int charactersCount)
@@ -20,9 +22,10 @@ namespace VsTeXCommentsExtension.Integration
             span = span.AddToEnd(charactersCount);
         }
 
-        public void RemoveLastLineBreak(int breakLength)
+        public void EndBlock(ITextSnapshotLine lastBlockLine)
         {
-            span = span.RemoveFromEnd(breakLength);
+            span = span.RemoveFromEnd(lastBlockLine.LineBreakLength);
+            lastLineWhiteSpacesAtStart = lastBlockLine.GetText().NumberOfWhiteSpaceCharsOnStartOfLine();
         }
 
         public TeXCommentBlockSpan Build(ITextSnapshot snapshot)
@@ -34,7 +37,7 @@ namespace VsTeXCommentsExtension.Integration
                 //there is no line break at the end of block
                 spanWithLastLineBreak = span;
             }
-            return new TeXCommentBlockSpan(span, spanWithLastLineBreak, firstLineWhiteSpacesAtStart, lineBreakText);
+            return new TeXCommentBlockSpan(span, spanWithLastLineBreak, firstLineWhiteSpacesAtStart, lastLineWhiteSpacesAtStart, lineBreakText);
         }
     }
 }
