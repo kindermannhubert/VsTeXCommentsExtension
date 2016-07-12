@@ -26,6 +26,12 @@ namespace VsTeXCommentsExtension.View
         public static SnippetMenuItem[] Snippets_Matrices { get; } = LoadSnippets("Matrices");
         public static SnippetMenuItem[] Snippets_GreekLowers { get; } = LoadSnippets("GreekLowers");
         public static SnippetMenuItem[] Snippets_GreekUppers { get; } = LoadSnippets("GreekUppers");
+        public static SnippetMenuItem[] Snippets_BinaryOperations { get; } = LoadSnippets("BinaryOperations");
+        public static SnippetMenuItem[] Snippets_Relations { get; } = LoadSnippets("Relations");
+        public static SnippetMenuItem[] Snippets_Arrows { get; } = LoadSnippets("Arrows");
+        public static SnippetMenuItem[] Snippets_Miscellaneous { get; } = LoadSnippets("Miscellaneous");
+        public static SnippetMenuItem[] Snippets_Functions { get; } = LoadSnippets("Functions");
+        public static SnippetMenuItem[] Snippets_Delimiters { get; } = LoadSnippets("Delimiters");
 
         private static SnippetMenuItem[] LoadSnippets(string group)
         {

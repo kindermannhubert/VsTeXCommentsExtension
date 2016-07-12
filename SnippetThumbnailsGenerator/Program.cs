@@ -19,7 +19,7 @@ namespace SnippetThumbnailsGenerator
         [STAThread]
         static void Main(string[] args)
         {
-            new System.Windows.Application(); //needed for correct resour loading
+            new System.Windows.Application(); //needed for correct resource loading
 
             var rendererCache = new HtmlRendererCache();
             if (Directory.Exists(rendererCache.CacheDirectory))

@@ -122,6 +122,14 @@
                             <MenuItem Header="Lower Case" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_GreekLowers}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
                             <MenuItem Header="Upper Case" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_GreekUppers}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
                         </MenuItem>
+                        <MenuItem Header="Symbols">
+                            <MenuItem Header="Binary Operations" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_BinaryOperations}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                            <MenuItem Header="Relations" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Relations}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                            <MenuItem Header="Arrows" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Arrows}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                            <MenuItem Header="Miscellaneous" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Miscellaneous}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                            <MenuItem Header="Functions" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Functions}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                            <MenuItem Header="Delimiters" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Delimiters}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                        </MenuItem>
                     </MenuItem>
                 </ContextMenu>
             </local:DropDownImageButton.ContextMenu>
