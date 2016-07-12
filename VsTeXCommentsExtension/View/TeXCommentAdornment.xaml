@@ -149,7 +149,5 @@
                 </Style>
             </local:CircleProgressBar.Style>
         </local:CircleProgressBar>
-
-        <TextBlock Text="PicaKunda"/>
     </StackPanel>
 </UserControl>

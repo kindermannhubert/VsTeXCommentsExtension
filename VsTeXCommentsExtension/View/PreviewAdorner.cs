@@ -45,7 +45,7 @@ namespace VsTeXCommentsExtension.View
             : base(adornedElement)
         {
             //content
-            var panel = new StackPanel() { Orientation = Orientation.Vertical, Margin = new Thickness(6) };
+            var panel = new StackPanel() { Orientation = Orientation.Vertical, Margin = new Thickness(6), UseLayoutRounding = true, SnapsToDevicePixels = true };
 
             Binding binding;
             var image = new Image() { SnapsToDevicePixels = true, UseLayoutRounding = true };
@@ -59,7 +59,8 @@ namespace VsTeXCommentsExtension.View
             binding = new Binding(nameof(TeXCommentAdornment.RenderedImageHeight)) { Source = adornedElement };
             image.SetBinding(Image.HeightProperty, binding);
 
-            panel.Children.Add(new TextBlock() { Text = "Preview:", Margin = new Thickness(0, 0, 0, 2) });
+            var textBlock = new TextBlock() { Text = "Preview:", Margin = new Thickness(0, 0, 0, 2) };
+            panel.Children.Add(textBlock);
             panel.Children.Add(image);
 
             Child = new Border() { Background = Brushes.White, BorderThickness = new Thickness(1), BorderBrush = Brushes.Black, Child = panel };

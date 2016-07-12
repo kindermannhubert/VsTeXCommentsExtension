@@ -3,7 +3,6 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -154,7 +153,6 @@ namespace VsTeXCommentsExtension.Integration.View
 
             var lastLine = snapshot.GetLineFromLineNumber(lineSpan.LastLine);
             var lastLineWidthWithoutStartWhiteSpaces = (lastLine.Extent.Length - dataTag.TeXBlock.LastLineWhiteSpacesAtStart) * TextView.FormattedLineSource?.ColumnWidth;
-            Debug.WriteLine($"FormattedLineSource {lastLineWidthWithoutStartWhiteSpaces.HasValue} - CreateAdornment");
 
             var adornment = new TeXCommentAdornment(
                 TextView,
@@ -197,7 +195,6 @@ namespace VsTeXCommentsExtension.Integration.View
 
             var lastLine = snapshot.GetLineFromLineNumber(lineSpan.LastLine);
             var lastLineWidthWithoutStartWhiteSpaces = (lastLine.Extent.Length - dataTag.TeXBlock.LastLineWhiteSpacesAtStart) * TextView.FormattedLineSource?.ColumnWidth;
-            Debug.WriteLine($"FormattedLineSource {lastLineWidthWithoutStartWhiteSpaces.HasValue} - UpdateAdornment");
 
             adornment.Update(dataTag, lineSpan, lastLineWidthWithoutStartWhiteSpaces);
         }
