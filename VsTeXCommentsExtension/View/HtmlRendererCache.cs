@@ -10,15 +10,16 @@ namespace VsTeXCommentsExtension.View
 {
     public class HtmlRendererCache : IDisposable
     {
-        private readonly string directory;
         private readonly Mutex mutex = new Mutex(false, $"{nameof(VsTeXCommentsExtension)}.{nameof(HtmlRendererCache)}.Mutex");
+
+        public string CacheDirectory { get; }
 
         public HtmlRendererCache()
         {
-            directory = Path.Combine(Path.GetTempPath(), nameof(VsTeXCommentsExtension), nameof(HtmlRendererCache));
-            if (!Directory.Exists(directory))
+            CacheDirectory = Path.Combine(Path.GetTempPath(), nameof(VsTeXCommentsExtension), nameof(HtmlRendererCache));
+            if (!Directory.Exists(CacheDirectory))
             {
-                Directory.CreateDirectory(directory);
+                Directory.CreateDirectory(CacheDirectory);
             }
         }
 
@@ -26,7 +27,7 @@ namespace VsTeXCommentsExtension.View
         {
             result = null;
 
-            var filePath = Path.Combine(directory, info.GetFileName());
+            var filePath = Path.Combine(CacheDirectory, info.GetFileName());
             try
             {
                 mutex.WaitOne();
@@ -50,7 +51,7 @@ namespace VsTeXCommentsExtension.View
 
         public string Add(Info info, Bitmap bitmap)
         {
-            var filePath = Path.Combine(directory, info.GetFileName());
+            var filePath = Path.Combine(CacheDirectory, info.GetFileName());
 
             try
             {

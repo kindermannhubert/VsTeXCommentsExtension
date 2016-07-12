@@ -8,3 +8,6 @@
 /VsTeXCommentsExtension/VsTeXCommentsExtension.nuget.props
 /.vs
 /VsTeXCommentsExtension/project.lock.json
+/SnippetThumbnailsGenerator/bin
+/SnippetThumbnailsGenerator/obj
+/SnippetThumbnailsGenerator/project.lock.json

@@ -1,0 +1,11 @@
+﻿{
+  "frameworks": {
+    "net461": {}
+  },
+  "dependencies": {
+    "Microsoft.VisualStudio.Text.UI.Wpf": "14.3.25407",
+  },
+  "runtimes": {
+    "win": {}
+  }
+}

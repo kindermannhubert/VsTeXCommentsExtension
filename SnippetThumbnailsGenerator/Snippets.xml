@@ -1,0 +1,207 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Snippets>
+  <!--Fraction-->
+  <Snippet>
+    <Path>Snippets\Fraction</Path>
+    <Code>\frac{a}{b}</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Fraction</Path>
+    <Code>\frac{dy}{dx}</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Fraction</Path>
+    <Code>\frac{\Delta y}{\Delta x}</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Fraction</Path>
+    <Code>\frac{\partial y}{\partial x}</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Fraction</Path>
+    <Code>\frac{\delta y}{\delta x}</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Fraction</Path>
+    <Code>\frac{\pi}{2}</Code>
+  </Snippet>
+
+  <!--Script-->
+  <Snippet>
+    <Path>Snippets\Script</Path>
+    <Code>a^b</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Script</Path>
+    <Code>a_b</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Script</Path>
+    <Code>a_b^c</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Script</Path>
+    <Code>{}_{a}^b{c}</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Script</Path>
+    <Code>x_{y^2}</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Script</Path>
+    <Code>e^{-i \omega t}</Code>
+  </Snippet>
+
+  <!--Radicals-->
+  <Snippet>
+    <Path>Snippets\Radical</Path>
+    <Code>\sqrt{a}</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Radical</Path>
+    <Code>\sqrt{n}{a}</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Radical</Path>
+    <Code>\sqrt{a^2+b^2}</Code>
+  </Snippet>
+
+  <!--Integral-->
+  <Snippet>
+    <Path>Snippets\Integral</Path>
+    <Code>\int{f(x)}\,\mathrm{d}x</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Integral</Path>
+    <Code>\int_{a}^{b}{f(x)}\,\mathrm{d}x</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Integral</Path>
+    <Code>\iint_V{f(u,v)}\,\mathrm{d}u\,\mathrm{d}v</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Integral</Path>
+    <Code>\iiint_V{f(u,v,w)}\,\mathrm{d}u\,\mathrm{d}v\,\mathrm{d}w</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Integral</Path>
+    <Code>\idotsint_V{f(u_1,\dots,u_k)}\,\mathrm{d}u_1\dots\,\mathrm{d}u_k</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Integral</Path>
+    <Code>\oint_V{f(s)}\,\mathrm{d}s</Code>
+  </Snippet>
+
+  <!--Large Operator-->
+  <Snippet>
+    <Path>Snippets\LargeOperator</Path>
+    <Code>\sum_{i=1}^{N}{n_i}</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\LargeOperator</Path>
+    <Code>\prod_{i=1}^{N}{n_i}</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\LargeOperator</Path>
+    <Code>\bigcup_{i=1}^{N}{X_i}</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\LargeOperator</Path>
+    <Code>\bigcap_{i=1}^{N}{X_i}</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\LargeOperator</Path>
+    <Code>\bigwedge_{i=1}^{N}{n_i}</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\LargeOperator</Path>
+    <Code>\bigvee_{i=1}^{N}{n_i}</Code>
+  </Snippet>
+
+  <!--Matrix - !!whitespaces are important!!-->
+  <Snippet>
+    <Path>Snippets\Matrix</Path>
+    <Code>
+\begin{matrix}
+  a &amp; b \\
+  c &amp; d \\
+\end{matrix}
+</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Matrix</Path>
+    <Code>
+\begin{pmatrix}
+  a &amp; b \\
+  c &amp; d \\
+\end{pmatrix}
+</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Matrix</Path>
+    <Code>
+\begin{bmatrix}
+  a &amp; b \\
+  c &amp; d \\
+\end{bmatrix}
+</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Matrix</Path>
+    <Code>
+\begin{Bmatrix}
+  a &amp; b \\
+  c &amp; d \\
+\end{Bmatrix}
+</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Matrix</Path>
+    <Code>
+\begin{vmatrix}
+  a &amp; b \\
+  c &amp; d \\
+\end{vmatrix}
+</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Matrix</Path>
+    <Code>
+\begin{Vmatrix}
+  a &amp; b \\
+  c &amp; d \\
+\end{Vmatrix}
+</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Matrix</Path>
+    <Code>
+\begin{pmatrix}
+  a &amp; b &amp; c \\
+  d &amp; e &amp; f \\
+  g &amp; h &amp; i \\
+\end{pmatrix}
+</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Matrix</Path>
+    <Code>
+\begin{pmatrix}
+  a_{1,1} &amp; \cdots &amp; a_{1,n} \\
+  \vdots &amp; \ddots &amp; \vdots \\
+  a_{n,1} &amp; \cdots &amp; a_{n,n} \\
+\end{pmatrix}
+</Code>
+  </Snippet>
+  <Snippet>
+    <Path>Snippets\Matrix</Path>
+    <Code>
+\left(
+    \begin{array}{cc|c}
+      a &amp; b &amp; c \\
+      d &amp; e &amp; f
+    \end{array}
+\right)
+</Code>
+  </Snippet>
+</Snippets>
