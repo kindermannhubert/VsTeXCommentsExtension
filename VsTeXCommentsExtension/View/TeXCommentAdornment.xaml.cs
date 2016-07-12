@@ -111,7 +111,7 @@ namespace VsTeXCommentsExtension.View
             {
                 if (previewAdorner.Parent == null)
                 {
-                    previewAdorner.OffsetX = -lastLineWidthWithoutStartWhiteSpaces;
+                    previewAdorner.OffsetX = -this.lastLineWidthWithoutStartWhiteSpaces; //'this' is important because of lambda closure
                     var imageBinding = new Binding(nameof(RenderedImage)) { Source = root.DataContext };
                     previewAdorner.SetBinding(PreviewAdorner.ImageSourceProperty, imageBinding);
                     System.Windows.Documents.AdornerLayer.GetAdornerLayer(this).Add(previewAdorner);
@@ -126,14 +126,17 @@ namespace VsTeXCommentsExtension.View
             CurrentState = TeXCommentAdornmentState.Rendering;
         }
 
-        public void Update(TeXCommentTag tag, LineSpan lineSpan, double lastLineWidthWithoutStartWhiteSpaces)
+        public void Update(TeXCommentTag tag, LineSpan lineSpan, double? lastLineWidthWithoutStartWhiteSpaces)
         {
             bool changed = this.tag.Text != tag.Text;
 
             this.tag = tag;
             LineSpan = lineSpan;
-            this.lastLineWidthWithoutStartWhiteSpaces = lastLineWidthWithoutStartWhiteSpaces;
-            previewAdorner.OffsetX = -lastLineWidthWithoutStartWhiteSpaces;
+            if (lastLineWidthWithoutStartWhiteSpaces.HasValue)
+            {
+                this.lastLineWidthWithoutStartWhiteSpaces = lastLineWidthWithoutStartWhiteSpaces.Value;
+                previewAdorner.OffsetX = -lastLineWidthWithoutStartWhiteSpaces.Value;
+            }
 
             if (changed || isInvalidated)
             {
