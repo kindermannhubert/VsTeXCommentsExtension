@@ -66,7 +66,7 @@ namespace SnippetThumbnailsGenerator
                           null,
                           null));
 
-                SaveSnippet(result.CachePath, code, $"{snippet.Element("Path").Value}\\{++index}.png", exportElement);
+                SaveSnippet(result.CachePath, snippet.Element("Group").Value, code, $"{++index}.png", exportElement);
             }
 
             exportElement.Save(Path.Combine(OutputPath, "Snippets.xml"));
@@ -74,7 +74,7 @@ namespace SnippetThumbnailsGenerator
             Console.WriteLine("Done");
         }
 
-        private static void SaveSnippet(string renderedImagePath, string code, string outputPath, XElement exportElement)
+        private static void SaveSnippet(string renderedImagePath, string group, string code, string outputPath, XElement exportElement)
         {
             var absoluteOutputPath = Path.Combine(Environment.CurrentDirectory, OutputPath, outputPath);
             var outputDirectory = Path.GetDirectoryName(absoluteOutputPath);
@@ -90,12 +90,13 @@ namespace SnippetThumbnailsGenerator
                 {
                     lines[i] = "//" + lines[i];
                 }
-                code = lines.Aggregate((a, b) => a + "\n" + b);
+                code = lines.Aggregate((a, b) => a + "\r\n" + b);
             }
 
             var snippetElement = new XElement("Snippet");
+            snippetElement.Add(new XElement("Group") { Value = group });
             snippetElement.Add(new XElement("Code") { Value = code });
-            snippetElement.Add(new XElement("Icon") { Value = outputPath });
+            snippetElement.Add(new XElement("Icon") { Value = "Snippets/" + outputPath });
             exportElement.Add(snippetElement);
         }
     }

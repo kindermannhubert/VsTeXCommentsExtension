@@ -70,7 +70,7 @@
                     <MenuItem Header="Open Image Cache..." Click="MenuItem_OpenImageCache_Click" />
 
                     <!--Name 'Zoom' is used also in code-behind.-->
-                    <MenuItem Header="Zoom" ItemsSource="{Binding ZoomMenuItems}">
+                    <MenuItem Header="Zoom" ItemsSource="{x:Static local:TeXCommentAdornment.ZoomMenuItems}">
                         <MenuItem.ItemContainerStyle>
                             <Style TargetType="MenuItem">
                                 <Setter Property="Header" Value="{Binding}"/>
@@ -112,12 +112,12 @@
                 <ContextMenu DataContext="{Binding DataContext, ElementName=root}">
                     <MenuItem Header="Show All" Click="MenuItem_ShowAll_Click" />
                     <MenuItem Header="Snippets">
-                        <MenuItem Header="Fraction" ItemsSource="{Binding Snippets_Fraction}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
-                        <MenuItem Header="Script" ItemsSource="{Binding Snippets_Script}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
-                        <MenuItem Header="Radical" ItemsSource="{Binding Snippets_Radical}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
-                        <MenuItem Header="Integral" ItemsSource="{Binding Snippets_Integral}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
-                        <MenuItem Header="Large Operator" ItemsSource="{Binding Snippets_LargeOperator}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
-                        <MenuItem Header="Matrix" ItemsSource="{Binding Snippets_Matrix}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                        <MenuItem Header="Fraction" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Fraction}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                        <MenuItem Header="Script" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Script}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                        <MenuItem Header="Radical" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Radical}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                        <MenuItem Header="Integral" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Integral}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                        <MenuItem Header="Large Operator" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_LargeOperator}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                        <MenuItem Header="Matrix" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Matrix}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
                         <!--TODO more-->
                     </MenuItem>
                 </ContextMenu>

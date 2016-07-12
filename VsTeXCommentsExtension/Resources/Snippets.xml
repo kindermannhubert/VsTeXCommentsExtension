@@ -1,0 +1,196 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Snippets>
+  <Snippet>
+    <Code>\frac{a}{b}</Code>
+    <Icon>Snippets\Fraction\1.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>\frac{dy}{dx}</Code>
+    <Icon>Snippets\Fraction\2.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>\frac{\Delta y}{\Delta x}</Code>
+    <Icon>Snippets\Fraction\3.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>\frac{\partial y}{\partial x}</Code>
+    <Icon>Snippets\Fraction\4.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>\frac{\delta y}{\delta x}</Code>
+    <Icon>Snippets\Fraction\5.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>\frac{\pi}{2}</Code>
+    <Icon>Snippets\Fraction\6.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>a^b</Code>
+    <Icon>Snippets\Script\7.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>a_b</Code>
+    <Icon>Snippets\Script\8.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>a_b^c</Code>
+    <Icon>Snippets\Script\9.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>{}_{a}^b{c}</Code>
+    <Icon>Snippets\Script\10.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>x_{y^2}</Code>
+    <Icon>Snippets\Script\11.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>e^{-i \omega t}</Code>
+    <Icon>Snippets\Script\12.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>\sqrt{a}</Code>
+    <Icon>Snippets\Radical\13.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>\sqrt{n}{a}</Code>
+    <Icon>Snippets\Radical\14.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>\sqrt{a^2+b^2}</Code>
+    <Icon>Snippets\Radical\15.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>\int{f(x)}\,\mathrm{d}x</Code>
+    <Icon>Snippets\Integral\16.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>\int_{a}^{b}{f(x)}\,\mathrm{d}x</Code>
+    <Icon>Snippets\Integral\17.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>\iint_V{f(u,v)}\,\mathrm{d}u\,\mathrm{d}v</Code>
+    <Icon>Snippets\Integral\18.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>\iiint_V{f(u,v,w)}\,\mathrm{d}u\,\mathrm{d}v\,\mathrm{d}w</Code>
+    <Icon>Snippets\Integral\19.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>\idotsint_V{f(u_1,\dots,u_k)}\,\mathrm{d}u_1\dots\,\mathrm{d}u_k</Code>
+    <Icon>Snippets\Integral\20.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>\oint_V{f(s)}\,\mathrm{d}s</Code>
+    <Icon>Snippets\Integral\21.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>\sum_{i=1}^{N}{n_i}</Code>
+    <Icon>Snippets\LargeOperator\22.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>\prod_{i=1}^{N}{n_i}</Code>
+    <Icon>Snippets\LargeOperator\23.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>\bigcup_{i=1}^{N}{X_i}</Code>
+    <Icon>Snippets\LargeOperator\24.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>\bigcap_{i=1}^{N}{X_i}</Code>
+    <Icon>Snippets\LargeOperator\25.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>\bigwedge_{i=1}^{N}{n_i}</Code>
+    <Icon>Snippets\LargeOperator\26.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>\bigvee_{i=1}^{N}{n_i}</Code>
+    <Icon>Snippets\LargeOperator\27.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>
+//\begin{matrix}
+//  a &amp; b \\
+//  c &amp; d \\
+//\end{matrix}
+//</Code>
+    <Icon>Snippets\Matrix\28.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>
+//\begin{pmatrix}
+//  a &amp; b \\
+//  c &amp; d \\
+//\end{pmatrix}
+//</Code>
+    <Icon>Snippets\Matrix\29.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>
+//\begin{bmatrix}
+//  a &amp; b \\
+//  c &amp; d \\
+//\end{bmatrix}
+//</Code>
+    <Icon>Snippets\Matrix\30.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>
+//\begin{Bmatrix}
+//  a &amp; b \\
+//  c &amp; d \\
+//\end{Bmatrix}
+//</Code>
+    <Icon>Snippets\Matrix\31.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>
+//\begin{vmatrix}
+//  a &amp; b \\
+//  c &amp; d \\
+//\end{vmatrix}
+//</Code>
+    <Icon>Snippets\Matrix\32.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>
+//\begin{Vmatrix}
+//  a &amp; b \\
+//  c &amp; d \\
+//\end{Vmatrix}
+//</Code>
+    <Icon>Snippets\Matrix\33.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>
+//\begin{pmatrix}
+//  a &amp; b &amp; c \\
+//  d &amp; e &amp; f \\
+//  g &amp; h &amp; i \\
+//\end{pmatrix}
+//</Code>
+    <Icon>Snippets\Matrix\34.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>
+//\begin{pmatrix}
+//  a_{1,1} &amp; \cdots &amp; a_{1,n} \\
+//  \vdots &amp; \ddots &amp; \vdots \\
+//  a_{n,1} &amp; \cdots &amp; a_{n,n} \\
+//\end{pmatrix}
+//</Code>
+    <Icon>Snippets\Matrix\35.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Code>
+//\left(
+//    \begin{array}{cc|c}
+//      a &amp; b &amp; c \\
+//      d &amp; e &amp; f
+//    \end{array}
+//\right)
+//</Code>
+    <Icon>Snippets\Matrix\36.png</Icon>
+  </Snippet>
+</Snippets>

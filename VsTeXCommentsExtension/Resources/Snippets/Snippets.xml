@@ -1,207 +1,232 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Snippets>
-  <!--Fraction-->
   <Snippet>
     <Group>Fraction</Group>
     <Code>\frac{a}{b}</Code>
+    <Icon>Snippets/1.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Fraction</Group>
     <Code>\frac{dy}{dx}</Code>
+    <Icon>Snippets/2.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Fraction</Group>
     <Code>\frac{\Delta y}{\Delta x}</Code>
+    <Icon>Snippets/3.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Fraction</Group>
     <Code>\frac{\partial y}{\partial x}</Code>
+    <Icon>Snippets/4.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Fraction</Group>
     <Code>\frac{\delta y}{\delta x}</Code>
+    <Icon>Snippets/5.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Fraction</Group>
     <Code>\frac{\pi}{2}</Code>
+    <Icon>Snippets/6.png</Icon>
   </Snippet>
-
-  <!--Script-->
   <Snippet>
     <Group>Script</Group>
     <Code>a^b</Code>
+    <Icon>Snippets/7.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Script</Group>
     <Code>a_b</Code>
+    <Icon>Snippets/8.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Script</Group>
     <Code>a_b^c</Code>
+    <Icon>Snippets/9.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Script</Group>
     <Code>{}_{a}^b{c}</Code>
+    <Icon>Snippets/10.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Script</Group>
     <Code>x_{y^2}</Code>
+    <Icon>Snippets/11.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Script</Group>
     <Code>e^{-i \omega t}</Code>
+    <Icon>Snippets/12.png</Icon>
   </Snippet>
-
-  <!--Radicals-->
   <Snippet>
     <Group>Radical</Group>
     <Code>\sqrt{a}</Code>
+    <Icon>Snippets/13.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Radical</Group>
     <Code>\sqrt[n]{a}</Code>
+    <Icon>Snippets/14.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Radical</Group>
     <Code>\sqrt{a^2+b^2}</Code>
+    <Icon>Snippets/15.png</Icon>
   </Snippet>
-
-  <!--Integral-->
   <Snippet>
     <Group>Integral</Group>
     <Code>\int{f(x)}\,\mathrm{d}x</Code>
+    <Icon>Snippets/16.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Integral</Group>
     <Code>\int_{a}^{b}{f(x)}\,\mathrm{d}x</Code>
+    <Icon>Snippets/17.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Integral</Group>
     <Code>\iint_V{f(u,v)}\,\mathrm{d}u\,\mathrm{d}v</Code>
+    <Icon>Snippets/18.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Integral</Group>
     <Code>\iiint_V{f(u,v,w)}\,\mathrm{d}u\,\mathrm{d}v\,\mathrm{d}w</Code>
+    <Icon>Snippets/19.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Integral</Group>
     <Code>\idotsint_V{f(u_1,\dots,u_k)}\,\mathrm{d}u_1\dots\,\mathrm{d}u_k</Code>
+    <Icon>Snippets/20.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Integral</Group>
     <Code>\oint_V{f(s)}\,\mathrm{d}s</Code>
+    <Icon>Snippets/21.png</Icon>
   </Snippet>
-
-  <!--Large Operator-->
   <Snippet>
     <Group>LargeOperator</Group>
     <Code>\sum_{i=1}^{N}{n_i}</Code>
+    <Icon>Snippets/22.png</Icon>
   </Snippet>
   <Snippet>
     <Group>LargeOperator</Group>
     <Code>\prod_{i=1}^{N}{n_i}</Code>
+    <Icon>Snippets/23.png</Icon>
   </Snippet>
   <Snippet>
     <Group>LargeOperator</Group>
     <Code>\bigcup_{i=1}^{N}{X_i}</Code>
+    <Icon>Snippets/24.png</Icon>
   </Snippet>
   <Snippet>
     <Group>LargeOperator</Group>
     <Code>\bigcap_{i=1}^{N}{X_i}</Code>
+    <Icon>Snippets/25.png</Icon>
   </Snippet>
   <Snippet>
     <Group>LargeOperator</Group>
     <Code>\bigwedge_{i=1}^{N}{n_i}</Code>
+    <Icon>Snippets/26.png</Icon>
   </Snippet>
   <Snippet>
     <Group>LargeOperator</Group>
     <Code>\bigvee_{i=1}^{N}{n_i}</Code>
-  </Snippet>
-
-  <!--Matrix - !!whitespaces are important!!-->
-  <Snippet>
-    <Group>Matrix</Group>
-    <Code>
-\begin{matrix}
-  a &amp; b \\
-  c &amp; d \\
-\end{matrix}
-</Code>
+    <Icon>Snippets/27.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Matrix</Group>
     <Code>
-\begin{pmatrix}
-  a &amp; b \\
-  c &amp; d \\
-\end{pmatrix}
-</Code>
+//\begin{matrix}
+//  a &amp; b \\
+//  c &amp; d \\
+//\end{matrix}
+//</Code>
+    <Icon>Snippets/28.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Matrix</Group>
     <Code>
-\begin{bmatrix}
-  a &amp; b \\
-  c &amp; d \\
-\end{bmatrix}
-</Code>
+//\begin{pmatrix}
+//  a &amp; b \\
+//  c &amp; d \\
+//\end{pmatrix}
+//</Code>
+    <Icon>Snippets/29.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Matrix</Group>
     <Code>
-\begin{Bmatrix}
-  a &amp; b \\
-  c &amp; d \\
-\end{Bmatrix}
-</Code>
+//\begin{bmatrix}
+//  a &amp; b \\
+//  c &amp; d \\
+//\end{bmatrix}
+//</Code>
+    <Icon>Snippets/30.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Matrix</Group>
     <Code>
-\begin{vmatrix}
-  a &amp; b \\
-  c &amp; d \\
-\end{vmatrix}
-</Code>
+//\begin{Bmatrix}
+//  a &amp; b \\
+//  c &amp; d \\
+//\end{Bmatrix}
+//</Code>
+    <Icon>Snippets/31.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Matrix</Group>
     <Code>
-\begin{Vmatrix}
-  a &amp; b \\
-  c &amp; d \\
-\end{Vmatrix}
-</Code>
+//\begin{vmatrix}
+//  a &amp; b \\
+//  c &amp; d \\
+//\end{vmatrix}
+//</Code>
+    <Icon>Snippets/32.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Matrix</Group>
     <Code>
-\begin{pmatrix}
-  a &amp; b &amp; c \\
-  d &amp; e &amp; f \\
-  g &amp; h &amp; i \\
-\end{pmatrix}
-</Code>
+//\begin{Vmatrix}
+//  a &amp; b \\
+//  c &amp; d \\
+//\end{Vmatrix}
+//</Code>
+    <Icon>Snippets/33.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Matrix</Group>
     <Code>
-\begin{pmatrix}
-  a_{1,1} &amp; \cdots &amp; a_{1,n} \\
-  \vdots &amp; \ddots &amp; \vdots \\
-  a_{n,1} &amp; \cdots &amp; a_{n,n} \\
-\end{pmatrix}
-</Code>
+//\begin{pmatrix}
+//  a &amp; b &amp; c \\
+//  d &amp; e &amp; f \\
+//  g &amp; h &amp; i \\
+//\end{pmatrix}
+//</Code>
+    <Icon>Snippets/34.png</Icon>
   </Snippet>
   <Snippet>
     <Group>Matrix</Group>
     <Code>
-\left(
-    \begin{array}{cc|c}
-      a &amp; b &amp; c \\
-      d &amp; e &amp; f
-    \end{array}
-\right)
-</Code>
+//\begin{pmatrix}
+//  a_{1,1} &amp; \cdots &amp; a_{1,n} \\
+//  \vdots &amp; \ddots &amp; \vdots \\
+//  a_{n,1} &amp; \cdots &amp; a_{n,n} \\
+//\end{pmatrix}
+//</Code>
+    <Icon>Snippets/35.png</Icon>
+  </Snippet>
+  <Snippet>
+    <Group>Matrix</Group>
+    <Code>
+//\left(
+//    \begin{array}{cc|c}
+//      a &amp; b &amp; c \\
+//      d &amp; e &amp; f
+//    \end{array}
+//\right)
+//</Code>
+    <Icon>Snippets/36.png</Icon>
   </Snippet>
 </Snippets>
