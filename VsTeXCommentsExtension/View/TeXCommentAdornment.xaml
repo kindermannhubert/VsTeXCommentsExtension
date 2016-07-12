@@ -118,7 +118,10 @@
                         <MenuItem Header="Integral" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Integral}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
                         <MenuItem Header="Large Operator" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_LargeOperator}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
                         <MenuItem Header="Matrix" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Matrix}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
-                        <!--TODO more-->
+                        <MenuItem Header="Greek">
+                            <MenuItem Header="Matrix" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_GreekLower}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                            <MenuItem Header="Matrix" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_GreekUpper}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                        </MenuItem>
                     </MenuItem>
                 </ContextMenu>
             </local:DropDownImageButton.ContextMenu>

@@ -24,6 +24,8 @@ namespace VsTeXCommentsExtension.View
         public static SnippetMenuItem[] Snippets_Integral { get; } = LoadSnippets("Integral");
         public static SnippetMenuItem[] Snippets_LargeOperator { get; } = LoadSnippets("LargeOperator");
         public static SnippetMenuItem[] Snippets_Matrix { get; } = LoadSnippets("Matrix");
+        public static SnippetMenuItem[] Snippets_GreekLower { get; } = LoadSnippets("GreekLower");
+        public static SnippetMenuItem[] Snippets_GreekUpper { get; } = LoadSnippets("GreekUpper");
 
         private static SnippetMenuItem[] LoadSnippets(string group)
         {

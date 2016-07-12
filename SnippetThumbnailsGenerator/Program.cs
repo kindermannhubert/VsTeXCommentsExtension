@@ -59,7 +59,7 @@ namespace SnippetThumbnailsGenerator
                 var result = renderer.Render(
                       new HtmlRenderer.Input(
                           new TeXCommentTag($"$${code}$$", default(TeXCommentBlockSpan)),
-                          1,
+                          1.3,
                           Colors.Black,
                           Colors.White,
                           font,
