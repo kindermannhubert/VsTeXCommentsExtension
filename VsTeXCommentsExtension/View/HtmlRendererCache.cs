@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
-using System.Windows.Media.Imaging;
 
 using wpf = System.Windows.Media;
 
@@ -39,18 +38,9 @@ namespace VsTeXCommentsExtension.View
 
                 if (info.ToString() != File.ReadAllText(filePathTxt)) return false; //hash conflict
 
-                using (var fs = new FileStream(filePathPng, FileMode.Open))
-                {
-                    var bmp = new BitmapImage();
-                    bmp.BeginInit();
-                    bmp.CacheOption = BitmapCacheOption.OnLoad;
-                    bmp.StreamSource = fs;
-                    bmp.EndInit();
-                    bmp.Freeze();
-
-                    result = new RendererResult(bmp, filePathPng, Array.Empty<string>());
-                    return true;
-                }
+                var source = ResourcesManager.CreateBitmapSourceWithCurrentDpi(filePathPng);
+                result = new RendererResult(source, filePathPng, Array.Empty<string>());
+                return true;
             }
             finally
             {

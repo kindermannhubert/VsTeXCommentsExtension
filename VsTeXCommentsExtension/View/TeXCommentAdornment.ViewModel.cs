@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace VsTeXCommentsExtension.View
 {
@@ -26,7 +26,7 @@ namespace VsTeXCommentsExtension.View
 
         public bool AnyRenderingErrors => renderedResult.HasValue && renderedResult.Value.HasErrors;
         public string ErrorsSummary => renderedResult?.ErrorsSummary ?? string.Empty;
-        public ImageSource RenderedImage => renderedResult?.Image;
+        public BitmapSource RenderedImage => renderedResult?.Image;
         public double RenderedImageWidth => (renderedResult?.Image.Width / (textView.ZoomLevel * 0.01)) ?? 0;
         public double RenderedImageHeight => (renderedResult?.Image.Height / (textView.ZoomLevel * 0.01)) ?? 0;
 

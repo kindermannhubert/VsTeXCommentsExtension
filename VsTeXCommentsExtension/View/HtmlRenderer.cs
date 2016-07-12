@@ -8,7 +8,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
-using System.Windows.Media.Imaging;
 using VsTeXCommentsExtension.Integration.Data;
 using VsTeXCommentsExtension.Integration.View;
 using wpf = System.Windows.Media;
@@ -122,7 +121,6 @@ namespace VsTeXCommentsExtension.View
                 const PixelFormat pixelFormat = PixelFormat.Format32bppArgb;
                 using (var bitmap = new Bitmap(width, height, pixelFormat))
                 {
-                    bitmap.SetResolution(Native.CurrentDpiX, Native.CurrentDpiY);
                     var viewObject = webBrowser.Document.DomDocument as IViewObject;
 
                     if (viewObject != null)
@@ -166,33 +164,20 @@ namespace VsTeXCommentsExtension.View
                         using (var croppedBitmap = CropToContent(bitmap, background))
                         {
                             MakeBackgroundTransparent(croppedBitmap, background);
-                            var croppedBitmapData = croppedBitmap.LockBits(new Rectangle(0, 0, croppedBitmap.Width, croppedBitmap.Height), ImageLockMode.ReadOnly, croppedBitmap.PixelFormat);
-                            try
-                            {
-                                var bitmapSource = BitmapSource.Create(
-                                    croppedBitmapData.Width, croppedBitmapData.Height,
-                                    Native.CurrentDpiX, Native.CurrentDpiY,
-                                    wpf.PixelFormats.Bgra32, null,
-                                    croppedBitmapData.Scan0,
-                                    croppedBitmapData.Height * croppedBitmapData.Stride,
-                                    croppedBitmapData.Stride);
 
-                                var cacheInfo = new HtmlRendererCache.Info(
-                                    currentContent,
-                                    input.Foreground,
-                                    input.Background,
-                                    input.Font,
-                                    input.ZoomScale * ExtensionSettings.Instance.CustomZoomScale,
-                                    CacheVersion);
+                            var bitmapSource = ResourcesManager.CreateBitmapSourceWithCurrentDpi(croppedBitmap);
 
-                                var errors = objectForScripting.Errors.Count == 0 ? Array.Empty<string>() : objectForScripting.Errors.ToArray();
-                                var cachedImagePath = errors.Length == 0 ? cache.Add(cacheInfo, croppedBitmap) : null;
-                                rendererResult = new RendererResult(bitmapSource, cachedImagePath, errors);
-                            }
-                            finally
-                            {
-                                croppedBitmap.UnlockBits(croppedBitmapData);
-                            }
+                            var cacheInfo = new HtmlRendererCache.Info(
+                                currentContent,
+                                input.Foreground,
+                                input.Background,
+                                input.Font,
+                                input.ZoomScale * ExtensionSettings.Instance.CustomZoomScale,
+                                CacheVersion);
+
+                            var errors = objectForScripting.Errors.Count == 0 ? Array.Empty<string>() : objectForScripting.Errors.ToArray();
+                            var cachedImagePath = errors.Length == 0 ? cache.Add(cacheInfo, croppedBitmap) : null;
+                            rendererResult = new RendererResult(bitmapSource, cachedImagePath, errors);
                         }
                     }
                 }
@@ -392,53 +377,6 @@ namespace VsTeXCommentsExtension.View
             public event Action RenderingDone;
 
             public IReadOnlyList<string> Errors => errors;
-        }
-
-        private class Native
-        {
-            private static int dpiX = -1;
-            private static int dpiY = -1;
-
-            [DllImport("gdi32.dll", CharSet = CharSet.Auto, SetLastError = true, ExactSpelling = true)]
-            private static extern int GetDeviceCaps(IntPtr hDC, int nIndex);
-
-            private enum DeviceCap
-            {
-                LOGPIXELSX = 88,
-                LOGPIXELSY = 90
-            }
-
-            private static void Init()
-            {
-                if (dpiX == -1)
-                {
-                    using (var g = Graphics.FromHwnd(IntPtr.Zero))
-                    {
-                        var desktop = g.GetHdc();
-                        dpiX = GetDeviceCaps(desktop, (int)DeviceCap.LOGPIXELSX);
-                        dpiY = GetDeviceCaps(desktop, (int)DeviceCap.LOGPIXELSY);
-                        g.ReleaseHdc();
-                    }
-                }
-            }
-
-            public static int CurrentDpiX
-            {
-                get
-                {
-                    Init();
-                    return dpiX;
-                }
-            }
-
-            public static int CurrentDpiY
-            {
-                get
-                {
-                    Init();
-                    return dpiY;
-                }
-            }
         }
 
         public struct Input : IRendererInput

@@ -87,7 +87,8 @@
                                    ResourcesManager="{Binding ResourcesManager}" 
                                    Click="ButtonShow_Click" Margin="12,0,0,0">
             <local:DropDownImageButton.Resources>
-                <Image Source="{Binding Path=Icon}" x:Key="SnippetsMenuItemIcon" x:Shared="false" Margin="0,4,0,4" UseLayoutRounding="True" SnapsToDevicePixels="True" />
+                <Image Source="{Binding Path=Icon}" x:Key="SnippetsMenuItemIcon" x:Shared="false" Margin="0,4,0,4" 
+                       UseLayoutRounding="True" SnapsToDevicePixels="True" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" />
 
                 <Style x:Key="SnippetsMenuItemStyle" TargetType="MenuItem">
                     <Setter Property="Header" Value="{StaticResource SnippetsMenuItemIcon}" />
@@ -148,5 +149,7 @@
                 </Style>
             </local:CircleProgressBar.Style>
         </local:CircleProgressBar>
+
+        <TextBlock Text="PicaKunda"/>
     </StackPanel>
 </UserControl>

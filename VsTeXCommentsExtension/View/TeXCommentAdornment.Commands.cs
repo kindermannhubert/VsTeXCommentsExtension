@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using VsTeXCommentsExtension.Integration.View;
 
 namespace VsTeXCommentsExtension.View
@@ -240,7 +239,14 @@ namespace VsTeXCommentsExtension.View
             public SnippetMenuItem(string snippet, string iconPath)
             {
                 Snippet = snippet;
-                Icon = new BitmapImage(ResourcesManager.GetAssemblyResourceUri(iconPath));
+
+                var iconUri = ResourcesManager.GetAssemblyResourceUri(iconPath);
+
+                using (var stream = Application.GetResourceStream(iconUri).Stream)
+                using (var bmp = new System.Drawing.Bitmap(stream))
+                {
+                    Icon = ResourcesManager.CreateBitmapSourceWithCurrentDpi(bmp);
+                }
             }
         }
     }

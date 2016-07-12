@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -27,6 +29,9 @@ namespace VsTeXCommentsExtension.View
         private static readonly ImageSource warning_Dark = new BitmapImage(GetAssemblyResourceUri("Warning_Dark.png"));
 
         private static readonly Dictionary<IWpfTextView, ResourcesManager> instances = new Dictionary<IWpfTextView, ResourcesManager>();
+
+        public static int CurrentDpiX => Native.CurrentDpiX;
+        public static int CurrentDpiY => Native.CurrentDpiY;
 
         public static ResourcesManager GetOrCreate(IWpfTextView textView)
         {
@@ -105,6 +110,86 @@ namespace VsTeXCommentsExtension.View
         public static Uri GetAssemblyResourceUri(string pathRelativeToResourcesFolder)
         {
             return new Uri($"pack://application:,,,/VsTeXCommentsExtension;component/Resources/{pathRelativeToResourcesFolder}");
+        }
+
+        public static unsafe BitmapSource CreateBitmapSourceWithCurrentDpi(System.Drawing.Bitmap bitmap)
+        {
+            Debug.Assert(bitmap.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            var bitmapData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), System.Drawing.Imaging.ImageLockMode.ReadOnly, bitmap.PixelFormat);
+            try
+            {
+                bitmap.SetResolution(CurrentDpiX, CurrentDpiY); //maybe not necessary
+                var source = BitmapSource.Create(
+                              bitmapData.Width, bitmapData.Height,
+                              CurrentDpiX, CurrentDpiY,
+                              PixelFormats.Bgra32, null,
+                              bitmapData.Scan0,
+                              bitmapData.Height * bitmapData.Stride,
+                              bitmapData.Stride);
+
+                source.Freeze();
+                return source;
+            }
+            finally
+            {
+                bitmap.UnlockBits(bitmapData);
+            }
+        }
+
+        public static unsafe BitmapSource CreateBitmapSourceWithCurrentDpi(string path)
+        {
+            using (var bmp = new System.Drawing.Bitmap(path))
+            {
+                return CreateBitmapSourceWithCurrentDpi(bmp);
+            }
+        }
+
+        private class Native
+        {
+            private static int dpiX = -1;
+            private static int dpiY = -1;
+
+            [DllImport("gdi32.dll", CharSet = CharSet.Auto, SetLastError = true, ExactSpelling = true)]
+            private static extern int GetDeviceCaps(IntPtr hDC, int nIndex);
+
+            private enum DeviceCap
+            {
+                LOGPIXELSX = 88,
+                LOGPIXELSY = 90
+            }
+
+            private static void Init()
+            {
+                if (dpiX == -1)
+                {
+                    using (var g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero))
+                    {
+                        var desktop = g.GetHdc();
+                        dpiX = GetDeviceCaps(desktop, (int)DeviceCap.LOGPIXELSX);
+                        dpiY = GetDeviceCaps(desktop, (int)DeviceCap.LOGPIXELSY);
+                        g.ReleaseHdc();
+                    }
+                }
+            }
+
+            public static int CurrentDpiX
+            {
+                get
+                {
+                    Init();
+                    return dpiX;
+                }
+            }
+
+            public static int CurrentDpiY
+            {
+                get
+                {
+                    Init();
+                    return dpiY;
+                }
+            }
         }
     }
 }
