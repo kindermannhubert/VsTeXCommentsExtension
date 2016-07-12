@@ -112,15 +112,15 @@
                 <ContextMenu DataContext="{Binding DataContext, ElementName=root}">
                     <MenuItem Header="Show All" Click="MenuItem_ShowAll_Click" />
                     <MenuItem Header="Snippets">
-                        <MenuItem Header="Fraction" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Fraction}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
-                        <MenuItem Header="Script" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Script}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
-                        <MenuItem Header="Radical" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Radical}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
-                        <MenuItem Header="Integral" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Integral}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
-                        <MenuItem Header="Large Operator" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_LargeOperator}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
-                        <MenuItem Header="Matrix" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Matrix}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
-                        <MenuItem Header="Greek">
-                            <MenuItem Header="Matrix" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_GreekLower}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
-                            <MenuItem Header="Matrix" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_GreekUpper}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                        <MenuItem Header="Fractions" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Fractions}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                        <MenuItem Header="Scripts" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Scripts}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                        <MenuItem Header="Radicals" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Radicals}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                        <MenuItem Header="Integrals" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Integrals}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                        <MenuItem Header="Large Operators" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_LargeOperators}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                        <MenuItem Header="Matrices" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Matrices}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                        <MenuItem Header="Greek Letters">
+                            <MenuItem Header="Lower Case" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_GreekLowers}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
+                            <MenuItem Header="Upper Case" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_GreekUppers}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
                         </MenuItem>
                     </MenuItem>
                 </ContextMenu>

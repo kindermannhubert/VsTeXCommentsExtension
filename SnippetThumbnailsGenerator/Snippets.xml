@@ -1,126 +1,126 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Snippets>
-  <!--Fraction-->
+  <!--Fractions-->
   <Snippet>
-    <Group>Fraction</Group>
+    <Group>Fractions</Group>
     <Code>\frac{a}{b}</Code>
   </Snippet>
   <Snippet>
-    <Group>Fraction</Group>
+    <Group>Fractions</Group>
     <Code>\frac{dy}{dx}</Code>
   </Snippet>
   <Snippet>
-    <Group>Fraction</Group>
+    <Group>Fractions</Group>
     <Code>\frac{\Delta y}{\Delta x}</Code>
   </Snippet>
   <Snippet>
-    <Group>Fraction</Group>
+    <Group>Fractions</Group>
     <Code>\frac{\partial y}{\partial x}</Code>
   </Snippet>
   <Snippet>
-    <Group>Fraction</Group>
+    <Group>Fractions</Group>
     <Code>\frac{\delta y}{\delta x}</Code>
   </Snippet>
   <Snippet>
-    <Group>Fraction</Group>
+    <Group>Fractions</Group>
     <Code>\frac{\pi}{2}</Code>
   </Snippet>
 
-  <!--Script-->
+  <!--Scripts-->
   <Snippet>
-    <Group>Script</Group>
+    <Group>Scripts</Group>
     <Code>a^b</Code>
   </Snippet>
   <Snippet>
-    <Group>Script</Group>
+    <Group>Scripts</Group>
     <Code>a_b</Code>
   </Snippet>
   <Snippet>
-    <Group>Script</Group>
+    <Group>Scripts</Group>
     <Code>a_b^c</Code>
   </Snippet>
   <Snippet>
-    <Group>Script</Group>
+    <Group>Scripts</Group>
     <Code>{}_{a}^b{c}</Code>
   </Snippet>
   <Snippet>
-    <Group>Script</Group>
+    <Group>Scripts</Group>
     <Code>x_{y^2}</Code>
   </Snippet>
   <Snippet>
-    <Group>Script</Group>
+    <Group>Scripts</Group>
     <Code>e^{-i \omega t}</Code>
   </Snippet>
 
   <!--Radicals-->
   <Snippet>
-    <Group>Radical</Group>
+    <Group>Radicals</Group>
     <Code>\sqrt{a}</Code>
   </Snippet>
   <Snippet>
-    <Group>Radical</Group>
+    <Group>Radicals</Group>
     <Code>\sqrt[n]{a}</Code>
   </Snippet>
   <Snippet>
-    <Group>Radical</Group>
+    <Group>Radicals</Group>
     <Code>\sqrt{a^2+b^2}</Code>
   </Snippet>
 
-  <!--Integral-->
+  <!--Integrals-->
   <Snippet>
-    <Group>Integral</Group>
+    <Group>Integrals</Group>
     <Code>\int{f(x)}\,\mathrm{d}x</Code>
   </Snippet>
   <Snippet>
-    <Group>Integral</Group>
+    <Group>Integrals</Group>
     <Code>\int_{a}^{b}{f(x)}\,\mathrm{d}x</Code>
   </Snippet>
   <Snippet>
-    <Group>Integral</Group>
+    <Group>Integrals</Group>
     <Code>\iint_V{f(u,v)}\,\mathrm{d}u\,\mathrm{d}v</Code>
   </Snippet>
   <Snippet>
-    <Group>Integral</Group>
+    <Group>Integrals</Group>
     <Code>\iiint_V{f(u,v,w)}\,\mathrm{d}u\,\mathrm{d}v\,\mathrm{d}w</Code>
   </Snippet>
   <Snippet>
-    <Group>Integral</Group>
+    <Group>Integrals</Group>
     <Code>\idotsint_V{f(u_1,\dots,u_k)}\,\mathrm{d}u_1\dots\,\mathrm{d}u_k</Code>
   </Snippet>
   <Snippet>
-    <Group>Integral</Group>
+    <Group>Integrals</Group>
     <Code>\oint_V{f(s)}\,\mathrm{d}s</Code>
   </Snippet>
 
-  <!--Large Operator-->
+  <!--Large Operators-->
   <Snippet>
-    <Group>LargeOperator</Group>
+    <Group>LargeOperators</Group>
     <Code>\sum_{i=1}^{N}{n_i}</Code>
   </Snippet>
   <Snippet>
-    <Group>LargeOperator</Group>
+    <Group>LargeOperators</Group>
     <Code>\prod_{i=1}^{N}{n_i}</Code>
   </Snippet>
   <Snippet>
-    <Group>LargeOperator</Group>
+    <Group>LargeOperators</Group>
     <Code>\bigcup_{i=1}^{N}{X_i}</Code>
   </Snippet>
   <Snippet>
-    <Group>LargeOperator</Group>
+    <Group>LargeOperators</Group>
     <Code>\bigcap_{i=1}^{N}{X_i}</Code>
   </Snippet>
   <Snippet>
-    <Group>LargeOperator</Group>
+    <Group>LargeOperators</Group>
     <Code>\bigwedge_{i=1}^{N}{n_i}</Code>
   </Snippet>
   <Snippet>
-    <Group>LargeOperator</Group>
+    <Group>LargeOperators</Group>
     <Code>\bigvee_{i=1}^{N}{n_i}</Code>
   </Snippet>
 
-  <!--Matrix - !!whitespaces are important!!-->
+  <!--Matrices - !!whitespaces are important!!-->
   <Snippet>
-    <Group>Matrix</Group>
+    <Group>Matrices</Group>
     <Code>
 \begin{matrix}
   a &amp; b \\
@@ -129,7 +129,7 @@
 </Code>
   </Snippet>
   <Snippet>
-    <Group>Matrix</Group>
+    <Group>Matrices</Group>
     <Code>
 \begin{pmatrix}
   a &amp; b \\
@@ -138,7 +138,7 @@
 </Code>
   </Snippet>
   <Snippet>
-    <Group>Matrix</Group>
+    <Group>Matrices</Group>
     <Code>
 \begin{bmatrix}
   a &amp; b \\
@@ -147,7 +147,7 @@
 </Code>
   </Snippet>
   <Snippet>
-    <Group>Matrix</Group>
+    <Group>Matrices</Group>
     <Code>
 \begin{Bmatrix}
   a &amp; b \\
@@ -156,7 +156,7 @@
 </Code>
   </Snippet>
   <Snippet>
-    <Group>Matrix</Group>
+    <Group>Matrices</Group>
     <Code>
 \begin{vmatrix}
   a &amp; b \\
@@ -165,7 +165,7 @@
 </Code>
   </Snippet>
   <Snippet>
-    <Group>Matrix</Group>
+    <Group>Matrices</Group>
     <Code>
 \begin{Vmatrix}
   a &amp; b \\
@@ -174,7 +174,7 @@
 </Code>
   </Snippet>
   <Snippet>
-    <Group>Matrix</Group>
+    <Group>Matrices</Group>
     <Code>
 \begin{pmatrix}
   a &amp; b &amp; c \\
@@ -184,7 +184,7 @@
 </Code>
   </Snippet>
   <Snippet>
-    <Group>Matrix</Group>
+    <Group>Matrices</Group>
     <Code>
 \begin{pmatrix}
   a_{1,1} &amp; \cdots &amp; a_{1,n} \\
@@ -194,7 +194,7 @@
 </Code>
   </Snippet>
   <Snippet>
-    <Group>Matrix</Group>
+    <Group>Matrices</Group>
     <Code>
 \left(
     \begin{array}{cc|c}
@@ -207,185 +207,185 @@
 
   <!--Greek letters - lower case-->
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\alpha</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\beta</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\gamma</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\delta</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\epsilon</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\zeta</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\eta</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\theta</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\iota</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\kappa</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\lambda</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\mu</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\nu</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\omicron</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\pi</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\rho</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\sigma</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\tau</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\upsilon</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\phi</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\chi</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\psi</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekLower</Group>
+    <Group>GreekLowers</Group>
     <Code>\omega</Code>
   </Snippet>
 
   <!--Greek letters - upper-->
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>A</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>B</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>\Gamma</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>\Delta</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>E</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>Z</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>E</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>\Theta</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>I</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>K</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>\Lambda</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>M</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>N</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>O</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>\Pi</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>R</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>\Sigma</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>T</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>\Upsilon</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>\Phi</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>X</Code>
   </Snippet>
   <Snippet>
-    <Group>GreekUpper</Group>
+    <Group>GreekUppers</Group>
     <Code>\Psi</Code>
   </Snippet>
   \Omega

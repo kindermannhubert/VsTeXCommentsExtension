@@ -18,14 +18,14 @@ namespace VsTeXCommentsExtension.View
             new ZoomMenuItem(1.7), new ZoomMenuItem(1.8), new ZoomMenuItem(1.9), new ZoomMenuItem(2)
         };
 
-        public static SnippetMenuItem[] Snippets_Fraction { get; } = LoadSnippets("Fraction");
-        public static SnippetMenuItem[] Snippets_Script { get; } = LoadSnippets("Script");
-        public static SnippetMenuItem[] Snippets_Radical { get; } = LoadSnippets("Radical");
-        public static SnippetMenuItem[] Snippets_Integral { get; } = LoadSnippets("Integral");
-        public static SnippetMenuItem[] Snippets_LargeOperator { get; } = LoadSnippets("LargeOperator");
-        public static SnippetMenuItem[] Snippets_Matrix { get; } = LoadSnippets("Matrix");
-        public static SnippetMenuItem[] Snippets_GreekLower { get; } = LoadSnippets("GreekLower");
-        public static SnippetMenuItem[] Snippets_GreekUpper { get; } = LoadSnippets("GreekUpper");
+        public static SnippetMenuItem[] Snippets_Fractions { get; } = LoadSnippets("Fractions");
+        public static SnippetMenuItem[] Snippets_Scripts { get; } = LoadSnippets("Scripts");
+        public static SnippetMenuItem[] Snippets_Radicals { get; } = LoadSnippets("Radicals");
+        public static SnippetMenuItem[] Snippets_Integrals { get; } = LoadSnippets("Integrals");
+        public static SnippetMenuItem[] Snippets_LargeOperators { get; } = LoadSnippets("LargeOperators");
+        public static SnippetMenuItem[] Snippets_Matrices { get; } = LoadSnippets("Matrices");
+        public static SnippetMenuItem[] Snippets_GreekLowers { get; } = LoadSnippets("GreekLowers");
+        public static SnippetMenuItem[] Snippets_GreekUppers { get; } = LoadSnippets("GreekUppers");
 
         private static SnippetMenuItem[] LoadSnippets(string group)
         {
