@@ -72,9 +72,8 @@ namespace VsTeXCommentsExtension
             }
         }
 
-        public static Span AddToEnd(this Span span, int charactersCount) => new Span(span.Start, span.Length + charactersCount);
-
-        public static Span RemoveFromEnd(this Span span, int charactersCount) => new Span(span.Start, span.Length - charactersCount);
+        public static Span TranslateStart(this Span span, int offset) => new Span(span.Start + offset, span.Length - offset);
+        public static Span TranslateEnd(this Span span, int offset) => new Span(span.Start, span.Length + offset);
 
         public static int NumberOfWhiteSpaceCharsOnStartOfLine(this string line)
         {

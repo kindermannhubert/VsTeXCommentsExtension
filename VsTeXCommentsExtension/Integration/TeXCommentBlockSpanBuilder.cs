@@ -19,18 +19,18 @@ namespace VsTeXCommentsExtension.Integration
 
         public void Add(int charactersCount)
         {
-            span = span.AddToEnd(charactersCount);
+            span = span.TranslateEnd(charactersCount);
         }
 
         public void EndBlock(ITextSnapshotLine lastBlockLine)
         {
-            span = span.RemoveFromEnd(lastBlockLine.LineBreakLength);
+            span = span.TranslateEnd(-lastBlockLine.LineBreakLength);
             lastLineWhiteSpacesAtStart = lastBlockLine.GetText().NumberOfWhiteSpaceCharsOnStartOfLine();
         }
 
         public TeXCommentBlockSpan Build(ITextSnapshot snapshot)
         {
-            var spanWithLastLineBreak = span.AddToEnd(lineBreakText.Length);
+            var spanWithLastLineBreak = span.TranslateEnd(lineBreakText.Length);
             if (span.Start + spanWithLastLineBreak.Length >= snapshot.Length ||
                 snapshot.GetText(span.End, lineBreakText.Length) != lineBreakText)
             {

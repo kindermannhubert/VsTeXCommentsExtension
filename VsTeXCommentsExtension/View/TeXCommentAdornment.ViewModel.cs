@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows.Media.Imaging;
+using VsTeXCommentsExtension.Integration;
 
 namespace VsTeXCommentsExtension.View
 {
@@ -35,6 +37,9 @@ namespace VsTeXCommentsExtension.View
             get
             {
                 var spanWithLastLineBreak = tag.SpanWithLastLineBreak;
+                Debug.Assert(spanWithLastLineBreak.Length >= tag.TeXBlock.FirstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length);
+                spanWithLastLineBreak = spanWithLastLineBreak.TranslateStart(tag.TeXBlock.FirstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length);
+
                 var caretPosition = textView.Caret.Position.BufferPosition;
                 if (tag.Span.Length == spanWithLastLineBreak.Length)
                 {

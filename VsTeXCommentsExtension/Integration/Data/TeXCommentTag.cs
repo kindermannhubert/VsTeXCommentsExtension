@@ -21,7 +21,14 @@ namespace VsTeXCommentsExtension.Integration.Data
         public readonly string Text;
         public readonly TeXCommentBlockSpan TeXBlock;
 
+        /// <summary>
+        /// Span of whole TeX comment block (without last line break).
+        /// </summary>
         public Span Span => TeXBlock.Span;
+
+        /// <summary>
+        /// Span of whole TeX comment block.
+        /// </summary>
         public Span SpanWithLastLineBreak => TeXBlock.SpanWithLastLineBreak;
 
         public TeXCommentTag(string text, TeXCommentBlockSpan span)

@@ -92,6 +92,7 @@
 
                 <Style x:Key="SnippetsMenuItemStyle" TargetType="MenuItem">
                     <Setter Property="Header" Value="{StaticResource SnippetsMenuItemIcon}" />
+                    <Setter Property="IsEnabled" Value="{Binding Path=DataContext.IsCaretInsideTeXBlock, ElementName=root}" />
                     <EventSetter Event="Click" Handler="MenuItem_InsertSnippet_Click"/>
                 </Style>
             </local:DropDownImageButton.Resources>
