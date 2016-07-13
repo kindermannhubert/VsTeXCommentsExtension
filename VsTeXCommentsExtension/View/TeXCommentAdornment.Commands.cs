@@ -40,7 +40,7 @@ namespace VsTeXCommentsExtension.View
                 var cfgElement = XElement.Load(stream);
                 return cfgElement.Elements("Snippet")
                     .Where(e => e.Element("Group").Value == group)
-                    .Select(e => new SnippetMenuItem(e.Element("Code").Value, e.Element("Icon").Value))
+                    .Select(e => new SnippetMenuItem(e.Element("Code").Value.Replace("\n", "\r\n"), e.Element("Icon").Value))
                     .ToArray();
             }
         }
