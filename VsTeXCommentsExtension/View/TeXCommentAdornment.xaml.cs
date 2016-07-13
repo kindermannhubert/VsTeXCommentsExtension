@@ -89,7 +89,7 @@ namespace VsTeXCommentsExtension.View
             Action<Span> refreshTags,
             Action<bool> setIsInEditModeForAllAdornmentsInDocument,
             IRenderingManager renderingManager,
-            VsSettings vsSettings)
+            IVsSettings vsSettings)
         {
             ExtensionSettings.Instance.CustomZoomChanged += CustomZoomChanged;
             textView.Caret.PositionChanged += Caret_PositionChanged;
@@ -106,7 +106,7 @@ namespace VsTeXCommentsExtension.View
 
             InitializeComponent();
 
-            previewAdorner = new PreviewAdorner(this);
+            previewAdorner = new PreviewAdorner(this, ResourcesManager, vsSettings);
             Loaded += (_, __) =>
             {
                 if (previewAdorner.Parent == null)

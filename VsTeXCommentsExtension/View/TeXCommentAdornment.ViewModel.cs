@@ -7,7 +7,7 @@ namespace VsTeXCommentsExtension.View
     {
         public ResourcesManager ResourcesManager { get; }
 
-        public VsSettings VsSettings { get; }
+        public IVsSettings VsSettings { get; }
 
         private RendererResult? renderedResult;
         public RendererResult? RenderedResult

@@ -11,10 +11,10 @@ namespace VsTeXCommentsExtension.View
 {
     public class ResourcesManager : INotifyPropertyChanged, IDisposable, IResourcesManager
     {
-        private static readonly Color ForegroundUIColor_Dark = Color.FromRgb(64, 64, 64);
-        private static readonly Color ForegroundUIColor_Light = Color.FromRgb(243, 243, 243);
-        private static readonly Color BackgroundUIColor_Dark = ForegroundUIColor_Light;
-        private static readonly Color BackgroundUIColor_Light = ForegroundUIColor_Dark;
+        private static readonly SolidColorBrush ForegroundUI_Dark = new SolidColorBrush(Color.FromRgb(64, 64, 64));
+        private static readonly SolidColorBrush ForegroundUI_Light = new SolidColorBrush(Color.FromRgb(243, 243, 243));
+        private static readonly SolidColorBrush BackgroundUI_Dark = ForegroundUI_Light;
+        private static readonly SolidColorBrush BackgroundUI_Light = ForegroundUI_Dark;
 
         private static readonly ImageSource dropDown_Light = new BitmapImage(GetAssemblyResourceUri("DropDown_Light.png"));
         private static readonly ImageSource dropDown_Dark = new BitmapImage(GetAssemblyResourceUri("DropDown_Dark.png"));
@@ -58,9 +58,9 @@ namespace VsTeXCommentsExtension.View
 
         public ImageSource Warning => useDark ? warning_Dark : warning_Light;
 
-        public Color ForegroundUIColor => useDark ? ForegroundUIColor_Dark : ForegroundUIColor_Light;
+        public SolidColorBrush ForegroundUI => useDark ? ForegroundUI_Dark : ForegroundUI_Light;
 
-        public Color BackgroundUIColor => useDark ? BackgroundUIColor_Dark : BackgroundUIColor_Light;
+        public SolidColorBrush BackgroundUI => useDark ? BackgroundUI_Dark : BackgroundUI_Light;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -91,8 +91,8 @@ namespace VsTeXCommentsExtension.View
                     OnPropertyChanged(nameof(Edit));
                     OnPropertyChanged(nameof(Show));
                     OnPropertyChanged(nameof(Warning));
-                    OnPropertyChanged(nameof(ForegroundUIColor));
-                    OnPropertyChanged(nameof(BackgroundUIColor));
+                    OnPropertyChanged(nameof(ForegroundUI));
+                    OnPropertyChanged(nameof(BackgroundUI));
                 }
             }
         }

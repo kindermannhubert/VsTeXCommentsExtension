@@ -41,37 +41,34 @@ namespace VsTeXCommentsExtension.View
             set { SetValue(ImageSourceProperty, value); }
         }
 
-        public PreviewAdorner(UIElement adornedElement)
+        public PreviewAdorner(UIElement adornedElement, IResourcesManager resourcesManager, IVsSettings vsSettings)
             : base(adornedElement)
         {
             //content
-            var panel = new StackPanel() { Orientation = Orientation.Vertical, Margin = new Thickness(6), UseLayoutRounding = true, SnapsToDevicePixels = true };
+            var panel = new StackPanel() { Orientation = Orientation.Vertical, Margin = new Thickness(6, 6, 8, 8), UseLayoutRounding = true, SnapsToDevicePixels = true };
 
-            Binding binding;
             var image = new Image() { SnapsToDevicePixels = true, UseLayoutRounding = true };
             RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.NearestNeighbor);
-            binding = new Binding(nameof(ImageSource)) { Source = this };
-            image.SetBinding(Image.SourceProperty, binding);
-
-            binding = new Binding(nameof(TeXCommentAdornment.RenderedImageWidth)) { Source = adornedElement };
-            image.SetBinding(Image.WidthProperty, binding);
-
-            binding = new Binding(nameof(TeXCommentAdornment.RenderedImageHeight)) { Source = adornedElement };
-            image.SetBinding(Image.HeightProperty, binding);
+            image.SetBinding(Image.SourceProperty, new Binding(nameof(ImageSource)) { Source = this });
+            image.SetBinding(Image.WidthProperty, new Binding(nameof(TeXCommentAdornment.RenderedImageWidth)) { Source = adornedElement });
+            image.SetBinding(Image.HeightProperty, new Binding(nameof(TeXCommentAdornment.RenderedImageHeight)) { Source = adornedElement });
 
             var textBlock = new TextBlock() { Text = "Preview:", Margin = new Thickness(0, 0, 0, 2) };
+            textBlock.SetBinding(TextBlock.ForegroundProperty, new Binding(nameof(IResourcesManager.ForegroundUI)) { Source = resourcesManager });
             panel.Children.Add(textBlock);
             panel.Children.Add(image);
 
-            Child = new Border() { Background = Brushes.White, BorderThickness = new Thickness(1), BorderBrush = Brushes.Black, Child = panel };
+            var border = new Border() { BorderThickness = new Thickness(1), Child = panel };
+            border.SetBinding(Border.BorderBrushProperty, new Binding(nameof(IResourcesManager.ForegroundUI)) { Source = resourcesManager });
+            border.SetBinding(Border.BackgroundProperty, new Binding(nameof(IVsSettings.CommentsBackground)) { Source = vsSettings });
+            Child = border;
 
             //visibility setup
             var style = new Style(typeof(PreviewAdorner));
             style.Setters.Add(new Setter(VisibilityProperty, Visibility.Collapsed));
-            binding = new Binding(nameof(TeXCommentAdornment.CurrentState)) { Source = adornedElement };
             var isCarretInsideTeXBlockBinding = new Binding(nameof(TeXCommentAdornment.IsCaretInsideTeXBlock)) { Source = adornedElement };
             var visibilityTrigger = new MultiDataTrigger();
-            visibilityTrigger.Conditions.Add(new Condition(binding, TeXCommentAdornmentState.EditingWithPreview));
+            visibilityTrigger.Conditions.Add(new Condition(new Binding(nameof(TeXCommentAdornment.CurrentState)) { Source = adornedElement }, TeXCommentAdornmentState.EditingWithPreview));
             visibilityTrigger.Conditions.Add(new Condition(isCarretInsideTeXBlockBinding, true));
             visibilityTrigger.Setters.Add(new Setter(VisibilityProperty, Visibility.Visible));
             style.Triggers.Add(visibilityTrigger);

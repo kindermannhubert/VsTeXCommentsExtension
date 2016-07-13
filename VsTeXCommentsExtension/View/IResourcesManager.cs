@@ -4,10 +4,10 @@ namespace VsTeXCommentsExtension.View
 {
     public interface IResourcesManager
     {
-        Color BackgroundUIColor { get; }
+        SolidColorBrush BackgroundUI { get; }
         ImageSource DropDown { get; }
         ImageSource Edit { get; }
-        Color ForegroundUIColor { get; }
+        SolidColorBrush ForegroundUI { get; }
         ImageSource Show { get; }
         ImageSource Warning { get; }
     }
