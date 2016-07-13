@@ -17,7 +17,7 @@ namespace VsTeXCommentsExtension
     {
         private static readonly SolidColorBrush DefaultForegroundBrush = new SolidColorBrush(wpf.Color.FromRgb(0, 128, 0));
         private static readonly SolidColorBrush DefaultBackgroundBrush = new SolidColorBrush(Colors.White);
-        private static readonly Dictionary<IWpfTextView, VsSettings> instances = new Dictionary<IWpfTextView, VsSettings>();
+        private static readonly Dictionary<IWpfTextView, VsSettings> Instances = new Dictionary<IWpfTextView, VsSettings>();
 
         public static bool IsInitialized { get; private set; }
         private static IEditorFormatMapService editorFormatMapService;
@@ -58,13 +58,13 @@ namespace VsTeXCommentsExtension
 
         public static VsSettings GetOrCreate(IWpfTextView textView)
         {
-            lock (instances)
+            lock (Instances)
             {
                 VsSettings settings;
-                if (!instances.TryGetValue(textView, out settings))
+                if (!Instances.TryGetValue(textView, out settings))
                 {
                     settings = new VsSettings(textView);
-                    instances.Add(textView, settings);
+                    Instances.Add(textView, settings);
                 }
                 return settings;
             }

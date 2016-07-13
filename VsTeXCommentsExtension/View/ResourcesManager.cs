@@ -16,32 +16,32 @@ namespace VsTeXCommentsExtension.View
         private static readonly SolidColorBrush BackgroundUI_Dark = ForegroundUI_Light;
         private static readonly SolidColorBrush BackgroundUI_Light = ForegroundUI_Dark;
 
-        private static readonly ImageSource dropDown_Light = new BitmapImage(GetAssemblyResourceUri("DropDown_Light.png"));
-        private static readonly ImageSource dropDown_Dark = new BitmapImage(GetAssemblyResourceUri("DropDown_Dark.png"));
+        private static readonly ImageSource DropDown_Light = new BitmapImage(GetAssemblyResourceUri("DropDown_Light.png"));
+        private static readonly ImageSource DropDown_Dark = new BitmapImage(GetAssemblyResourceUri("DropDown_Dark.png"));
 
-        private static readonly ImageSource edit_Light = new BitmapImage(GetAssemblyResourceUri("Edit_Light.png"));
-        private static readonly ImageSource edit_Dark = new BitmapImage(GetAssemblyResourceUri("Edit_Dark.png"));
+        private static readonly ImageSource Edit_Light = new BitmapImage(GetAssemblyResourceUri("Edit_Light.png"));
+        private static readonly ImageSource Edit_Dark = new BitmapImage(GetAssemblyResourceUri("Edit_Dark.png"));
 
-        private static readonly ImageSource show_Light = new BitmapImage(GetAssemblyResourceUri("Show_Light.png"));
-        private static readonly ImageSource show_Dark = new BitmapImage(GetAssemblyResourceUri("Show_Dark.png"));
+        private static readonly ImageSource Show_Light = new BitmapImage(GetAssemblyResourceUri("Show_Light.png"));
+        private static readonly ImageSource Show_Dark = new BitmapImage(GetAssemblyResourceUri("Show_Dark.png"));
 
-        private static readonly ImageSource warning_Light = new BitmapImage(GetAssemblyResourceUri("Warning_Light.png"));
-        private static readonly ImageSource warning_Dark = new BitmapImage(GetAssemblyResourceUri("Warning_Dark.png"));
+        private static readonly ImageSource Warning_Light = new BitmapImage(GetAssemblyResourceUri("Warning_Light.png"));
+        private static readonly ImageSource Warning_Dark = new BitmapImage(GetAssemblyResourceUri("Warning_Dark.png"));
 
-        private static readonly Dictionary<IWpfTextView, ResourcesManager> instances = new Dictionary<IWpfTextView, ResourcesManager>();
+        private static readonly Dictionary<IWpfTextView, ResourcesManager> Instances = new Dictionary<IWpfTextView, ResourcesManager>();
 
         public static int CurrentDpiX => Native.CurrentDpiX;
         public static int CurrentDpiY => Native.CurrentDpiY;
 
         public static ResourcesManager GetOrCreate(IWpfTextView textView)
         {
-            lock (instances)
+            lock (Instances)
             {
                 ResourcesManager instance;
-                if (!instances.TryGetValue(textView, out instance))
+                if (!Instances.TryGetValue(textView, out instance))
                 {
                     instance = new ResourcesManager(textView);
-                    instances.Add(textView, instance);
+                    Instances.Add(textView, instance);
                 }
                 return instance;
             }
@@ -50,13 +50,13 @@ namespace VsTeXCommentsExtension.View
         private readonly VsSettings vsSettings;
         private bool useDark = true;
 
-        public ImageSource DropDown => useDark ? dropDown_Dark : dropDown_Light;
+        public ImageSource DropDown => useDark ? DropDown_Dark : DropDown_Light;
 
-        public ImageSource Edit => useDark ? edit_Dark : edit_Light;
+        public ImageSource Edit => useDark ? Edit_Dark : Edit_Light;
 
-        public ImageSource Show => useDark ? show_Dark : show_Light;
+        public ImageSource Show => useDark ? Show_Dark : Show_Light;
 
-        public ImageSource Warning => useDark ? warning_Dark : warning_Light;
+        public ImageSource Warning => useDark ? Warning_Dark : Warning_Light;
 
         public SolidColorBrush ForegroundUI => useDark ? ForegroundUI_Dark : ForegroundUI_Light;
 

@@ -18,8 +18,10 @@ namespace VsTeXCommentsExtension.Integration.View
     [TagType(typeof(IntraTextAdornmentTag))]
     internal sealed class TeXCommentAdornmentTaggerProvider : IViewTaggerProvider, IDisposable
     {
-        private static readonly object sync = new object();
+        private static readonly object Sync = new object();
         private static IRenderingManager renderingManager;
+
+        private readonly HashSet<ITextView> textViews = new HashSet<ITextView>();
 
         [Import]
         private IBufferTagAggregatorFactoryService BufferTagAggregatorFactoryService = null; //MEF
@@ -29,8 +31,6 @@ namespace VsTeXCommentsExtension.Integration.View
 
         [Import]
         private IVsFontsAndColorsInformationService VsFontsAndColorsInformationService = null; //MEF
-
-        private readonly HashSet<ITextView> textViews = new HashSet<ITextView>();
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer)
             where T : ITag
@@ -49,7 +49,7 @@ namespace VsTeXCommentsExtension.Integration.View
 
             if (!VsSettings.IsInitialized)
             {
-                lock (sync)
+                lock (Sync)
                 {
                     if (!VsSettings.IsInitialized)
                     {
@@ -60,7 +60,7 @@ namespace VsTeXCommentsExtension.Integration.View
 
             if (renderingManager == null)
             {
-                lock (sync)
+                lock (Sync)
                 {
                     if (renderingManager == null)
                     {

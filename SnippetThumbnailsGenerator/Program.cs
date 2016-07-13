@@ -11,13 +11,13 @@ using VsTeXCommentsExtension.View;
 
 namespace SnippetThumbnailsGenerator
 {
-    class Program
+    internal class Program
     {
-        const string OutputPath = "Output";
-        static HtmlRenderer renderer;
+        private const string OutputPath = "Output";
+        private static HtmlRenderer renderer;
 
         [STAThread]
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             new System.Windows.Application(); //needed for correct resource loading
 
