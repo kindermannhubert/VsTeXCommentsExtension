@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using VsTeXCommentsExtension.Integration.Data;
 using VsTeXCommentsExtension.Integration.View;
 
@@ -112,8 +111,6 @@ namespace VsTeXCommentsExtension.View
                 if (previewAdorner.Parent == null)
                 {
                     previewAdorner.OffsetX = -this.lastLineWidthWithoutStartWhiteSpaces; //'this' is important because of lambda closure
-                    var imageBinding = new Binding(nameof(RenderedImage)) { Source = root.DataContext };
-                    previewAdorner.SetBinding(PreviewAdorner.ImageSourceProperty, imageBinding);
                     System.Windows.Documents.AdornerLayer.GetAdornerLayer(this).Add(previewAdorner);
                 }
             };

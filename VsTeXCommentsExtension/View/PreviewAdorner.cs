@@ -10,7 +10,7 @@ namespace VsTeXCommentsExtension.View
 {
     public class PreviewAdorner : Adorner
     {
-        public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.Register(nameof(ImageSource), typeof(ImageSource), typeof(PreviewAdorner), new PropertyMetadata(null));
+        private readonly GrayscaleEffect.GrayscaleEffect graycaleEffect = new GrayscaleEffect.GrayscaleEffect();
 
         private FrameworkElement child;
         public FrameworkElement Child
@@ -35,12 +35,6 @@ namespace VsTeXCommentsExtension.View
             }
         }
 
-        public ImageSource ImageSource
-        {
-            get { return (ImageSource)GetValue(ImageSourceProperty); }
-            set { SetValue(ImageSourceProperty, value); }
-        }
-
         public PreviewAdorner(UIElement adornedElement, IResourcesManager resourcesManager, IVsSettings vsSettings)
             : base(adornedElement)
         {
@@ -49,7 +43,7 @@ namespace VsTeXCommentsExtension.View
 
             var image = new Image() { SnapsToDevicePixels = true, UseLayoutRounding = true };
             RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.NearestNeighbor);
-            image.SetBinding(Image.SourceProperty, new Binding(nameof(ImageSource)) { Source = this });
+            image.SetBinding(Image.SourceProperty, new Binding(nameof(TeXCommentAdornment.RenderedImage)) { Source = adornedElement });
             image.SetBinding(Image.WidthProperty, new Binding(nameof(TeXCommentAdornment.RenderedImageWidth)) { Source = adornedElement });
             image.SetBinding(Image.HeightProperty, new Binding(nameof(TeXCommentAdornment.RenderedImageHeight)) { Source = adornedElement });
 
@@ -63,15 +57,32 @@ namespace VsTeXCommentsExtension.View
             border.SetBinding(Border.BackgroundProperty, new Binding(nameof(IVsSettings.CommentsBackground)) { Source = vsSettings });
             Child = border;
 
+            var style = new Style(typeof(Border));
+            var grayscaleTrigger = new DataTrigger()
+            {
+                Binding = new Binding(nameof(TeXCommentAdornment.CurrentState)) { Source = adornedElement },
+                Value = TeXCommentAdornmentState.EditingAndRenderingPreview
+            };
+            grayscaleTrigger.Setters.Add(new Setter(Border.EffectProperty, graycaleEffect));
+            style.Triggers.Add(grayscaleTrigger);
+            border.Style = style;
+
             //visibility setup
-            var style = new Style(typeof(PreviewAdorner));
+            style = new Style(typeof(PreviewAdorner));
             style.Setters.Add(new Setter(VisibilityProperty, Visibility.Collapsed));
-            var isCarretInsideTeXBlockBinding = new Binding(nameof(TeXCommentAdornment.IsCaretInsideTeXBlock)) { Source = adornedElement };
+
             var visibilityTrigger = new MultiDataTrigger();
             visibilityTrigger.Conditions.Add(new Condition(new Binding(nameof(TeXCommentAdornment.CurrentState)) { Source = adornedElement }, TeXCommentAdornmentState.EditingWithPreview));
-            visibilityTrigger.Conditions.Add(new Condition(isCarretInsideTeXBlockBinding, true));
+            visibilityTrigger.Conditions.Add(new Condition(new Binding(nameof(TeXCommentAdornment.IsCaretInsideTeXBlock)) { Source = adornedElement }, true));
             visibilityTrigger.Setters.Add(new Setter(VisibilityProperty, Visibility.Visible));
             style.Triggers.Add(visibilityTrigger);
+
+            visibilityTrigger = new MultiDataTrigger();
+            visibilityTrigger.Conditions.Add(new Condition(new Binding(nameof(TeXCommentAdornment.CurrentState)) { Source = adornedElement }, TeXCommentAdornmentState.EditingAndRenderingPreview));
+            visibilityTrigger.Conditions.Add(new Condition(new Binding(nameof(TeXCommentAdornment.IsCaretInsideTeXBlock)) { Source = adornedElement }, true));
+            visibilityTrigger.Setters.Add(new Setter(VisibilityProperty, Visibility.Visible));
+            style.Triggers.Add(visibilityTrigger);
+
             Style = style;
         }
 
