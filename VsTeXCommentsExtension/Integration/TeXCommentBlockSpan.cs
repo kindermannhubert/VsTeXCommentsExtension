@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.Text;
+using System;
 
 namespace VsTeXCommentsExtension.Integration
 {
@@ -53,6 +54,21 @@ namespace VsTeXCommentsExtension.Integration
             {
                 var line = snapshot.GetLineFromLineNumber(lineIndex);
                 int whitespaces = line.GetText().NumberOfWhiteSpaceCharsOnStartOfLine();
+                if (whitespaces < min) min = whitespaces;
+            }
+
+            return min;
+        }
+
+        public static int GetMinNumberOfWhitespacesBeforeCommentPrefixes(string teXBlock)
+        {
+            //TODO perf
+
+            var lines = teXBlock.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            int min = int.MaxValue;
+            foreach (var line in lines)
+            {
+                int whitespaces = line.NumberOfWhiteSpaceCharsOnStartOfLine();
                 if (whitespaces < min) min = whitespaces;
             }
 

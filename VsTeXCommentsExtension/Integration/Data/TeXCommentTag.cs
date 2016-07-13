@@ -19,6 +19,7 @@ namespace VsTeXCommentsExtension.Integration.Data
     {
         private string textTrimmed;
         public readonly string Text;
+        public readonly string TextWithWhitespacesAtStartOfFirstLine;
         public readonly TeXCommentBlockSpan TeXBlock;
 
         /// <summary>
@@ -36,6 +37,7 @@ namespace VsTeXCommentsExtension.Integration.Data
             Debug.Assert(text != null);
 
             textTrimmed = null;
+            TextWithWhitespacesAtStartOfFirstLine = text;
             Text = text.TrimStart(TextSnapshotTeXCommentBlocks.WhiteSpaces);
             TeXBlock = span;
         }

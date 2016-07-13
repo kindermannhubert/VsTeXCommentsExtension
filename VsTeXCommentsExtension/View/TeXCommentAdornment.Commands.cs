@@ -1,10 +1,12 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Xml.Linq;
+using VsTeXCommentsExtension.Integration;
 using VsTeXCommentsExtension.Integration.View;
 
 namespace VsTeXCommentsExtension.View
@@ -107,6 +109,20 @@ namespace VsTeXCommentsExtension.View
 
             var code = snippet.Snippet;
             if (!IsCaretInsideMathBlock) code = $"$${code}$$";
+
+            if (snippet.IsMultiLine)
+            {
+                //we need to corretly indent snippet
+                var indent = TeXCommentBlockSpan.GetMinNumberOfWhitespacesBeforeCommentPrefixes(tag.TextWithWhitespacesAtStartOfFirstLine);
+                var indentString = new string(' ', indent);
+                var lines = code.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    if (lines[i].Length > 0) lines[i] = indentString + lines[i];
+                }
+                code = lines.Aggregate((a, b) => $"{a}{Environment.NewLine}{b}");
+            }
+
             textView.TextBuffer.Insert(caret.Position.BufferPosition.Position, code);
         }
 
@@ -140,10 +156,14 @@ namespace VsTeXCommentsExtension.View
         {
             public string Snippet { get; }
             public ImageSource Icon { get; }
+            public bool IsMultiLine { get; }
 
             public SnippetMenuItem(string snippet, string iconPath)
             {
                 Snippet = snippet;
+
+                IsMultiLine = snippet.Contains('\n');
+                Debug.Assert(!IsMultiLine || snippet.StartsWith(Environment.NewLine));
 
                 var iconUri = ResourcesManager.GetAssemblyResourceUri(iconPath);
 
