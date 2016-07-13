@@ -43,7 +43,7 @@ namespace VsTeXCommentsExtension.View
                 spanWithLastLineBreak = spanWithLastLineBreak.TranslateStart(tag.TeXBlock.FirstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length);
 
                 var caretPosition = textView.Caret.Position.BufferPosition;
-                if (tag.Span.Length == spanWithLastLineBreak.Length)
+                if (tag.Span.Length == tag.SpanWithLastLineBreak.Length)
                 {
                     return caretPosition >= spanWithLastLineBreak.Start && caretPosition <= spanWithLastLineBreak.End;
                 }
@@ -64,9 +64,13 @@ namespace VsTeXCommentsExtension.View
                 var caretPositionRelativeToTextStart = textView.Caret.Position.BufferPosition.Position - textStartIndex;
                 foreach (Match mathBlockMatch in TeXSyntaxClassifier.MathBlockRegex.Matches(tag.Text))
                 {
-                    if (caretPositionRelativeToTextStart >= mathBlockMatch.Index &&
-                        caretPositionRelativeToTextStart <= mathBlockMatch.Index + mathBlockMatch.Length)
-                        return true;
+                    if (mathBlockMatch.Success)
+                    {
+                        var dollarSignCount = mathBlockMatch.Groups[1].Length;
+                        if (caretPositionRelativeToTextStart >= mathBlockMatch.Index + dollarSignCount &&
+                            caretPositionRelativeToTextStart <= mathBlockMatch.Index + mathBlockMatch.Length - dollarSignCount)
+                            return true;
+                    }
                 }
 
                 //special case

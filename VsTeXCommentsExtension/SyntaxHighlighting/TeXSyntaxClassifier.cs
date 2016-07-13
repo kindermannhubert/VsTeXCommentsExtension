@@ -10,7 +10,7 @@ namespace VsTeXCommentsExtension.SyntaxHighlighting
 {
     public class TeXSyntaxClassifier : IClassifier
     {
-        public static readonly Regex MathBlockRegex = new Regex(@"[\$]?\$[^\$]+\$[\$]?", RegexOptions.Multiline | RegexOptions.Compiled);
+        public static readonly Regex MathBlockRegex = new Regex(@"([\$]?\$)[^\$]+\$[\$]?", RegexOptions.Multiline | RegexOptions.Compiled);
         public static readonly Regex CommandRegex = new Regex(@"\\[^ {}_\^\$\r\n]+", RegexOptions.Multiline | RegexOptions.Compiled);
         public static readonly Regex TexPrefixRegex = new Regex($@"^[ \t]*({TextSnapshotTeXCommentBlocks.TeXCommentPrefix})", RegexOptions.Compiled);
 
