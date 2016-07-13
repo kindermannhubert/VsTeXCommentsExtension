@@ -104,7 +104,10 @@ namespace VsTeXCommentsExtension.View
 
             var caret = textView.Caret;
             caret.EnsureVisible();
-            textView.TextBuffer.Insert(caret.Position.BufferPosition.Position, snippet.Snippet);
+
+            var code = snippet.Snippet;
+            if (!IsCaretInsideMathBlock) code = $"$${code}$$";
+            textView.TextBuffer.Insert(caret.Position.BufferPosition.Position, code);
         }
 
         public class ZoomMenuItem : INotifyPropertyChanged

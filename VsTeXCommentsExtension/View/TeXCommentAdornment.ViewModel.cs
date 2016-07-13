@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using System.Windows.Media.Imaging;
 using VsTeXCommentsExtension.Integration;
+using VsTeXCommentsExtension.SyntaxHighlighting;
 
 namespace VsTeXCommentsExtension.View
 {
@@ -46,6 +48,36 @@ namespace VsTeXCommentsExtension.View
                     return caretPosition >= spanWithLastLineBreak.Start && caretPosition <= spanWithLastLineBreak.End;
                 }
                 return spanWithLastLineBreak.Contains(caretPosition);
+            }
+        }
+
+        public bool IsCaretInsideMathBlock
+        {
+            get
+            {
+                if (!IsCaretInsideTeXBlock) return false;
+
+                var spanWithLastLineBreak = tag.SpanWithLastLineBreak;
+                Debug.Assert(spanWithLastLineBreak.Length >= tag.TeXBlock.FirstLineWhiteSpacesAtStart);
+                var textStartIndex = spanWithLastLineBreak.Start + tag.TeXBlock.FirstLineWhiteSpacesAtStart;
+
+                var caretPositionRelativeToTextStart = textView.Caret.Position.BufferPosition.Position - textStartIndex;
+                foreach (Match mathBlockMatch in TeXSyntaxClassifier.MathBlockRegex.Matches(tag.Text))
+                {
+                    if (caretPositionRelativeToTextStart >= mathBlockMatch.Index &&
+                        caretPositionRelativeToTextStart <= mathBlockMatch.Index + mathBlockMatch.Length)
+                        return true;
+                }
+
+                //special case
+                if (caretPositionRelativeToTextStart > 0 && caretPositionRelativeToTextStart < tag.Text.Length)
+                {
+                    if (tag.Text[caretPositionRelativeToTextStart - 1] == '$' &&
+                        tag.Text[caretPositionRelativeToTextStart] == '$')
+                        return true;
+                }
+
+                return false;
             }
         }
 

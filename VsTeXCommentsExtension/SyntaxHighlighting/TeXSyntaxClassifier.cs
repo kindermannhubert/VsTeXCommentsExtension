@@ -10,21 +10,18 @@ namespace VsTeXCommentsExtension.SyntaxHighlighting
 {
     public class TeXSyntaxClassifier : IClassifier
     {
+        public static readonly Regex MathBlockRegex = new Regex(@"[\$]?\$[^\$]+\$[\$]?", RegexOptions.Multiline | RegexOptions.Compiled);
+        public static readonly Regex CommandRegex = new Regex(@"\\[^ {}_\^\$\r\n]+", RegexOptions.Multiline | RegexOptions.Compiled);
+        public static readonly Regex TexPrefixRegex = new Regex($@"^[ \t]*({TextSnapshotTeXCommentBlocks.TeXCommentPrefix})", RegexOptions.Compiled);
+
         private readonly TextSnapshotTeXCommentBlocks texCommentBlocks = new TextSnapshotTeXCommentBlocks();
         private readonly IClassificationTypeRegistryService classificationTypeRegistry;
-        private readonly Regex mathBlockRegex;
-        private readonly Regex commandRegex;
-        private readonly Regex texPrefixRegex;
         private readonly IClassificationType commandClassificationType;
         private readonly IClassificationType mathBlockClassificationType;
 
         internal TeXSyntaxClassifier(IClassificationTypeRegistryService registry)
         {
             this.classificationTypeRegistry = registry;
-
-            mathBlockRegex = new Regex(@"[\$]?\$[^\$]+\$[\$]?", RegexOptions.Multiline | RegexOptions.Compiled);
-            commandRegex = new Regex(@"\\[^ {}_\^\$\r\n]+", RegexOptions.Multiline | RegexOptions.Compiled);
-            texPrefixRegex = new Regex($@"^[ \t]*({TextSnapshotTeXCommentBlocks.TeXCommentPrefix})", RegexOptions.Compiled);
 
             commandClassificationType = classificationTypeRegistry.GetClassificationType("TeX.command");
             mathBlockClassificationType = classificationTypeRegistry.GetClassificationType("TeX.mathBlock");
@@ -43,10 +40,10 @@ namespace VsTeXCommentsExtension.SyntaxHighlighting
             {
                 var blockText = blockSpan.GetText();
 
-                foreach (Match mathBlockMatch in mathBlockRegex.Matches(blockText))
+                foreach (Match mathBlockMatch in MathBlockRegex.Matches(blockText))
                 {
                     //commands colorizing (="\someCommand")
-                    foreach (Match commandMatch in commandRegex.Matches(mathBlockMatch.Value))
+                    foreach (Match commandMatch in CommandRegex.Matches(mathBlockMatch.Value))
                     {
                         var commandSpan = new Span(blockSpan.Start + mathBlockMatch.Index + commandMatch.Index, commandMatch.Length);
                         spans.Add(new ClassificationSpan(new SnapshotSpan(snapshot, commandSpan), commandClassificationType));
@@ -65,7 +62,7 @@ namespace VsTeXCommentsExtension.SyntaxHighlighting
                 }
 
                 //"tex:" prefix will be colorized too
-                var prefixMatch = texPrefixRegex.Match(blockText);
+                var prefixMatch = TexPrefixRegex.Match(blockText);
                 Debug.Assert(prefixMatch.Success && prefixMatch.Groups.Count == 2);
                 var prefixStart = prefixMatch.Groups[1].Index + TextSnapshotTeXCommentBlocks.CommentPrefix.Length;
                 var prefixLength = TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length - TextSnapshotTeXCommentBlocks.CommentPrefix.Length;
