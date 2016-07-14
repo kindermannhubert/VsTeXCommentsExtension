@@ -85,6 +85,7 @@ namespace VsTeXCommentsExtension.View
             TeXCommentTag tag,
             LineSpan lineSpan,
             double lastLineWidthWithoutStartWhiteSpaces,
+            TeXCommentAdornmentState initialState,
             Action<Span> refreshTags,
             Action<bool> setIsInEditModeForAllAdornmentsInDocument,
             IRenderingManager renderingManager,
@@ -120,7 +121,7 @@ namespace VsTeXCommentsExtension.View
             NameScope.SetNameScope(btnEdit.ContextMenu, NameScope.GetNameScope(this));
             NameScope.SetNameScope((ToolTip)imgError.ToolTip, NameScope.GetNameScope(this));
 
-            CurrentState = TeXCommentAdornmentState.Rendering;
+            CurrentState = initialState;
         }
 
         public void Update(TeXCommentTag tag, LineSpan lineSpan, double? lastLineWidthWithoutStartWhiteSpaces)

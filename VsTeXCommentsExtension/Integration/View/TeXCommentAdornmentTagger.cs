@@ -16,6 +16,7 @@ namespace VsTeXCommentsExtension.Integration.View
         private readonly IRenderingManager renderingManager;
         private readonly List<TeXCommentAdornment> linesWithAdornments = new List<TeXCommentAdornment>();
         private readonly VsSettings vsSettings;
+        private bool textHasBeenEdited;
 
         internal static TeXCommentAdornmentTagger GetTagger(
             IWpfTextView view,
@@ -43,6 +44,7 @@ namespace VsTeXCommentsExtension.Integration.View
 
         private void TextBuffer_Changed(object sender, TextContentChangedEventArgs e)
         {
+            textHasBeenEdited = true;
             HandleAutoCommentPrefixInsertionAfterEdit(e);
             HandleSwitchingToEditModeAfterEdit(e);
         }
@@ -159,6 +161,7 @@ namespace VsTeXCommentsExtension.Integration.View
                 dataTag,
                 lineSpan,
                 lastLineWidthWithoutStartWhiteSpaces ?? 0,
+                textHasBeenEdited ? TeXCommentAdornmentState.EditingAndRenderingPreview : TeXCommentAdornmentState.Rendering,
                 span =>
                 {
                     //var blockSpans = texCommentBlocks.GetBlockSpansWithLastLineBreakIntersectedBy(Snapshot, span);
