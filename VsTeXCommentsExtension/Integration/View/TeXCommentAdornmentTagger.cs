@@ -56,6 +56,7 @@ namespace VsTeXCommentsExtension.Integration.View
 
             var change = e.Changes[0];
             if (change.NewText != "\r\n") return;
+            if (change.OldText.Length != 0) return; //we handle only simple cases
 
             var block = TexCommentBlocks.GetBlockForPosition(e.Before, change.OldPosition);
             if (!block.HasValue) return;
@@ -63,9 +64,20 @@ namespace VsTeXCommentsExtension.Integration.View
             if (!block.Value.IsPositionAfterTeXPrefix(e.Before, change.OldPosition)) return;
 
             var line = e.Before.GetLineFromPosition(change.OldPosition);
-            var whitespaceCount = block.Value.GetMinNumberOfWhitespacesBeforeCommentPrefixes(e.Before);
-
-            TextView.TextBuffer.Insert(e.Changes[0].NewEnd, new string(' ', whitespaceCount) + "//");
+            var oldLinePartWhichIsMovedToNewLine = e.Before.GetText(change.OldPosition, line.Extent.End.Position - change.OldPosition);
+            if (oldLinePartWhichIsMovedToNewLine
+                .TrimStart(TextSnapshotTeXCommentBlocks.WhiteSpaces)
+                .StartsWith(TextSnapshotTeXCommentBlocks.CommentPrefix))
+            {
+                //Enter has was pressed before '//'
+                TextView.TextBuffer.Insert(change.NewPosition, "//"); //whitespaces are inserted automatically by VS
+            }
+            else
+            {
+                //Enter has was pressed after '//'
+                var whitespaceCount = block.Value.GetMinNumberOfWhitespacesBeforeCommentPrefixes(e.Before);
+                TextView.TextBuffer.Insert(change.NewEnd, new string(' ', whitespaceCount) + "//");
+            }
         }
 
         private void HandleSwitchingToEditModeAfterEdit(TextContentChangedEventArgs e)
