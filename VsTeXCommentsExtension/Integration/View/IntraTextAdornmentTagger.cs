@@ -272,7 +272,7 @@ namespace VsTeXCommentsExtension.Integration.View
                             adornment = adornmentsPool[adornmentsPool.Count - 1];
                             adornmentsPool.RemoveAt(adornmentsPool.Count - 1);
                             UpdateAdornment(adornment, tagData.Tag, adornmentInfo.Span.Span, snapshot);
-                            adornment.CurrentState = TeXCommentAdornmentState.Rendering;
+                            adornment.CurrentState = TeXCommentAdornmentState.EditingAndRenderingPreview;
                             Debug.WriteLine($"Reusing adornment {adornment.Index} from pool");
                         }
                         else
