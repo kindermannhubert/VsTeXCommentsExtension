@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
-
+using System.Windows;
 using wpf = System.Windows.Media;
 
 namespace VsTeXCommentsExtension.View
@@ -17,10 +17,6 @@ namespace VsTeXCommentsExtension.View
         public HtmlRendererCache()
         {
             CacheDirectory = Path.Combine(Path.GetTempPath(), nameof(VsTeXCommentsExtension), nameof(HtmlRendererCache));
-            if (!Directory.Exists(CacheDirectory))
-            {
-                Directory.CreateDirectory(CacheDirectory);
-            }
         }
 
         public bool TryGetImage(Info info, out RendererResult? result)
@@ -51,29 +47,38 @@ namespace VsTeXCommentsExtension.View
 
         public string Add(Info info, Bitmap bitmap)
         {
-            var filePath = Path.Combine(CacheDirectory, info.GetFileName());
-
             try
             {
-                mutex.WaitOne();
+                if (!Directory.Exists(CacheDirectory)) Directory.CreateDirectory(CacheDirectory);
+                var filePath = Path.Combine(CacheDirectory, info.GetFileName());
 
-                using (var fs = new FileStream(filePath + ".txt", FileMode.Create))
-                using (var writer = new StreamWriter(fs))
+                try
                 {
-                    writer.Write(info.ToString());
-                }
+                    mutex.WaitOne();
 
-                var filePathPng = filePath + ".png";
-                using (var fs = new FileStream(filePathPng, FileMode.Create))
+                    using (var fs = new FileStream(filePath + ".txt", FileMode.Create))
+                    using (var writer = new StreamWriter(fs))
+                    {
+                        writer.Write(info.ToString());
+                    }
+
+                    var filePathPng = filePath + ".png";
+                    using (var fs = new FileStream(filePathPng, FileMode.Create))
+                    {
+                        bitmap.Save(fs, ImageFormat.Png);
+                    }
+
+                    return filePathPng;
+                }
+                finally
                 {
-                    bitmap.Save(fs, ImageFormat.Png);
+                    mutex.ReleaseMutex();
                 }
-
-                return filePathPng;
             }
-            finally
+            catch (Exception ex)
             {
-                mutex.ReleaseMutex();
+                MessageBox.Show($"Error while saving rendered comment to cache. Exception: {ex}", nameof(VsTeXCommentsExtension), MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
             }
         }
 
