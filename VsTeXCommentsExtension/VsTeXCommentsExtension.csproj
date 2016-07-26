@@ -457,6 +457,7 @@
   <ItemGroup>
     <Analyzer Include="..\Analyzers\CodeCrackerAnalyzers\CodeCracker.Common.dll" />
     <Analyzer Include="..\Analyzers\CodeCrackerAnalyzers\CodeCracker.CSharp.dll" />
+    <Analyzer Include="..\Analyzers\RefactoringEssentials\RefactoringEssentials.dll" />
     <Analyzer Include="..\Analyzers\StyleCopAnalyzers\Newtonsoft.Json.dll" />
     <Analyzer Include="..\Analyzers\StyleCopAnalyzers\StyleCop.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\Analyzers\StyleCopAnalyzers\StyleCop.Analyzers.dll" />

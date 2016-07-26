@@ -107,7 +107,7 @@ namespace VsTeXCommentsExtension.View
             InitializeComponent();
 
             previewAdorner = new PreviewAdorner(this, ResourcesManager, vsSettings);
-            Loaded += (_, __) =>
+            Loaded += (s, e) =>
             {
                 if (previewAdorner.Parent == null)
                 {

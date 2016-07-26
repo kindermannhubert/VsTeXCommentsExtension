@@ -145,7 +145,7 @@ namespace VsTeXCommentsExtension.View
             }
         }
 
-        private class Native
+        private static class Native
         {
             private static int dpiX = -1;
             private static int dpiY = -1;
