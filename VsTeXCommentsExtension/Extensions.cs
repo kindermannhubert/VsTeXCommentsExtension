@@ -85,6 +85,18 @@ namespace VsTeXCommentsExtension
             return 0;
         }
 
+        public static bool StartsWith(this string text, int startIndex, string value)
+        {
+            int endIndex = startIndex + value.Length - 1;
+            if (text.Length <= endIndex) return false;
+
+            for (int i = startIndex, j = 0; i <= endIndex; ++i, ++j)
+            {
+                if (text[i] != value[j]) return false;
+            }
+            return true;
+        }
+
         public static void AddRange<T>(this List<T> list, PooledStructEnumerable<T> values)
         {
             foreach (var value in values)

@@ -57,7 +57,6 @@ namespace VsTeXCommentsExtension.Integration
             }
         }
 
-        //TODO perf/allocations
         private List<TeXCommentBlockSpan> GenerateTexCommentBlocks(ITextSnapshot snapshot)
         {
             var texCommentBlocks = blockListsPool.Get();
@@ -67,18 +66,19 @@ namespace VsTeXCommentsExtension.Integration
             foreach (var line in snapshot.Lines)
             {
                 var lineText = line.GetText();
-                var lineTextTrimmed = lineText.TrimStart(WhiteSpaces);
+                var numberOfWhiteSpaceCharsOnStartOfLine = lineText.NumberOfWhiteSpaceCharsOnStartOfLine();
+
                 if (atTexBlock)
                 {
-                    if (lineTextTrimmed.StartsWith(TeXCommentPrefix))
+                    if (lineText.StartsWith(numberOfWhiteSpaceCharsOnStartOfLine, TeXCommentPrefix))
                     {
                         texBlockSpanBuilder.EndBlock(lastBlockLine);
                         texCommentBlocks.Add(texBlockSpanBuilder.Build(snapshot)); //end of current block
 
-                        texBlockSpanBuilder = new TeXCommentBlockSpanBuilder(line.ExtentIncludingLineBreak, lineText.Length - lineTextTrimmed.Length, line.GetLineBreakText()); //start of new block
+                        texBlockSpanBuilder = new TeXCommentBlockSpanBuilder(line.ExtentIncludingLineBreak, numberOfWhiteSpaceCharsOnStartOfLine, line.GetLineBreakText()); //start of new block
                         lastBlockLine = line;
                     }
-                    else if (lineTextTrimmed.StartsWith(CommentPrefix))
+                    else if (lineText.StartsWith(numberOfWhiteSpaceCharsOnStartOfLine, CommentPrefix))
                     {
                         //continuation of current block
                         texBlockSpanBuilder.Add(line.LengthIncludingLineBreak);
@@ -92,11 +92,11 @@ namespace VsTeXCommentsExtension.Integration
                         atTexBlock = false;
                     }
                 }
-                else if (lineTextTrimmed.StartsWith(TeXCommentPrefix))
+                else if (lineText.StartsWith(numberOfWhiteSpaceCharsOnStartOfLine, TeXCommentPrefix))
                 {
                     //start of new block
                     atTexBlock = true;
-                    texBlockSpanBuilder = new TeXCommentBlockSpanBuilder(line.ExtentIncludingLineBreak, lineText.Length - lineTextTrimmed.Length, line.GetLineBreakText());
+                    texBlockSpanBuilder = new TeXCommentBlockSpanBuilder(line.ExtentIncludingLineBreak, numberOfWhiteSpaceCharsOnStartOfLine, line.GetLineBreakText());
                     lastBlockLine = line;
                 }
             }
