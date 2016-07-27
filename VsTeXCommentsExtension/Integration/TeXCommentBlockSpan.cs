@@ -26,7 +26,7 @@ namespace VsTeXCommentsExtension.Integration
         public int LastLineWhiteSpacesAtStart { get; }
 
         /// <summary>
-        /// Line break text used (should be "/r/n").
+        /// Line break text used (should be "\r\n").
         /// </summary>
         public string LineBreakText { get; }
 

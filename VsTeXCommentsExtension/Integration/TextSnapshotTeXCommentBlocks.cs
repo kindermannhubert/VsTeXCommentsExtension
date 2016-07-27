@@ -1,32 +1,27 @@
 ﻿using Microsoft.VisualStudio.Text;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace VsTeXCommentsExtension.Integration
 {
     internal class TextSnapshotTeXCommentBlocks
     {
-        private const int VersionsToCache = 8;
-        private const int CachedVersionToRemoveOnCleanUp = 4;
+        private const int VersionsToCache = 16;
+        private const int CachedVersionsToRemoveOnCleanUp = 13; //clean up will run when we have VersionsToCache+1 versions
 
         public const string CommentPrefix = "//";
         public const string TeXCommentPrefix = "//tex:";
         public static readonly char[] WhiteSpaces = new char[] { ' ', '\t' };
 
-        private readonly Dictionary<ITextBuffer, Dictionary<int, List<TeXCommentBlockSpan>>> blocksPerTextBuffer = new Dictionary<ITextBuffer, Dictionary<int, List<TeXCommentBlockSpan>>>();
+        private readonly Dictionary<int, List<TeXCommentBlockSpan>> blocksPerVersion = new Dictionary<int, List<TeXCommentBlockSpan>>();
         private readonly List<int> versions = new List<int>();
+
+        private readonly ObjectPool<List<TeXCommentBlockSpan>> blockListsPool = new ObjectPool<List<TeXCommentBlockSpan>>(() => new List<TeXCommentBlockSpan>());
+        private readonly ObjectPool<List<SnapshotSpan>> snapshotSpansListsPool = new ObjectPool<List<SnapshotSpan>>(() => new List<SnapshotSpan>());
 
         public IReadOnlyList<TeXCommentBlockSpan> GetTexCommentBlocks(ITextSnapshot snapshot)
         {
             lock (versions)
             {
-                Dictionary<int, List<TeXCommentBlockSpan>> blocksPerVersion;
-                if (!blocksPerTextBuffer.TryGetValue(snapshot.TextBuffer, out blocksPerVersion))
-                {
-                    blocksPerVersion = new Dictionary<int, List<TeXCommentBlockSpan>>();
-                    blocksPerTextBuffer.Add(snapshot.TextBuffer, blocksPerVersion);
-                }
-
                 var version = snapshot.Version.VersionNumber;
 
                 List<TeXCommentBlockSpan> blocks;
@@ -35,26 +30,37 @@ namespace VsTeXCommentsExtension.Integration
                     blocks = GenerateTexCommentBlocks(snapshot);
                     blocksPerVersion.Add(version, blocks);
                     versions.Add(-version);
-                }
 
-                if (versions.Count > VersionsToCache)
-                {
-                    versions.Sort();
-                    for (int i = versions.Count - 1; i >= VersionsToCache - CachedVersionToRemoveOnCleanUp; i--)
-                    {
-                        blocksPerVersion.Remove(-versions[i]);
-                    }
-                    versions.RemoveRange(VersionsToCache - CachedVersionToRemoveOnCleanUp, CachedVersionToRemoveOnCleanUp);
+                    DismissOldVersions();
                 }
 
                 return blocks;
             }
         }
 
-        //TODO perf/allocations/List<>pooling
-        private static List<TeXCommentBlockSpan> GenerateTexCommentBlocks(ITextSnapshot snapshot)
+        private void DismissOldVersions()
         {
-            var texCommentBlocks = new List<TeXCommentBlockSpan>();
+            if (versions.Count > VersionsToCache)
+            {
+                versions.Sort();
+                var lastIndex = versions.Count - CachedVersionsToRemoveOnCleanUp;
+                for (int i = versions.Count - 1; i >= lastIndex; i--)
+                {
+                    var versionToRemove = -versions[i];
+                    var removedBlocksList = blocksPerVersion[versionToRemove];
+                    blocksPerVersion.Remove(versionToRemove);
+
+                    removedBlocksList.Clear();
+                    blockListsPool.Put(removedBlocksList);
+                }
+                versions.RemoveRange(versions.Count - CachedVersionsToRemoveOnCleanUp, CachedVersionsToRemoveOnCleanUp);
+            }
+        }
+
+        //TODO perf/allocations
+        private List<TeXCommentBlockSpan> GenerateTexCommentBlocks(ITextSnapshot snapshot)
+        {
+            var texCommentBlocks = blockListsPool.Get();
             var atTexBlock = false;
             var texBlockSpanBuilder = default(TeXCommentBlockSpanBuilder);
             ITextSnapshotLine lastBlockLine = null;
@@ -103,32 +109,36 @@ namespace VsTeXCommentsExtension.Integration
             return texCommentBlocks;
         }
 
-        //TODO perf/allocations/List<>pooling
-        public IReadOnlyList<SnapshotSpan> GetBlockSpansIntersectedBy(ITextSnapshot snapshot, Span span)
+        public PooledStructEnumerable<SnapshotSpan> GetBlockSpansIntersectedBy(ITextSnapshot snapshot, Span span)
         {
             var blocks = GetTexCommentBlocks(snapshot);
 
-            var results = new List<SnapshotSpan>();
-            foreach (var block in blocks.Where(b => b.Span.IntersectsWith(span)))
+            var results = snapshotSpansListsPool.Get();
+            foreach (var block in blocks)
             {
-                results.Add(new SnapshotSpan(snapshot, block.Span));
+                if (block.Span.IntersectsWith(span))
+                {
+                    results.Add(new SnapshotSpan(snapshot, block.Span));
+                }
             }
 
-            return results;
+            return new PooledStructEnumerable<SnapshotSpan>(results, snapshotSpansListsPool);
         }
 
-        //TODO perf/allocations/List<>pooling
-        public IReadOnlyList<SnapshotSpan> GetBlockSpansWithLastLineBreakIntersectedBy(ITextSnapshot snapshot, Span span)
+        public PooledStructEnumerable<SnapshotSpan> GetBlockSpansWithLastLineBreakIntersectedBy(ITextSnapshot snapshot, Span span)
         {
             var blocks = GetTexCommentBlocks(snapshot);
 
-            var results = new List<SnapshotSpan>();
-            foreach (var block in blocks.Where(b => b.SpanWithLastLineBreak.IntersectsWith(span)))
+            var results = snapshotSpansListsPool.Get();
+            foreach (var block in blocks)
             {
-                results.Add(new SnapshotSpan(snapshot, block.SpanWithLastLineBreak));
+                if (block.SpanWithLastLineBreak.IntersectsWith(span))
+                {
+                    results.Add(new SnapshotSpan(snapshot, block.SpanWithLastLineBreak));
+                }
             }
 
-            return results;
+            return new PooledStructEnumerable<SnapshotSpan>(results, snapshotSpansListsPool);
         }
 
         public TeXCommentBlockSpan? GetBlockForPosition(ITextSnapshot snapshot, int position)

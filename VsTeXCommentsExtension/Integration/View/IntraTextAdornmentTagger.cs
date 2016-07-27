@@ -72,30 +72,31 @@ namespace VsTeXCommentsExtension.Integration.View
             var editedBlockSpans = new List<SnapshotSpan>();
             foreach (var change in args.Changes)
             {
-                var blockSpansBefore = TexCommentBlocks.GetBlockSpansIntersectedBy(args.Before, change.OldSpan);
-                var blockSpansAfter = TexCommentBlocks.GetBlockSpansIntersectedBy(args.After, change.NewSpan);
-
-                bool changed = false;
-                if (blockSpansBefore.Count == blockSpansAfter.Count)
+                using (var blockSpansBefore = TexCommentBlocks.GetBlockSpansIntersectedBy(args.Before, change.OldSpan))
+                using (var blockSpansAfter = TexCommentBlocks.GetBlockSpansIntersectedBy(args.After, change.NewSpan))
                 {
-                    for (int i = 0; i < blockSpansBefore.Count; i++)
+                    bool changed = false;
+                    if (blockSpansBefore.Count == blockSpansAfter.Count)
                     {
-                        if (blockSpansBefore[i].Span != blockSpansAfter[i].Span || blockSpansBefore[i].GetText() != blockSpansAfter[i].GetText())
+                        for (int i = 0; i < blockSpansBefore.Count; i++)
                         {
-                            changed = true;
-                            break;
+                            if (blockSpansBefore[i].Span != blockSpansAfter[i].Span || blockSpansBefore[i].GetText() != blockSpansAfter[i].GetText())
+                            {
+                                changed = true;
+                                break;
+                            }
                         }
                     }
-                }
-                else
-                {
-                    changed = true;
-                }
+                    else
+                    {
+                        changed = true;
+                    }
 
-                if (changed)
-                {
-                    editedBlockSpans.AddRange(blockSpansBefore);
-                    editedBlockSpans.AddRange(blockSpansAfter);
+                    if (changed)
+                    {
+                        editedBlockSpans.AddRange(blockSpansBefore);
+                        editedBlockSpans.AddRange(blockSpansAfter);
+                    }
                 }
             }
 

@@ -84,5 +84,13 @@ namespace VsTeXCommentsExtension
             }
             return 0;
         }
+
+        public static void AddRange<T>(this List<T> list, PooledStructEnumerable<T> values)
+        {
+            foreach (var value in values)
+            {
+                list.Add(value);
+            }
+        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace VsTeXCommentsExtension.Integration
+namespace VsTeXCommentsExtension
 {
     internal class CountedRef<T>
         where T : class, IDisposable
