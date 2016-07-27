@@ -7,7 +7,7 @@ using VsTeXCommentsExtension.Integration;
 namespace VsTeXCommentsExtension.SyntaxHighlighting
 {
     [Export(typeof(IClassifierProvider))]
-    [ContentType("text")]
+    [ContentType("CSharp")]
     internal class TeXSyntaxClassifierProvider : IClassifierProvider
     {
         [Import]

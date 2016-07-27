@@ -11,7 +11,7 @@
 //    /// Export a <see cref="IViewTaggerProvider"/>
 //    /// </summary>
 //    [Export(typeof(IViewTaggerProvider))]
-//    [ContentType("text")]
+//    [ContentType("CSharp")]
 //    [TagType(typeof(HighlightWordTag))]
 //    public class HighlightWordTaggerProvider : IViewTaggerProvider
 //    {

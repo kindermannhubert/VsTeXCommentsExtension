@@ -16,7 +16,7 @@ namespace VsTeXCommentsExtension.Integration
 {
     [Export(typeof(IWpfTextViewConnectionListener))]
     [Export(typeof(WpfTextViewResources))]
-    [ContentType("text")]
+    [ContentType("CSharp")]
     [TextViewRole(PredefinedTextViewRoles.Interactive)]
     internal class WpfTextViewResources : IWpfTextViewConnectionListener
     {

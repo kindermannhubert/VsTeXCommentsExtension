@@ -10,7 +10,7 @@ using System.ComponentModel.Composition;
 namespace VsTeXCommentsExtension.Integration.View
 {
     [Export(typeof(IViewTaggerProvider))]
-    [ContentType("text")]
+    [ContentType("CSharp")]
     [ContentType("projection")]
     [TagType(typeof(IntraTextAdornmentTag))]
     internal sealed class TeXCommentAdornmentTaggerProvider : IViewTaggerProvider
