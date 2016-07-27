@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
-using System;
 using System.Collections.Generic;
 using System.Windows;
 
@@ -15,7 +14,7 @@ namespace VsTeXCommentsExtension.Integration.View
     /// use the <see cref="IntraTextAdornmentTagger"/> base class.
     /// </remarks>
     internal abstract class IntraTextAdornmentTagTransformer<TDataTag, TAdornment>
-        : IntraTextAdornmentTagger<TDataTag, TAdornment>, IDisposable
+        : IntraTextAdornmentTagger<TDataTag, TAdornment>
         where TDataTag : ITag, ITagSpan
         where TAdornment : UIElement, ITagAdornment
     {
@@ -59,8 +58,9 @@ namespace VsTeXCommentsExtension.Integration.View
             InvalidateSpans(changedSpans);
         }
 
-        public virtual void Dispose()
+        public override void Dispose()
         {
+            base.Dispose();
             DataTagger.Dispose();
         }
     }

@@ -8,20 +8,25 @@ using VsTeXCommentsExtension.Integration;
 
 namespace VsTeXCommentsExtension.SyntaxHighlighting
 {
-    public class TeXSyntaxClassifier : IClassifier
+    public class TeXSyntaxClassifier : IClassifier, IDisposable
     {
         public static readonly Regex MathBlockRegex = new Regex(@"([\$]?\$)[^\$]+\$[\$]?", RegexOptions.Multiline | RegexOptions.Compiled);
         public static readonly Regex CommandRegex = new Regex(@"\\[^ {}_\^\$\r\n]+", RegexOptions.Multiline | RegexOptions.Compiled);
         public static readonly Regex TexPrefixRegex = new Regex($@"^[ \t]*({TextSnapshotTeXCommentBlocks.TeXCommentPrefix})", RegexOptions.Compiled);
 
-        private readonly TextSnapshotTeXCommentBlocks texCommentBlocks = new TextSnapshotTeXCommentBlocks();
+        private readonly ITextBuffer buffer;
+        private readonly TextSnapshotTeXCommentBlocks texCommentBlocks;
         private readonly IClassificationTypeRegistryService classificationTypeRegistry;
         private readonly IClassificationType commandClassificationType;
         private readonly IClassificationType mathBlockClassificationType;
 
-        internal TeXSyntaxClassifier(IClassificationTypeRegistryService registry)
+        private bool isDisposed;
+
+        internal TeXSyntaxClassifier(ITextBuffer buffer, IClassificationTypeRegistryService registry)
         {
+            this.buffer = buffer;
             this.classificationTypeRegistry = registry;
+            texCommentBlocks = TextSnapshotTeXCommentBlocksProvider.Get(buffer);
 
             commandClassificationType = classificationTypeRegistry.GetClassificationType("TeX.command");
             mathBlockClassificationType = classificationTypeRegistry.GetClassificationType("TeX.mathBlock");
@@ -70,6 +75,20 @@ namespace VsTeXCommentsExtension.SyntaxHighlighting
             }
 
             return spans;
+        }
+
+        public void Dispose()
+        {
+            if (isDisposed) return;
+
+            try
+            {
+                TextSnapshotTeXCommentBlocksProvider.Release(buffer, texCommentBlocks);
+            }
+            finally
+            {
+                isDisposed = true;
+            }
         }
     }
 }

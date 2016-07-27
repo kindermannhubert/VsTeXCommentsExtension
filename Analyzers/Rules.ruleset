@@ -234,7 +234,7 @@
     <Rule Id="CC0067" Action="None" />
     <Rule Id="CC0068" Action="None" />
     <Rule Id="CC0070" Action="None" />
-    <Rule Id="CC0071" Action="None" />
+    <Rule Id="CC0071" Action="Hidden" />
     <Rule Id="CC0072" Action="None" />
     <Rule Id="CC0073" Action="None" />
     <Rule Id="CC0074" Action="None" />

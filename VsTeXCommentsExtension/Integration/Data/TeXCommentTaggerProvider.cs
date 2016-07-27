@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using System;
@@ -13,7 +12,7 @@ namespace VsTeXCommentsExtension.Integration.Data
     internal sealed class TeXCommentTaggerProvider : ITaggerProvider
     {
         [Import]
-        private IClassifierAggregatorService AggregatorService { get; set; }
+        private WpfTextViewResources WpfTextViewResources = null; //MEF
 
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer)
             where T : ITag
@@ -24,12 +23,7 @@ namespace VsTeXCommentsExtension.Integration.Data
             if (typeof(T) != typeof(TeXCommentTag))
                 throw new ArgumentNullException(nameof(T));
 
-            return buffer.Properties.GetOrCreateSingletonProperty(
-                () =>
-                {
-                    var classifier = AggregatorService.GetClassifier(buffer);
-                    return new TeXCommentTagger(buffer, classifier);
-                }) as ITagger<T>;
+            return WpfTextViewResources.GetTeXCommentTagger(buffer) as ITagger<T>;
         }
     }
 }

@@ -18,34 +18,37 @@ namespace VsTeXCommentsExtension.Integration
 
         public IReadOnlyList<TeXCommentBlockSpan> GetTexCommentBlocks(ITextSnapshot snapshot)
         {
-            Dictionary<int, List<TeXCommentBlockSpan>> blocksPerVersion;
-            if (!blocksPerTextBuffer.TryGetValue(snapshot.TextBuffer, out blocksPerVersion))
+            lock (versions)
             {
-                blocksPerVersion = new Dictionary<int, List<TeXCommentBlockSpan>>();
-                blocksPerTextBuffer.Add(snapshot.TextBuffer, blocksPerVersion);
-            }
-
-            var version = snapshot.Version.VersionNumber;
-
-            List<TeXCommentBlockSpan> blocks;
-            if (!blocksPerVersion.TryGetValue(version, out blocks))
-            {
-                blocks = GenerateTexCommentBlocks(snapshot);
-                blocksPerVersion.Add(version, blocks);
-                versions.Add(-version);
-            }
-
-            if (versions.Count > VersionsToCache)
-            {
-                versions.Sort();
-                for (int i = versions.Count - 1; i >= VersionsToCache - CachedVersionToRemoveOnCleanUp; i--)
+                Dictionary<int, List<TeXCommentBlockSpan>> blocksPerVersion;
+                if (!blocksPerTextBuffer.TryGetValue(snapshot.TextBuffer, out blocksPerVersion))
                 {
-                    blocksPerVersion.Remove(-versions[i]);
+                    blocksPerVersion = new Dictionary<int, List<TeXCommentBlockSpan>>();
+                    blocksPerTextBuffer.Add(snapshot.TextBuffer, blocksPerVersion);
                 }
-                versions.RemoveRange(VersionsToCache - CachedVersionToRemoveOnCleanUp, CachedVersionToRemoveOnCleanUp);
-            }
 
-            return blocks;
+                var version = snapshot.Version.VersionNumber;
+
+                List<TeXCommentBlockSpan> blocks;
+                if (!blocksPerVersion.TryGetValue(version, out blocks))
+                {
+                    blocks = GenerateTexCommentBlocks(snapshot);
+                    blocksPerVersion.Add(version, blocks);
+                    versions.Add(-version);
+                }
+
+                if (versions.Count > VersionsToCache)
+                {
+                    versions.Sort();
+                    for (int i = versions.Count - 1; i >= VersionsToCache - CachedVersionToRemoveOnCleanUp; i--)
+                    {
+                        blocksPerVersion.Remove(-versions[i]);
+                    }
+                    versions.RemoveRange(VersionsToCache - CachedVersionToRemoveOnCleanUp, CachedVersionToRemoveOnCleanUp);
+                }
+
+                return blocks;
+            }
         }
 
         //TODO perf/allocations/List<>pooling

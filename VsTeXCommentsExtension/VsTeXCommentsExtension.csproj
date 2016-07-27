@@ -73,8 +73,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions.cs" />
+    <Compile Include="Integration\CountedRef.cs" />
     <Compile Include="Integration\ITagSpan.cs" />
     <Compile Include="Integration\TeXCommentBlockSpanBuilder.cs" />
+    <Compile Include="Integration\TextSnapshotTeXCommentBlocksProvider.cs" />
+    <Compile Include="Integration\WpfTextViewResources.cs" />
     <Compile Include="IVsSettings.cs" />
     <Compile Include="LineSpan.cs" />
     <Compile Include="Integration\TeXCommentBlockSpan.cs" />

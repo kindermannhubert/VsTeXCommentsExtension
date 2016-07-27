@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
+using VsTeXCommentsExtension.Integration;
 
 namespace VsTeXCommentsExtension.SyntaxHighlighting
 {
@@ -10,16 +11,8 @@ namespace VsTeXCommentsExtension.SyntaxHighlighting
     internal class TeXSyntaxClassifierProvider : IClassifierProvider
     {
         [Import]
-        private IClassificationTypeRegistryService ClassificationRegistry = null; //MEF
+        private WpfTextViewResources WpfTextViewResources = null; //MEF
 
-        private static TeXSyntaxClassifier diffClassifier;
-
-        public IClassifier GetClassifier(ITextBuffer buffer)
-        {
-            if (diffClassifier == null)
-                diffClassifier = new TeXSyntaxClassifier(ClassificationRegistry);
-
-            return diffClassifier;
-        }
+        public IClassifier GetClassifier(ITextBuffer buffer) => WpfTextViewResources.GetTeXSyntaxClassifier(buffer);
     }
 }

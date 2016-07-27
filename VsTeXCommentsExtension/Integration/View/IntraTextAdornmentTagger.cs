@@ -19,7 +19,7 @@ namespace VsTeXCommentsExtension.Integration.View
     /// that are consistent with the latest sent TagsChanged event by storing that particular snapshot
     /// and using it to query for the data tags.
     /// </remarks>
-    internal abstract class IntraTextAdornmentTagger<TDataTag, TAdornment> : ITagger<IntraTextAdornmentTag>
+    internal abstract class IntraTextAdornmentTagger<TDataTag, TAdornment> : ITagger<IntraTextAdornmentTag>, IDisposable
         where TDataTag : ITag, ITagSpan
         where TAdornment : UIElement, ITagAdornment
     {
@@ -29,7 +29,7 @@ namespace VsTeXCommentsExtension.Integration.View
         private readonly List<TAdornment> adornmentsPool = new List<TAdornment>(MaxAdornmentPoolSize);
         private Dictionary<AdornmentCacheKey, TAdornment> adornmentsCache = new Dictionary<AdornmentCacheKey, TAdornment>();
 
-        protected readonly TextSnapshotTeXCommentBlocks TexCommentBlocks = new TextSnapshotTeXCommentBlocks();
+        protected readonly TextSnapshotTeXCommentBlocks TexCommentBlocks;
         protected readonly IWpfTextView TextView;
         protected ITextSnapshot Snapshot { get; private set; }
 
@@ -39,6 +39,7 @@ namespace VsTeXCommentsExtension.Integration.View
         {
             this.TextView = textView;
             Snapshot = textView.TextBuffer.CurrentSnapshot;
+            TexCommentBlocks = TextSnapshotTeXCommentBlocksProvider.Get(textView.TextBuffer);
             //this.view.LayoutChanged += HandleLayoutChanged;
             this.TextView.TextBuffer.Changed += HandleBufferChanged;
         }
@@ -315,6 +316,11 @@ namespace VsTeXCommentsExtension.Integration.View
                     adornmentsCache.Remove(adornmentKey);
                 }
             }
+        }
+
+        public virtual void Dispose()
+        {
+            TextSnapshotTeXCommentBlocksProvider.Release(TextView.TextBuffer, TexCommentBlocks);
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;

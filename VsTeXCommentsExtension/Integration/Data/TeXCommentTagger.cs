@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
@@ -17,26 +16,38 @@ namespace VsTeXCommentsExtension.Integration.Data
     /// The <see cref="TeXCommentAdornmentTagger"/> takes tags produced by this tagger and creates corresponding UI for this data.
     /// </para>
     /// </remarks>
-    internal sealed class TeXCommentTagger : ITagger<TeXCommentTag>
+    internal sealed class TeXCommentTagger : ITagger<TeXCommentTag>, IDisposable
     {
         private readonly ITextBuffer buffer;
-        private readonly IClassifier classifier;
-        private readonly TextSnapshotTeXCommentBlocks texCommentBlocks = new TextSnapshotTeXCommentBlocks();
+        private readonly TextSnapshotTeXCommentBlocks texCommentBlocks;
 
-        internal TeXCommentTagger(ITextBuffer buffer, IClassifier classifier)
+        private bool isDisposed;
+
+        internal TeXCommentTagger(ITextBuffer buffer)
         {
             this.buffer = buffer;
-            this.classifier = classifier;
+            texCommentBlocks = TextSnapshotTeXCommentBlocksProvider.Get(buffer);
 
             //buffer.Changed += (sender, args) => HandleBufferChanged(args);
-
-            //TODO
-            //buffer.Properties.AddProperty(texCommentBlocks);
         }
 
 #pragma warning disable CS0067 // The event is never used
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 #pragma warning restore CS0067 // The event is never used
+
+        public void Dispose()
+        {
+            if (isDisposed) return;
+
+            try
+            {
+                TextSnapshotTeXCommentBlocksProvider.Release(buffer, texCommentBlocks);
+            }
+            finally
+            {
+                isDisposed = true;
+            }
+        }
 
         //TODO perf/allocations/caching per buffer version
         public IEnumerable<ITagSpan<TeXCommentTag>> GetTags(NormalizedSnapshotSpanCollection spans)

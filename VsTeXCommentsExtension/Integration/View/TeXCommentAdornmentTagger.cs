@@ -17,17 +17,9 @@ namespace VsTeXCommentsExtension.Integration.View
         private readonly List<TeXCommentAdornment> linesWithAdornments = new List<TeXCommentAdornment>();
         private readonly VsSettings vsSettings;
         private bool textHasBeenEdited;
+        private bool isDisposed;
 
-        internal static TeXCommentAdornmentTagger GetTagger(
-            IWpfTextView view,
-            Lazy<ITagAggregator<TeXCommentTag>> texCommentTagger,
-            IRenderingManager renderingManager)
-        {
-            return view.Properties.GetOrCreateSingletonProperty(
-                () => new TeXCommentAdornmentTagger(view, renderingManager, texCommentTagger.Value));
-        }
-
-        private TeXCommentAdornmentTagger(
+        public TeXCommentAdornmentTagger(
             IWpfTextView textView,
             IRenderingManager renderingManager,
             ITagAggregator<TeXCommentTag> texCommentTagger)
@@ -151,12 +143,20 @@ namespace VsTeXCommentsExtension.Integration.View
 
         public override void Dispose()
         {
-            base.Dispose();
-            TextView.TextBuffer.Changed -= TextBuffer_Changed;
-            vsSettings.ZoomChanged -= ZoomChanged;
-            vsSettings.CommentsColorChanged -= ColorsChanged;
-            ExtensionSettings.Instance.CustomZoomChanged -= CustomZoomChanged;
-            TextView.Properties.RemoveProperty(typeof(TeXCommentAdornmentTagger));
+            if (isDisposed) return;
+
+            try
+            {
+                base.Dispose();
+                TextView.TextBuffer.Changed -= TextBuffer_Changed;
+                vsSettings.ZoomChanged -= ZoomChanged;
+                vsSettings.CommentsColorChanged -= ColorsChanged;
+                ExtensionSettings.Instance.CustomZoomChanged -= CustomZoomChanged;
+            }
+            finally
+            {
+                isDisposed = true;
+            }
         }
 
         protected override TeXCommentAdornment CreateAdornment(TeXCommentTag dataTag, Span adornmentSpan, ITextSnapshot snapshot)

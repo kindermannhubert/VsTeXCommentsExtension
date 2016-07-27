@@ -5,10 +5,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using VsTeXCommentsExtension.Integration.Data;
-using VsTeXCommentsExtension.View;
 
 namespace VsTeXCommentsExtension.Integration.View
 {
@@ -16,21 +13,18 @@ namespace VsTeXCommentsExtension.Integration.View
     [ContentType("text")]
     [ContentType("projection")]
     [TagType(typeof(IntraTextAdornmentTag))]
-    internal sealed class TeXCommentAdornmentTaggerProvider : IViewTaggerProvider, IDisposable
+    internal sealed class TeXCommentAdornmentTaggerProvider : IViewTaggerProvider
     {
         private static readonly object Sync = new object();
-        private static IRenderingManager renderingManager;
-
-        private readonly HashSet<ITextView> textViews = new HashSet<ITextView>();
-
-        [Import]
-        private IBufferTagAggregatorFactoryService BufferTagAggregatorFactoryService = null; //MEF
 
         [Import]
         private IEditorFormatMapService EditorFormatMapService = null; //MEF
 
         [Import]
         private IVsFontsAndColorsInformationService VsFontsAndColorsInformationService = null; //MEF
+
+        [Import]
+        private WpfTextViewResources WpfTextViewResources = null; //MEF
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer)
             where T : ITag
@@ -41,11 +35,6 @@ namespace VsTeXCommentsExtension.Integration.View
 
             var wpfTextView = textView as IWpfTextView;
             if (wpfTextView == null) return null;
-
-            if (textViews.Add(textView))
-            {
-                textView.Closed += TextView_Closed;
-            }
 
             if (!VsSettings.IsInitialized)
             {
@@ -58,40 +47,7 @@ namespace VsTeXCommentsExtension.Integration.View
                 }
             }
 
-            if (renderingManager == null)
-            {
-                lock (Sync)
-                {
-                    if (renderingManager == null)
-                    {
-                        renderingManager = new RenderingManager(new HtmlRenderer());
-                    }
-                }
-            }
-
-            var resultTagger = TeXCommentAdornmentTagger.GetTagger(
-                wpfTextView,
-                new Lazy<ITagAggregator<TeXCommentTag>>(
-                    () => BufferTagAggregatorFactoryService.CreateTagAggregator<TeXCommentTag>(textView.TextBuffer)),
-                    renderingManager);
-
-            return resultTagger as ITagger<T>;
-        }
-
-        private void TextView_Closed(object sender, EventArgs e)
-        {
-            var textView = (ITextView)sender;
-            textViews.Remove(textView);
-            renderingManager.DiscartRenderingRequestsForTextView(textView);
-        }
-
-        public void Dispose()
-        {
-            foreach (var textView in textViews)
-            {
-                textView.Closed -= TextView_Closed;
-            }
-            textViews.Clear();
+            return WpfTextViewResources.GetTeXCommentAdornmentTagger(wpfTextView) as ITagger<T>;
         }
     }
 }
