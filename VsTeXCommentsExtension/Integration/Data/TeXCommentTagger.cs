@@ -3,7 +3,6 @@ using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace VsTeXCommentsExtension.Integration.Data
 {
@@ -18,6 +17,9 @@ namespace VsTeXCommentsExtension.Integration.Data
     /// </remarks>
     internal sealed class TeXCommentTagger : ITagger<TeXCommentTag>, IDisposable
     {
+        private readonly ObjectPool<List<ITagSpan<TeXCommentTag>>> tagSpanListsPool = new ObjectPool<List<ITagSpan<TeXCommentTag>>>(() => new List<ITagSpan<TeXCommentTag>>());
+        private readonly TextSnapshotValuesPerVersionCache<PooledStructEnumerable<ITagSpan<TeXCommentTag>>> tagsPerVersion;
+
         private readonly ITextBuffer buffer;
         private readonly TextSnapshotTeXCommentBlocks texCommentBlocks;
 
@@ -26,6 +28,7 @@ namespace VsTeXCommentsExtension.Integration.Data
         internal TeXCommentTagger(ITextBuffer buffer)
         {
             this.buffer = buffer;
+            tagsPerVersion = new TextSnapshotValuesPerVersionCache<PooledStructEnumerable<ITagSpan<TeXCommentTag>>>(GenerateAllTags);
             texCommentBlocks = TextSnapshotTeXCommentBlocksProvider.Get(buffer);
 
             //buffer.Changed += (sender, args) => HandleBufferChanged(args);
@@ -49,27 +52,41 @@ namespace VsTeXCommentsExtension.Integration.Data
             }
         }
 
-        //TODO perf/allocations/caching per buffer version
         public IEnumerable<ITagSpan<TeXCommentTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
             if (spans.Count == 0) yield break;
 
             var snapshot = spans[0].Snapshot;
-            Debug.Assert(spans.All(s => s.Snapshot.Version.VersionNumber == snapshot.Version.VersionNumber));
-
-            var blocks = texCommentBlocks.GetTexCommentBlocks(snapshot);
-            foreach (var block in blocks)
+            var allTagSpans = tagsPerVersion.GetValue(snapshot);
+            for (int spanIndex = 0; spanIndex < spans.Count; spanIndex++)
             {
-                if (spans.Any(s => s.IntersectsWith(block.Span)))
+                var span = spans[spanIndex];
+                foreach (var tagSpan in allTagSpans)
                 {
-                    var firstLine = snapshot.GetLineFromPosition(block.Span.Start);
-                    var lastLine = snapshot.GetLineFromPosition(block.Span.End);
-
-                    var tag = new TeXCommentTag(snapshot.GetText(block.Span), block);
-                    var translatedBlockSpan = new Span(block.Span.Start + block.FirstLineWhiteSpacesAtStart, block.Span.Length - block.FirstLineWhiteSpacesAtStart);
-                    yield return new TagSpan<TeXCommentTag>(new SnapshotSpan(snapshot, translatedBlockSpan), tag);
+                    if (span.IntersectsWith(tagSpan.Span))
+                    {
+                        yield return tagSpan;
+                    }
                 }
             }
+        }
+
+        private PooledStructEnumerable<ITagSpan<TeXCommentTag>> GenerateAllTags(ITextSnapshot snapshot)
+        {
+            var results = tagSpanListsPool.Get();
+            Debug.Assert(results.Count == 0);
+
+            foreach (var block in texCommentBlocks.GetTexCommentBlocks(snapshot))
+            {
+                var firstLine = snapshot.GetLineFromPosition(block.Span.Start);
+                var lastLine = snapshot.GetLineFromPosition(block.Span.End);
+
+                var tag = block.GetDataTag(snapshot);
+                var translatedBlockSpan = new Span(block.Span.Start + block.FirstLineWhiteSpacesAtStart, block.Span.Length - block.FirstLineWhiteSpacesAtStart);
+                results.Add(new TagSpan<TeXCommentTag>(new SnapshotSpan(snapshot, translatedBlockSpan), tag));
+            }
+
+            return new PooledStructEnumerable<ITagSpan<TeXCommentTag>>(results, tagSpanListsPool);
         }
 
         ///// <summary>

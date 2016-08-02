@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace VsTeXCommentsExtension
 {
-    internal class ObjectPool<T>
+    public class ObjectPool<T>
         where T : class
     {
         private readonly Func<T> createValue;

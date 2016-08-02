@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace VsTeXCommentsExtension
 {
-    internal struct PooledStructEnumerable<T> : IDisposable
+    public struct PooledStructEnumerable<T> : IDisposable
     {
         private readonly List<T> list;
         private readonly ObjectPool<List<T>> sourcePool;
@@ -24,13 +24,12 @@ namespace VsTeXCommentsExtension
             isDisposed = true;
         }
 
-        public List<T>.Enumerator GetEnumerator()
-        {
-            return list.GetEnumerator();
-        }
+        public List<T>.Enumerator GetEnumerator() => list.GetEnumerator();
 
         public int Count => list.Count;
 
         public T this[int index] => list[index];
+
+        public static implicit operator StructEnumerable<T>(PooledStructEnumerable<T> value) => new StructEnumerable<T>(value.list);
     }
 }

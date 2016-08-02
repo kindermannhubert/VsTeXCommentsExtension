@@ -35,8 +35,9 @@ namespace VsTeXCommentsExtension.View
             {
                 Debug.WriteLine($"Adornment {Index}: changing state from '{currentState}' to '{value}'");
 
+                var lastDisplayMode = DisplayMode;
                 currentState = value;
-                refreshTags(tag.TeXBlock.Span);
+                if (lastDisplayMode != DisplayMode) refreshTags(tag.TeXBlock.Span);
 
                 OnPropertyChanged(nameof(CurrentState));
 

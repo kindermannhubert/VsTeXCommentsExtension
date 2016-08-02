@@ -47,8 +47,12 @@ namespace VsTeXCommentsExtension.View
         {
             this.renderer = renderer;
 
-            var thread = new Thread(ProcessQueue);
-            thread.Name = $"{typeof(RenderingManager).FullName}_{nameof(ProcessQueue)}";
+            var thread = new Thread(ProcessQueue)
+            {
+                Name = $"{typeof(RenderingManager).FullName}_{nameof(ProcessQueue)}",
+                IsBackground = true,
+                Priority = ThreadPriority.BelowNormal
+            };
             thread.Start();
         }
 

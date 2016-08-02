@@ -1,65 +1,32 @@
 ﻿using Microsoft.VisualStudio.Text;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace VsTeXCommentsExtension.Integration
 {
     internal class TextSnapshotTeXCommentBlocks
     {
-        private const int VersionsToCache = 16;
-        private const int CachedVersionsToRemoveOnCleanUp = 13; //clean up will run when we have VersionsToCache+1 versions
-
         public const string CommentPrefix = "//";
         public const string TeXCommentPrefix = "//tex:";
         public static readonly char[] WhiteSpaces = new char[] { ' ', '\t' };
 
-        private readonly Dictionary<int, List<TeXCommentBlockSpan>> blocksPerVersion = new Dictionary<int, List<TeXCommentBlockSpan>>();
-        private readonly List<int> versions = new List<int>();
+        private readonly TextSnapshotValuesPerVersionCache<PooledStructEnumerable<TeXCommentBlockSpan>> blocksPerVersion;
 
         private readonly ObjectPool<List<TeXCommentBlockSpan>> blockListsPool = new ObjectPool<List<TeXCommentBlockSpan>>(() => new List<TeXCommentBlockSpan>());
         private readonly ObjectPool<List<SnapshotSpan>> snapshotSpansListsPool = new ObjectPool<List<SnapshotSpan>>(() => new List<SnapshotSpan>());
 
-        public IReadOnlyList<TeXCommentBlockSpan> GetTexCommentBlocks(ITextSnapshot snapshot)
+        public TextSnapshotTeXCommentBlocks()
         {
-            lock (versions)
-            {
-                var version = snapshot.Version.VersionNumber;
-
-                List<TeXCommentBlockSpan> blocks;
-                if (!blocksPerVersion.TryGetValue(version, out blocks))
-                {
-                    blocks = GenerateTexCommentBlocks(snapshot);
-                    blocksPerVersion.Add(version, blocks);
-                    versions.Add(-version);
-
-                    DismissOldVersions();
-                }
-
-                return blocks;
-            }
+            blocksPerVersion = new TextSnapshotValuesPerVersionCache<PooledStructEnumerable<TeXCommentBlockSpan>>(GenerateTexCommentBlocks);
         }
 
-        private void DismissOldVersions()
-        {
-            if (versions.Count > VersionsToCache)
-            {
-                versions.Sort();
-                var lastIndex = versions.Count - CachedVersionsToRemoveOnCleanUp;
-                for (int i = versions.Count - 1; i >= lastIndex; i--)
-                {
-                    var versionToRemove = -versions[i];
-                    var removedBlocksList = blocksPerVersion[versionToRemove];
-                    blocksPerVersion.Remove(versionToRemove);
+        public StructEnumerable<TeXCommentBlockSpan> GetTexCommentBlocks(ITextSnapshot snapshot) => blocksPerVersion.GetValue(snapshot);
 
-                    removedBlocksList.Clear();
-                    blockListsPool.Put(removedBlocksList);
-                }
-                versions.RemoveRange(versions.Count - CachedVersionsToRemoveOnCleanUp, CachedVersionsToRemoveOnCleanUp);
-            }
-        }
-
-        private List<TeXCommentBlockSpan> GenerateTexCommentBlocks(ITextSnapshot snapshot)
+        private PooledStructEnumerable<TeXCommentBlockSpan> GenerateTexCommentBlocks(ITextSnapshot snapshot)
         {
             var texCommentBlocks = blockListsPool.Get();
+            Debug.Assert(texCommentBlocks.Count == 0);
+
             var atTexBlock = false;
             var texBlockSpanBuilder = default(TeXCommentBlockSpanBuilder);
             ITextSnapshotLine lastBlockLine = null;
@@ -106,7 +73,7 @@ namespace VsTeXCommentsExtension.Integration
                 texCommentBlocks.Add(texBlockSpanBuilder.Build(snapshot));
             }
 
-            return texCommentBlocks;
+            return new PooledStructEnumerable<TeXCommentBlockSpan>(texCommentBlocks, blockListsPool);
         }
 
         public PooledStructEnumerable<SnapshotSpan> GetBlockSpansIntersectedBy(ITextSnapshot snapshot, Span span)

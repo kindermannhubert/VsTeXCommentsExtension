@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.Text;
 using System;
+using VsTeXCommentsExtension.Integration.Data;
 
 namespace VsTeXCommentsExtension.Integration
 {
@@ -38,6 +39,8 @@ namespace VsTeXCommentsExtension.Integration
             LastLineWhiteSpacesAtStart = lastLineWhiteSpacesAtStart;
             LineBreakText = lineBreakText;
         }
+
+        public TeXCommentTag GetDataTag(ITextSnapshot snapshot) => new TeXCommentTag(snapshot.GetText(Span), this);
 
         public bool IsPositionAfterTeXPrefix(ITextSnapshot snapshot, int position)
         {

@@ -72,6 +72,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Integration\TextSnapshotValuesPerVersionCache.cs" />
     <Compile Include="ObjectPool.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="CountedRef.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="LineSpan.cs" />
     <Compile Include="Integration\TeXCommentBlockSpan.cs" />
     <Compile Include="ObjectEventHandlerTuple.cs" />
+    <Compile Include="StructEnumerable.cs" />
     <Compile Include="PooledStructEnumerable.cs" />
     <Compile Include="SyntaxHighlighting\ClassificationDefinitions.cs" />
     <Compile Include="SyntaxHighlighting\MatchingBracesTagger.cs" />
