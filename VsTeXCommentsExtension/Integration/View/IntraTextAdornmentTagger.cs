@@ -185,7 +185,7 @@ namespace VsTeXCommentsExtension.Integration.View
                 invalidatedSpans.Clear();
             }
 
-            RaiseTagsChanged(new SnapshotSpan(Snapshot, minSpan, maxSpan));
+            RaiseTagsChanged(new SnapshotSpan(Snapshot, minSpan, maxSpan - minSpan));
         }
 
         /// <summary>
