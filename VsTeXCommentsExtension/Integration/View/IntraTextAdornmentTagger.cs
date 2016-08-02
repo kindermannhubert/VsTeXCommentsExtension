@@ -251,7 +251,7 @@ namespace VsTeXCommentsExtension.Integration.View
                     if (spans.IntersectsWith(new NormalizedSnapshotSpanCollection(kv.Key.Span)))
                         toRemove.Add(kv.Key);
 
-                foreach (var tagData in GetAdornmentData(spans).Distinct())
+                foreach (var tagData in GetAdornmentData(spans))
                 {
                     // Look up the corresponding adornment or create one if it's new.
                     TAdornment adornment;

@@ -17,9 +17,9 @@ namespace VsTeXCommentsExtension.Integration.Data
     /// </remarks>
     internal sealed class TeXCommentTagger : ITagger<TeXCommentTag>, IDisposable
     {
+        private readonly ObjectPool<List<bool>> boolListsPool = new ObjectPool<List<bool>>(() => new List<bool>());
         private readonly ObjectPool<List<ITagSpan<TeXCommentTag>>> tagSpanListsPool = new ObjectPool<List<ITagSpan<TeXCommentTag>>>(() => new List<ITagSpan<TeXCommentTag>>());
         private readonly TextSnapshotValuesPerVersionCache<PooledStructEnumerable<ITagSpan<TeXCommentTag>>> tagsPerVersion;
-
         private readonly ITextBuffer buffer;
         private readonly TextSnapshotTeXCommentBlocks texCommentBlocks;
 
@@ -65,24 +65,45 @@ namespace VsTeXCommentsExtension.Integration.Data
             }
             else
             {
+                //we don't want to report any tagSpans multiple times, so we keep track of already yielded ones
+                List<bool> tagSpanYielded;
+                lock (boolListsPool)
+                {
+                    tagSpanYielded = boolListsPool.Get();
+                }
+                for (int i = 0; i < allTagSpans.Count; i++) tagSpanYielded.Add(false);
+
                 for (int spanIndex = 0; spanIndex < spans.Count; spanIndex++)
                 {
                     var span = spans[spanIndex];
 
                     bool foundAnyInCurrentSpan = false;
+                    int tagSpanIndex = 0;
                     foreach (var tagSpan in allTagSpans)
                     {
-                        if (span.IntersectsWith(tagSpan.Span))
+                        if (!tagSpanYielded[tagSpanIndex])
                         {
-                            foundAnyInCurrentSpan = true;
-                            yield return tagSpan;
+                            if (span.IntersectsWith(tagSpan.Span))
+                            {
+                                foundAnyInCurrentSpan = true;
+                                tagSpanYielded[tagSpanIndex] = true;
+                                yield return tagSpan;
+                            }
+                            else if (foundAnyInCurrentSpan)
+                            {
+                                //tagspans are ordered, so we can stop searching here
+                                break;
+                            }
                         }
-                        else if (foundAnyInCurrentSpan)
-                        {
-                            //tagspans are ordered, so we can stop searching here
-                            break;
-                        }
+
+                        ++tagSpanIndex;
                     }
+                }
+
+                tagSpanYielded.Clear();
+                lock (boolListsPool)
+                {
+                    boolListsPool.Put(tagSpanYielded);
                 }
             }
         }
