@@ -205,8 +205,11 @@ namespace VsTeXCommentsExtension.Integration.View
                 Snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.Start),
                 Snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.End));
 
-            MarkAdornmentLines(adornment.LineSpan, null); //remove old
-            MarkAdornmentLines(lineSpan, adornment); //add new
+            if (adornment.LineSpan != lineSpan)
+            {
+                MarkAdornmentLines(adornment.LineSpan, null); //remove old
+                MarkAdornmentLines(lineSpan, adornment); //add new
+            }
 
             var lastLine = snapshot.GetLineFromLineNumber(lineSpan.LastLine);
             var lastLineWidthWithoutStartWhiteSpaces = (lastLine.Extent.Length - dataTag.TeXBlock.LastLineWhiteSpacesAtStart) * TextView.FormattedLineSource?.ColumnWidth;

@@ -30,8 +30,11 @@ namespace VsTeXCommentsExtension.View
             get { return offsetX; }
             set
             {
-                offsetX = value;
-                InvalidateArrange();
+                if (offsetX != value)
+                {
+                    offsetX = value;
+                    InvalidateArrange();
+                }
             }
         }
 

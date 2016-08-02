@@ -104,5 +104,13 @@ namespace VsTeXCommentsExtension
                 list.Add(value);
             }
         }
+
+        public static void AddRangeByFor<T>(this IList<T> list, IList<T> values)
+        {
+            for (int i = 0; i < values.Count; i++)
+            {
+                list.Add(values[i]);
+            }
+        }
     }
 }
