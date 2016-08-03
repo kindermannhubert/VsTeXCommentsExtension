@@ -46,14 +46,16 @@ namespace VsTeXCommentsExtension.Integration
             }
         }
 
-        public TeXCommentAdornmentTagger GetTeXCommentAdornmentTagger(IWpfTextView textView) => GetOrAddTextViewData(textView).GetTexViewData<TeXCommentAdornmentTagger>();
-        public TeXSyntaxClassifier GetTeXSyntaxClassifier(ITextBuffer buffer) => GetOrAddTextBufferData(buffer).GetTextBufferData<TeXSyntaxClassifier>();
-        public TeXCommentTagger GetTeXCommentTagger(ITextBuffer buffer) => GetOrAddTextBufferData(buffer).GetTextBufferData<TeXCommentTagger>();
+        public TeXCommentAdornmentTagger GetTeXCommentAdornmentTagger(IWpfTextView textView) => GetOrAddTextViewData(textView)?.GetTexViewData<TeXCommentAdornmentTagger>();
+        public TeXSyntaxClassifier GetTeXSyntaxClassifier(ITextBuffer buffer) => GetOrAddTextBufferData(buffer)?.GetTextBufferData<TeXSyntaxClassifier>();
+        public TeXCommentTagger GetTeXCommentTagger(ITextBuffer buffer) => GetOrAddTextBufferData(buffer)?.GetTextBufferData<TeXCommentTagger>();
 
         private TextBufferData GetOrAddTextBufferData(ITextBuffer buffer)
         {
             lock (syncRoot)
             {
+                if (buffer.ContentType.TypeName != "CSharp") return null;
+
                 TextBufferData textBufferData;
                 if (!textBuffers.TryGetValue(buffer, out textBufferData))
                 {
@@ -71,6 +73,8 @@ namespace VsTeXCommentsExtension.Integration
         {
             lock (syncRoot)
             {
+                if (textView.TextBuffer.ContentType.TypeName != "CSharp") return null;
+
                 TextViewData textViewData;
                 if (!textViews.TryGetValue(textView, out textViewData))
                 {
@@ -88,7 +92,7 @@ namespace VsTeXCommentsExtension.Integration
         {
             lock (syncRoot)
             {
-                GetOrAddTextViewData(textView);
+                if (GetOrAddTextViewData(textView) == null) return;
 
                 foreach (var buffer in subjectBuffers)
                 {
