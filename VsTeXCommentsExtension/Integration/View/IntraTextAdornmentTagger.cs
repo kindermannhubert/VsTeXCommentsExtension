@@ -4,8 +4,8 @@ using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Windows;
+using VsTeXCommentsExtension.View;
 
 namespace VsTeXCommentsExtension.Integration.View
 {
@@ -27,8 +27,11 @@ namespace VsTeXCommentsExtension.Integration.View
 
         private readonly List<SnapshotSpan> invalidatedSpans = new List<SnapshotSpan>();
         private readonly List<TAdornment> adornmentsPool = new List<TAdornment>(MaxAdornmentPoolSize);
-        private readonly ObjectPool<HashSet<AdornmentCacheKey>> adornmentCacheKeyHashsetsPool = new ObjectPool<HashSet<AdornmentCacheKey>>(() => new HashSet<AdornmentCacheKey>());
         private readonly List<SnapshotSpan> editedBlockSpans = new List<SnapshotSpan>();
+        private readonly TextSnapshotValuesPerVersionCache<PooledStructEnumerable<ITagSpan<IntraTextAdornmentTag>>> perSnapshotResults;
+        private readonly ObjectPool<HashSet<AdornmentCacheKey>> adornmentCacheKeyHashsetsPool = new ObjectPool<HashSet<AdornmentCacheKey>>(() => new HashSet<AdornmentCacheKey>());
+        private readonly ObjectPool<List<ITagSpan<IntraTextAdornmentTag>>> tagSpanListsPool = new ObjectPool<List<ITagSpan<IntraTextAdornmentTag>>>(() => new List<ITagSpan<IntraTextAdornmentTag>>());
+        private readonly ObjectPool<Dictionary<AdornmentCacheKey, TAdornment>> adormentDictionariesPool = new ObjectPool<Dictionary<AdornmentCacheKey, TAdornment>>(() => new Dictionary<AdornmentCacheKey, TAdornment>());
 
         private Dictionary<AdornmentCacheKey, TAdornment> adornmentsCache = new Dictionary<AdornmentCacheKey, TAdornment>();
 
@@ -45,13 +48,14 @@ namespace VsTeXCommentsExtension.Integration.View
             TexCommentBlocks = TextSnapshotTeXCommentBlocksProvider.Get(textView.TextBuffer);
             //this.view.LayoutChanged += HandleLayoutChanged;
             this.TextView.TextBuffer.Changed += HandleBufferChanged;
+            perSnapshotResults = new TextSnapshotValuesPerVersionCache<PooledStructEnumerable<ITagSpan<IntraTextAdornmentTag>>>(GetAdornmentTagsOnSnapshot);
         }
 
         /// <param name="span">The span of text that this adornment will elide.</param>
         /// <returns>Adornment corresponding to given data. May be null.</returns>
-        protected abstract TAdornment CreateAdornment(TDataTag data, Span adornmentSpan, ITextSnapshot snapshot);
+        protected abstract TAdornment CreateAdornment(TDataTag data, ITextSnapshot snapshot);
 
-        protected abstract void UpdateAdornment(TAdornment adornment, TDataTag data, Span adornmentSpan, ITextSnapshot snapshot);
+        protected abstract void UpdateAdornment(TAdornment adornment, TDataTag data, ITextSnapshot snapshot);
 
         /// <param name="spans">Spans to provide adornment data for. These spans do not necessarily correspond to text lines.</param>
         /// <remarks>
@@ -155,8 +159,8 @@ namespace VsTeXCommentsExtension.Integration.View
             {
                 Snapshot = TextView.TextBuffer.CurrentSnapshot;
 
-                var translatedAdornmentCache = new Dictionary<AdornmentCacheKey, TAdornment>();
-
+                var translatedAdornmentCache = adormentDictionariesPool.Get();
+                Debug.Assert(translatedAdornmentCache.Count == 0);
                 lock (adornmentsCache)
                 {
                     foreach (var keyValuePair in adornmentsCache)
@@ -166,6 +170,8 @@ namespace VsTeXCommentsExtension.Integration.View
                             translatedAdornmentCache.Add(newKey, keyValuePair.Value);
                     }
 
+                    adornmentsCache.Clear();
+                    adormentDictionariesPool.Put(adornmentsCache);
                     adornmentsCache = translatedAdornmentCache;
                 }
             }
@@ -213,52 +219,52 @@ namespace VsTeXCommentsExtension.Integration.View
         //}
 
         // Produces tags on the snapshot that the tag consumer asked for.
-        public virtual IEnumerable<ITagSpan<IntraTextAdornmentTag>> GetTags(NormalizedSnapshotSpanCollection spans)
+        public IEnumerable<ITagSpan<IntraTextAdornmentTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
-            if (spans == null || spans.Count == 0)
-                yield break;
+            if (spans == null || spans.Count == 0) yield break;
 
-            // Translate the request to the snapshot that this tagger is current with.
             var requestedSnapshot = spans[0].Snapshot;
-            if (Snapshot != requestedSnapshot)
+            var allTagSpans = perSnapshotResults.GetValue(Snapshot);
+            foreach (var tagSpan in allTagSpans)
             {
-                if (spans.Count == 1) spans = new NormalizedSnapshotSpanCollection(spans[0].TranslateTo(Snapshot, SpanTrackingMode.EdgeExclusive));
-                else spans = new NormalizedSnapshotSpanCollection(spans.Select(span => span.TranslateTo(Snapshot, SpanTrackingMode.EdgeExclusive)));
-            }
+                foreach (var span in spans)
+                {
+                    var adornment = (TeXCommentAdornment)tagSpan.Tag.Adornment;
+                    var dataTagSpan = adornment.DataTag.SpanWithLastLineBreak;
 
-            // Grab the adornments.
-            foreach (var tagSpan in GetAdornmentTagsOnSnapshot(spans))
-            {
-                // Translate each adornment to the snapshot that the tagger was asked about.
-                var span = tagSpan.Span.TranslateTo(requestedSnapshot, SpanTrackingMode.EdgeExclusive);
-
-                var tag = new IntraTextAdornmentTag(tagSpan.Tag.Adornment, tagSpan.Tag.RemovalCallback, tagSpan.Tag.Affinity);
-                yield return new TagSpan<IntraTextAdornmentTag>(span, tag);
+                    var translatedDataTagSpan = new SnapshotSpan(Snapshot, dataTagSpan).TranslateTo(requestedSnapshot, SpanTrackingMode.EdgeExclusive);
+                    if (translatedDataTagSpan.IntersectsWith(span))
+                    {
+                        var translatedTagSpan = new SnapshotSpan(Snapshot, tagSpan.Span).TranslateTo(requestedSnapshot, SpanTrackingMode.EdgeExclusive);
+                        yield return new TagSpan<IntraTextAdornmentTag>(translatedTagSpan, tagSpan.Tag);
+                        break;
+                    }
+                }
             }
         }
 
-        // Produces tags on the snapshot that this tagger is current with.
-        private IEnumerable<TagSpan<IntraTextAdornmentTag>> GetAdornmentTagsOnSnapshot(NormalizedSnapshotSpanCollection spans)
+        private PooledStructEnumerable<ITagSpan<IntraTextAdornmentTag>> GetAdornmentTagsOnSnapshot(ITextSnapshot snapshot)
         {
-            if (spans.Count == 0) yield break;
-
-            var snapshot = spans[0].Snapshot;
-            Debug.Assert(snapshot == this.Snapshot);
-
             // Since WPF UI objects have state (like mouse hover or animation) and are relatively expensive to create and lay out,
             // this code tries to reuse controls as much as possible.
             // The controls are stored in this.adornmentCache between the calls.
 
-            // Mark which adornments fall inside the requested spans with Keep=false
-            // so that they can be removed from the cache if they no longer correspond to data tags.
+            var results = tagSpanListsPool.Get();
+            Debug.Assert(results.Count == 0);
+
+            var toRemove = adornmentCacheKeyHashsetsPool.Get();
+            Debug.Assert(toRemove.Count == 0);
+
             lock (adornmentsCache)
             {
-                var toRemove = adornmentCacheKeyHashsetsPool.Get();
+                // Mark which adornments fall inside the requested spans with Keep=false
+                // so that they can be removed from the cache if they no longer correspond to data tags.
                 foreach (var kv in adornmentsCache)
-                    if (spans.IntersectsWith(new NormalizedSnapshotSpanCollection(kv.Key.Span)))
-                        toRemove.Add(kv.Key);
+                {
+                    toRemove.Add(kv.Key);
+                }
 
-                foreach (var tagData in GetAdornmentData(spans))
+                foreach (var tagData in GetAdornmentData(new NormalizedSnapshotSpanCollection(snapshot, new Span(0, snapshot.Length))))
                 {
                     // Look up the corresponding adornment or create one if it's new.
                     TAdornment adornment;
@@ -267,7 +273,7 @@ namespace VsTeXCommentsExtension.Integration.View
                     if (adornmentsCache.TryGetValue(key, out adornment))
                     {
                         adornmentInfo = tagData.GetAdornmentInfo(adornment.DisplayMode);
-                        UpdateAdornment(adornment, tagData.Tag, adornmentInfo.Span.Span, snapshot);
+                        UpdateAdornment(adornment, tagData.Tag, snapshot);
                         toRemove.Remove(key);
 
                         Debug.WriteLine($"Updating adornment {adornment.Index}");
@@ -280,13 +286,14 @@ namespace VsTeXCommentsExtension.Integration.View
                         {
                             adornment = adornmentsPool[adornmentsPool.Count - 1];
                             adornmentsPool.RemoveAt(adornmentsPool.Count - 1);
-                            UpdateAdornment(adornment, tagData.Tag, adornmentInfo.Span.Span, snapshot);
+                            UpdateAdornment(adornment, tagData.Tag, snapshot);
                             adornment.CurrentState = TeXCommentAdornmentState.EditingAndRenderingPreview;
                             Debug.WriteLine($"Reusing adornment {adornment.Index} from pool");
                         }
                         else
                         {
-                            adornment = CreateAdornment(tagData.Tag, adornmentInfo.Span, snapshot);
+                            adornment = CreateAdornment(tagData.Tag, snapshot);
+                            adornment.DisplayModeChanged += (s, e) => perSnapshotResults.UpdateValue(Snapshot); //will be deattached on  dispose
                             Debug.WriteLine($"Creating adornment {adornment.Index}");
                         }
 
@@ -306,7 +313,7 @@ namespace VsTeXCommentsExtension.Integration.View
                     }
 
                     Debug.WriteLine($"Yielding adornment {adornment.Index} with span {adornmentInfo.Span}");
-                    yield return new TagSpan<IntraTextAdornmentTag>(adornmentInfo.Span, new IntraTextAdornmentTag(adornment, null, adornmentInfo.Affinity));
+                    results.Add(new TagSpan<IntraTextAdornmentTag>(adornmentInfo.Span, new IntraTextAdornmentTag(adornment, null, adornmentInfo.Affinity)));
                 }
 
                 foreach (var adornmentKey in toRemove)
@@ -318,13 +325,20 @@ namespace VsTeXCommentsExtension.Integration.View
                     adornmentsCache.Remove(adornmentKey);
                 }
 
+                toRemove.Clear();
                 adornmentCacheKeyHashsetsPool.Put(toRemove);
             }
+
+            return new PooledStructEnumerable<ITagSpan<IntraTextAdornmentTag>>(results, tagSpanListsPool);
         }
 
         public virtual void Dispose()
         {
             TextSnapshotTeXCommentBlocksProvider.Release(TextView.TextBuffer, TexCommentBlocks);
+            perSnapshotResults.Dispose();
+
+            foreach (var item in adornmentsCache.Values) item.Dispose();
+            adornmentsCache.Clear();
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;

@@ -159,11 +159,11 @@ namespace VsTeXCommentsExtension.Integration.View
             }
         }
 
-        protected override TeXCommentAdornment CreateAdornment(TeXCommentTag dataTag, Span adornmentSpan, ITextSnapshot snapshot)
+        protected override TeXCommentAdornment CreateAdornment(TeXCommentTag dataTag, ITextSnapshot snapshot)
         {
             var lineSpan = new LineSpan(
-                Snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.Start),
-                Snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.End));
+                snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.Start),
+                snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.End));
 
             var lastLine = snapshot.GetLineFromLineNumber(lineSpan.LastLine);
             var lastLineWidthWithoutStartWhiteSpaces = (lastLine.Extent.Length - dataTag.TeXBlock.LastLineWhiteSpacesAtStart) * TextView.FormattedLineSource?.ColumnWidth;
@@ -176,15 +176,15 @@ namespace VsTeXCommentsExtension.Integration.View
                 textHasBeenEdited ? TeXCommentAdornmentState.EditingAndRenderingPreview : TeXCommentAdornmentState.Rendering,
                 span =>
                 {
-                    //var blockSpans = texCommentBlocks.GetBlockSpansWithLastLineBreakIntersectedBy(Snapshot, span);
+                    //var blockSpans = texCommentBlocks.GetBlockSpansWithLastLineBreakIntersectedBy(snapshot, span);
                     //foreach (var blockSpan in blockSpans)
                     //{
-                    //    RaiseTagsChanged(new SnapshotSpan(Snapshot, blockSpan));
+                    //    RaiseTagsChanged(new SnapshotSpan(snapshot, blockSpan));
                     //}
 
-                    //RaiseTagsChanged(new SnapshotSpan(Snapshot, 0, Snapshot.Length));
+                    //RaiseTagsChanged(new SnapshotSpan(snapshot, 0, snapshot.Length));
 
-                    InvalidateSpans(new List<SnapshotSpan>() { new SnapshotSpan(Snapshot, 0, Snapshot.Length) });
+                    InvalidateSpans(new List<SnapshotSpan>() { new SnapshotSpan(snapshot, 0, snapshot.Length) });
                 },
                 isInEditMode =>
                 {
@@ -199,11 +199,11 @@ namespace VsTeXCommentsExtension.Integration.View
             return adornment;
         }
 
-        protected override void UpdateAdornment(TeXCommentAdornment adornment, TeXCommentTag dataTag, Span adornmentSpan, ITextSnapshot snapshot)
+        protected override void UpdateAdornment(TeXCommentAdornment adornment, TeXCommentTag dataTag, ITextSnapshot snapshot)
         {
             var lineSpan = new LineSpan(
-                Snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.Start),
-                Snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.End));
+                snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.Start),
+                snapshot.GetLineNumberFromPosition(dataTag.TeXBlock.Span.End));
 
             if (adornment.LineSpan != lineSpan)
             {

@@ -37,7 +37,7 @@ namespace VsTeXCommentsExtension.Integration.View
 
         protected override IEnumerable<TagData> GetAdornmentData(NormalizedSnapshotSpanCollection spans)
         {
-            if (spans.Count == 0) yield break;
+            if (spans.Count == 0 || DataTagger.BufferGraph == null) yield break;
 
             var snapshot = spans[0].Snapshot;
             foreach (var dataTagSpan in DataTagger.GetTags(spans))

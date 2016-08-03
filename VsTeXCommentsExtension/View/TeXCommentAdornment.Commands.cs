@@ -113,7 +113,7 @@ namespace VsTeXCommentsExtension.View
             if (snippet.IsMultiLine)
             {
                 //we need to corretly indent snippet
-                var indent = TeXCommentBlockSpan.GetMinNumberOfWhitespacesBeforeCommentPrefixes(tag.TextWithWhitespacesAtStartOfFirstLine);
+                var indent = TeXCommentBlockSpan.GetMinNumberOfWhitespacesBeforeCommentPrefixes(DataTag.TextWithWhitespacesAtStartOfFirstLine);
                 var indentString = new string(' ', indent);
                 var lines = code.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
                 for (int i = 0; i < lines.Length; i++)

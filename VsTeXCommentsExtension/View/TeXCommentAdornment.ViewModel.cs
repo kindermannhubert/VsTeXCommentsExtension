@@ -38,12 +38,12 @@ namespace VsTeXCommentsExtension.View
         {
             get
             {
-                var spanWithLastLineBreak = tag.SpanWithLastLineBreak;
-                Debug.Assert(spanWithLastLineBreak.Length >= tag.TeXBlock.FirstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length);
-                spanWithLastLineBreak = spanWithLastLineBreak.TranslateStart(tag.TeXBlock.FirstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length);
+                var spanWithLastLineBreak = DataTag.SpanWithLastLineBreak;
+                Debug.Assert(spanWithLastLineBreak.Length >= DataTag.TeXBlock.FirstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length);
+                spanWithLastLineBreak = spanWithLastLineBreak.TranslateStart(DataTag.TeXBlock.FirstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length);
 
                 var caretPosition = textView.Caret.Position.BufferPosition;
-                if (tag.Span.Length == tag.SpanWithLastLineBreak.Length)
+                if (DataTag.Span.Length == DataTag.SpanWithLastLineBreak.Length)
                 {
                     return caretPosition >= spanWithLastLineBreak.Start && caretPosition <= spanWithLastLineBreak.End;
                 }
@@ -57,12 +57,12 @@ namespace VsTeXCommentsExtension.View
             {
                 if (!IsCaretInsideTeXBlock) return false;
 
-                var spanWithLastLineBreak = tag.SpanWithLastLineBreak;
-                Debug.Assert(spanWithLastLineBreak.Length >= tag.TeXBlock.FirstLineWhiteSpacesAtStart);
-                var textStartIndex = spanWithLastLineBreak.Start + tag.TeXBlock.FirstLineWhiteSpacesAtStart;
+                var spanWithLastLineBreak = DataTag.SpanWithLastLineBreak;
+                Debug.Assert(spanWithLastLineBreak.Length >= DataTag.TeXBlock.FirstLineWhiteSpacesAtStart);
+                var textStartIndex = spanWithLastLineBreak.Start + DataTag.TeXBlock.FirstLineWhiteSpacesAtStart;
 
                 var caretPositionRelativeToTextStart = textView.Caret.Position.BufferPosition.Position - textStartIndex;
-                foreach (Match mathBlockMatch in TeXSyntaxClassifier.MathBlockRegex.Matches(tag.Text))
+                foreach (Match mathBlockMatch in TeXSyntaxClassifier.MathBlockRegex.Matches(DataTag.Text))
                 {
                     if (mathBlockMatch.Success)
                     {
@@ -74,10 +74,10 @@ namespace VsTeXCommentsExtension.View
                 }
 
                 //special case
-                if (caretPositionRelativeToTextStart > 0 && caretPositionRelativeToTextStart < tag.Text.Length)
+                if (caretPositionRelativeToTextStart > 0 && caretPositionRelativeToTextStart < DataTag.Text.Length)
                 {
-                    if (tag.Text[caretPositionRelativeToTextStart - 1] == '$' &&
-                        tag.Text[caretPositionRelativeToTextStart] == '$')
+                    if (DataTag.Text[caretPositionRelativeToTextStart - 1] == '$' &&
+                        DataTag.Text[caretPositionRelativeToTextStart] == '$')
                         return true;
                 }
 

@@ -1,10 +1,11 @@
 ﻿using Microsoft.VisualStudio.Text;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace VsTeXCommentsExtension.Integration
 {
-    internal class TextSnapshotValuesPerVersionCache<T>
+    internal class TextSnapshotValuesPerVersionCache<T> : IDisposable
         where T : IDisposable
     {
         private const int VersionsToCache = 16;
@@ -39,6 +40,22 @@ namespace VsTeXCommentsExtension.Integration
             }
         }
 
+        public void UpdateValue(ITextSnapshot snapshot)
+        {
+            lock (versions)
+            {
+                var version = snapshot.Version.VersionNumber;
+                if (valuesPerVersion.ContainsKey(version))
+                {
+                    valuesPerVersion[version] = getValueForSnapshot(snapshot);
+                }
+                else
+                {
+                    Debug.Assert(false);
+                }
+            }
+        }
+
         private void DismissOldVersions()
         {
             if (versions.Count > VersionsToCache)
@@ -54,6 +71,16 @@ namespace VsTeXCommentsExtension.Integration
                     removedValue?.Dispose();
                 }
                 versions.RemoveRange(versions.Count - CachedVersionsToRemoveOnCleanUp, CachedVersionsToRemoveOnCleanUp);
+            }
+        }
+
+        public void Dispose()
+        {
+            lock (versions)
+            {
+                foreach (var item in valuesPerVersion.Values) item?.Dispose();
+                valuesPerVersion.Clear();
+                versions.Clear();
             }
         }
     }

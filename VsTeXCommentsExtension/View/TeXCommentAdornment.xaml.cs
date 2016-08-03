@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
@@ -20,11 +21,12 @@ namespace VsTeXCommentsExtension.View
         private readonly IWpfTextView textView;
         private readonly PreviewAdorner previewAdorner;
         private readonly IRenderingManager renderingManager;
+        private readonly List<EventHandler> displayModeChangedHandlers = new List<EventHandler>();
 
-        private TeXCommentTag tag;
         private bool isInvalidated;
         private double lastLineWidthWithoutStartWhiteSpaces;
 
+        public TeXCommentTag DataTag { get; private set; }
         public bool IsInEditMode => currentState == TeXCommentAdornmentState.EditingAndRenderingPreview || currentState == TeXCommentAdornmentState.EditingWithPreview;
 
         private TeXCommentAdornmentState currentState;
@@ -37,7 +39,11 @@ namespace VsTeXCommentsExtension.View
 
                 var lastDisplayMode = DisplayMode;
                 currentState = value;
-                if (lastDisplayMode != DisplayMode) refreshTags(tag.TeXBlock.Span);
+                if (lastDisplayMode != DisplayMode)
+                {
+                    foreach (var handler in displayModeChangedHandlers) handler(this, null);
+                    refreshTags(DataTag.TeXBlock.Span);
+                }
 
                 OnPropertyChanged(nameof(CurrentState));
 
@@ -73,6 +79,12 @@ namespace VsTeXCommentsExtension.View
             }
         }
 
+        public event EventHandler DisplayModeChanged
+        {
+            add { displayModeChangedHandlers.Add(value); }
+            remove { displayModeChangedHandlers.Remove(value); }
+        }
+
         private static int debugIndexer;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -95,7 +107,7 @@ namespace VsTeXCommentsExtension.View
             ExtensionSettings.Instance.CustomZoomChanged += CustomZoomChanged;
             textView.Caret.PositionChanged += Caret_PositionChanged;
 
-            this.tag = tag;
+            this.DataTag = tag;
             this.refreshTags = refreshTags;
             this.setIsInEditModeForAllAdornmentsInDocument = setIsInEditModeForAllAdornmentsInDocument;
             this.textView = textView;
@@ -127,9 +139,9 @@ namespace VsTeXCommentsExtension.View
 
         public void Update(TeXCommentTag tag, LineSpan lineSpan, double? lastLineWidthWithoutStartWhiteSpaces)
         {
-            bool changed = this.tag.Text != tag.Text;
+            bool changed = this.DataTag.Text != tag.Text;
 
-            this.tag = tag;
+            this.DataTag = tag;
             LineSpan = lineSpan;
             if (lastLineWidthWithoutStartWhiteSpaces.HasValue)
             {
@@ -178,12 +190,13 @@ namespace VsTeXCommentsExtension.View
             ExtensionSettings.Instance.CustomZoomChanged -= CustomZoomChanged;
             textView.Caret.PositionChanged -= Caret_PositionChanged;
             ResourcesManager?.Dispose();
+            displayModeChangedHandlers.Clear();
         }
 
         private void UpdateImageAsync()
         {
             var input = new HtmlRenderer.Input(
-                tag,
+                DataTag,
                 0.01 * VsSettings.ZoomPercentage,
                 VsSettings.CommentsForeground.Color,
                 VsSettings.CommentsBackground.Color,
