@@ -58,10 +58,33 @@ namespace VsTeXCommentsExtension.Integration.Data
 
             var firstSpan = spans[0];
             var allTagSpans = tagsPerVersion.GetValue(firstSpan.Snapshot);
-            if (spans.Count == 1 && firstSpan.Start == 0 && firstSpan.Length == firstSpan.Snapshot.Length)
+            if (spans.Count == 1)
             {
-                //span is over whole snapshot, so we can return all tagspans without filtering
-                foreach (var tagSpan in allTagSpans) yield return tagSpan;
+                if (firstSpan.Start == 0 && firstSpan.Length == firstSpan.Snapshot.Length)
+                {
+                    //span is over whole snapshot, so we can return all tagspans without filtering
+                    foreach (var tagSpan in allTagSpans) yield return tagSpan;
+                }
+                else
+                {
+                    bool foundAnyInCurrentSpan = false;
+                    int tagSpanIndex = 0;
+                    foreach (var tagSpan in allTagSpans)
+                    {
+                        if (firstSpan.IntersectsWith(tagSpan.Span))
+                        {
+                            foundAnyInCurrentSpan = true;
+                            yield return tagSpan;
+                        }
+                        else if (foundAnyInCurrentSpan)
+                        {
+                            //tagspans are ordered, so we can stop searching here
+                            break;
+                        }
+
+                        ++tagSpanIndex;
+                    }
+                }
             }
             else
             {
