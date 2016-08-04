@@ -176,19 +176,24 @@ namespace VsTeXCommentsExtension.Integration.View
                 textHasBeenEdited ? TeXCommentAdornmentState.EditingAndRenderingPreview : TeXCommentAdornmentState.Rendering,
                 span =>
                 {
-                    //var blockSpans = texCommentBlocks.GetBlockSpansWithLastLineBreakIntersectedBy(snapshot, span);
+                    //var blockSpans = texCommentBlocks.GetBlockSpansWithLastLineBreakIntersectedBy(Snapshot, span);
                     //foreach (var blockSpan in blockSpans)
                     //{
-                    //    RaiseTagsChanged(new SnapshotSpan(snapshot, blockSpan));
+                    //    RaiseTagsChanged(new SnapshotSpan(Snapshot, blockSpan));
                     //}
 
-                    //RaiseTagsChanged(new SnapshotSpan(snapshot, 0, snapshot.Length));
+                    //RaiseTagsChanged(new SnapshotSpan(Snapshot, 0, Snapshot.Length));
 
-                    InvalidateSpans(new List<SnapshotSpan>() { new SnapshotSpan(snapshot, 0, snapshot.Length) });
+                    InvalidateSpans(new List<SnapshotSpan>() { new SnapshotSpan(Snapshot, 0, Snapshot.Length) });
                 },
                 isInEditMode =>
                 {
                     ForAllCurrentlyUsedAdornments(a => a.CurrentState = isInEditMode ? TeXCommentAdornmentState.EditingAndRenderingPreview : TeXCommentAdornmentState.Rendering, false);
+                },
+                (tag, attributeText) =>
+                {
+                    var pos = tag.Span.Start + tag.TeXBlock.FirstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length + tag.TeXBlock.PropertiesSegmentLength;
+                    Snapshot.TextBuffer.Insert(pos, $"[{attributeText}]");
                 },
                 renderingManager,
                 vsSettings);

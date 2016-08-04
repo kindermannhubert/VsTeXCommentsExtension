@@ -126,6 +126,16 @@ namespace VsTeXCommentsExtension.View
             textView.TextBuffer.Insert(caret.Position.BufferPosition.Position, code);
         }
 
+        private void MenuItem_AddCustomForegroundAttribute_Click(object sender, RoutedEventArgs e)
+        {
+            addAttribute(DataTag, "foreground=red");
+        }
+
+        private void MenuItem_AddCustomZoomAttribute_Click(object sender, RoutedEventArgs e)
+        {
+            addAttribute(DataTag, "zoom=120%");
+        }
+
         public class ZoomMenuItem : INotifyPropertyChanged
         {
             public double ZoomScale { get; }

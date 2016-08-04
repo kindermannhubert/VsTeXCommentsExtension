@@ -18,6 +18,7 @@ namespace VsTeXCommentsExtension.View
     {
         private readonly Action<Span> refreshTags;
         private readonly Action<bool> setIsInEditModeForAllAdornmentsInDocument;
+        private readonly Action<TeXCommentTag, string> addAttribute;
         private readonly IWpfTextView textView;
         private readonly PreviewAdorner previewAdorner;
         private readonly IRenderingManager renderingManager;
@@ -101,6 +102,7 @@ namespace VsTeXCommentsExtension.View
             TeXCommentAdornmentState initialState,
             Action<Span> refreshTags,
             Action<bool> setIsInEditModeForAllAdornmentsInDocument,
+            Action<TeXCommentTag, string> addAttribute,
             IRenderingManager renderingManager,
             IVsSettings vsSettings)
         {
@@ -110,6 +112,7 @@ namespace VsTeXCommentsExtension.View
             this.DataTag = tag;
             this.refreshTags = refreshTags;
             this.setIsInEditModeForAllAdornmentsInDocument = setIsInEditModeForAllAdornmentsInDocument;
+            this.addAttribute = addAttribute;
             this.textView = textView;
             this.lastLineWidthWithoutStartWhiteSpaces = lastLineWidthWithoutStartWhiteSpaces;
             this.renderingManager = renderingManager;

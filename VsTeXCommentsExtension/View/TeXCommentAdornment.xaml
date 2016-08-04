@@ -69,8 +69,7 @@
                     <MenuItem Header="Edit All" Click="MenuItem_EditAll_Click" />
                     <MenuItem Header="Open Image Cache..." Click="MenuItem_OpenImageCache_Click" />
 
-                    <!--Name 'Zoom' is used also in code-behind.-->
-                    <MenuItem Header="Zoom" ItemsSource="{x:Static local:TeXCommentAdornment.ZoomMenuItems}">
+                    <MenuItem Header="Global Zoom" ItemsSource="{x:Static local:TeXCommentAdornment.ZoomMenuItems}">
                         <MenuItem.ItemContainerStyle>
                             <Style TargetType="MenuItem">
                                 <Setter Property="Header" Value="{Binding}"/>
@@ -131,6 +130,10 @@
                             <MenuItem Header="Functions" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Functions}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
                             <MenuItem Header="Delimiters" ItemsSource="{x:Static local:TeXCommentAdornment.Snippets_Delimiters}" ItemContainerStyle="{StaticResource ResourceKey=SnippetsMenuItemStyle}" />
                         </MenuItem>
+                    </MenuItem>
+                    <MenuItem Header="Properties">
+                        <MenuItem Header="Add Custom Foreground Attribute" Click="MenuItem_AddCustomForegroundAttribute_Click" />
+                        <MenuItem Header="Add Custom Zoom Attribute" Click="MenuItem_AddCustomZoomAttribute_Click" />
                     </MenuItem>
                 </ContextMenu>
             </local:DropDownImageButton.ContextMenu>
