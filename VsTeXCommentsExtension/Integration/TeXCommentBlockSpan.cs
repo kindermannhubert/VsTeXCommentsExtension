@@ -27,17 +27,37 @@ namespace VsTeXCommentsExtension.Integration
         public int LastLineWhiteSpacesAtStart { get; }
 
         /// <summary>
+        /// Length of properties segment (e.g., "[zoom=120%]")
+        /// </summary>
+        public int PropertiesSegmentLength { get; }
+
+        /// <summary>
         /// Line break text used (should be "\r\n").
         /// </summary>
         public string LineBreakText { get; }
 
-        public TeXCommentBlockSpan(Span span, Span spanWithLastLineBreak, int firstLineWhiteSpacesAtStart, int lastLineWhiteSpacesAtStart, string lineBreakText)
+        public int ZoomPercentage { get; }
+
+        public string SyntaxErrors { get; }
+
+        public TeXCommentBlockSpan(
+            Span span,
+            Span spanWithLastLineBreak,
+            int firstLineWhiteSpacesAtStart,
+            int lastLineWhiteSpacesAtStart,
+            int propertiesSegmentLength,
+            string lineBreakText,
+            int zoomPercentage,
+            string syntaxErrors)
         {
             Span = span;
             SpanWithLastLineBreak = spanWithLastLineBreak;
             FirstLineWhiteSpacesAtStart = firstLineWhiteSpacesAtStart;
             LastLineWhiteSpacesAtStart = lastLineWhiteSpacesAtStart;
+            PropertiesSegmentLength = propertiesSegmentLength;
             LineBreakText = lineBreakText;
+            ZoomPercentage = zoomPercentage;
+            SyntaxErrors = syntaxErrors;
         }
 
         public TeXCommentTag GetDataTag(ITextSnapshot snapshot) => new TeXCommentTag(snapshot.GetText(Span), this);

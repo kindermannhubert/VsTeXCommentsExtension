@@ -21,15 +21,22 @@ namespace VsTeXCommentsExtension.View
             {
                 renderedResult = value;
                 OnPropertyChanged(nameof(ErrorsSummary));
-                OnPropertyChanged(nameof(AnyRenderingErrors));
+                OnPropertyChanged(nameof(AnyErrors));
                 OnPropertyChanged(nameof(RenderedImage));
                 OnPropertyChanged(nameof(RenderedImageWidth));
                 OnPropertyChanged(nameof(RenderedImageHeight));
             }
         }
 
-        public bool AnyRenderingErrors => renderedResult.HasValue && renderedResult.Value.HasErrors;
-        public string ErrorsSummary => renderedResult?.ErrorsSummary ?? string.Empty;
+        public bool AnyErrors => DataTag.SyntaxErrors != null || (renderedResult.HasValue && renderedResult.Value.HasErrors);
+        public string ErrorsSummary
+        {
+            get
+            {
+                if (DataTag.SyntaxErrors != null) return DataTag.SyntaxErrors;
+                else return renderedResult?.ErrorsSummary ?? string.Empty;
+            }
+        }
         public BitmapSource RenderedImage => renderedResult?.Image;
         public double RenderedImageWidth => (renderedResult?.Image.Width / (textView.ZoomLevel * 0.01)) ?? 0;
         public double RenderedImageHeight => (renderedResult?.Image.Height / (textView.ZoomLevel * 0.01)) ?? 0;

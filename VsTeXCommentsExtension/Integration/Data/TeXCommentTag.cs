@@ -27,6 +27,8 @@ namespace VsTeXCommentsExtension.Integration.Data
         /// </summary>
         public Span Span => TeXBlock.Span;
 
+        public string SyntaxErrors => TeXBlock.SyntaxErrors;
+
         /// <summary>
         /// Span of whole TeX comment block.
         /// </summary>
@@ -42,6 +44,7 @@ namespace VsTeXCommentsExtension.Integration.Data
             TeXBlock = span;
         }
 
+        //TODO - cacheing could not work well because this is struct
         public string GetTextWithoutCommentMarks()
         {
             if (textTrimmed == null)
@@ -54,7 +57,7 @@ namespace VsTeXCommentsExtension.Integration.Data
                     var trimmedLine = line.TrimStart(TextSnapshotTeXCommentBlocks.WhiteSpaces);
                     if (trimmedLine.StartsWith(TextSnapshotTeXCommentBlocks.TeXCommentPrefix))
                     {
-                        trimmedLine = trimmedLine.Substring(TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length);
+                        trimmedLine = trimmedLine.Substring(TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length + TeXBlock.PropertiesSegmentLength);
                     }
                     else if (trimmedLine.StartsWith(TextSnapshotTeXCommentBlocks.CommentPrefix))
                     {

@@ -137,7 +137,7 @@
         </local:DropDownImageButton>
 
         <Image x:Name="imgError" Width="14" Height="14" Margin="4,0,0,0" RenderOptions.BitmapScalingMode="HighQuality"
-               Visibility="{Binding AnyRenderingErrors, Converter={StaticResource boolToVisibilityConverter}}"
+               Visibility="{Binding AnyErrors, Converter={StaticResource boolToVisibilityConverter}}"
                Source="{Binding ResourcesManager.Warning}">
             <Image.ToolTip>
                 <ToolTip DataContext="{Binding DataContext, ElementName=root}">

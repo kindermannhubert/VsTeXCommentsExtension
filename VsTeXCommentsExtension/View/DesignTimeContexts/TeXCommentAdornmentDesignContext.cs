@@ -15,7 +15,7 @@ namespace VsTeXCommentsExtension.View.DesignTimeContexts
 
         public ImageSource RenderedImage { get; } = new BitmapImage(View.ResourcesManager.GetAssemblyResourceUri("DesignPreview.png"));
 
-        public bool AnyRenderingErrors => CurrentState == TeXCommentAdornmentState.Rendering;
+        public bool AnyErrors => CurrentState == TeXCommentAdornmentState.Rendering;
 
         public string ErrorsSummary => "some error";
 

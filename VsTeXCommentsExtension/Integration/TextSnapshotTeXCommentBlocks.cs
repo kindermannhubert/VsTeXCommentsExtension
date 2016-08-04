@@ -42,7 +42,7 @@ namespace VsTeXCommentsExtension.Integration
                         texBlockSpanBuilder.EndBlock(lastBlockLine);
                         texCommentBlocks.Add(texBlockSpanBuilder.Build(snapshot)); //end of current block
 
-                        texBlockSpanBuilder = new TeXCommentBlockSpanBuilder(line.ExtentIncludingLineBreak, numberOfWhiteSpaceCharsOnStartOfLine, line.GetLineBreakText()); //start of new block
+                        texBlockSpanBuilder = new TeXCommentBlockSpanBuilder(line.ExtentIncludingLineBreak, numberOfWhiteSpaceCharsOnStartOfLine, lineText, line.GetLineBreakText()); //start of new block
                         lastBlockLine = line;
                     }
                     else if (lineText.StartsWith(numberOfWhiteSpaceCharsOnStartOfLine, CommentPrefix))
@@ -63,7 +63,7 @@ namespace VsTeXCommentsExtension.Integration
                 {
                     //start of new block
                     atTexBlock = true;
-                    texBlockSpanBuilder = new TeXCommentBlockSpanBuilder(line.ExtentIncludingLineBreak, numberOfWhiteSpaceCharsOnStartOfLine, line.GetLineBreakText());
+                    texBlockSpanBuilder = new TeXCommentBlockSpanBuilder(line.ExtentIncludingLineBreak, numberOfWhiteSpaceCharsOnStartOfLine, lineText, line.GetLineBreakText());
                     lastBlockLine = line;
                 }
             }
