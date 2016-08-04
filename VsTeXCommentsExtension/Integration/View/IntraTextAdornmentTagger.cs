@@ -34,6 +34,7 @@ namespace VsTeXCommentsExtension.Integration.View
         private readonly ObjectPool<Dictionary<AdornmentCacheKey, TAdornment>> adormentDictionariesPool = new ObjectPool<Dictionary<AdornmentCacheKey, TAdornment>>(() => new Dictionary<AdornmentCacheKey, TAdornment>());
 
         private Dictionary<AdornmentCacheKey, TAdornment> adornmentsCache = new Dictionary<AdornmentCacheKey, TAdornment>();
+        private bool isEnabled;
 
         protected readonly TextSnapshotTeXCommentBlocks TexCommentBlocks;
         protected readonly IWpfTextView TextView;
@@ -48,6 +49,7 @@ namespace VsTeXCommentsExtension.Integration.View
             TexCommentBlocks = TextSnapshotTeXCommentBlocksProvider.Get(textView.TextBuffer);
             //this.view.LayoutChanged += HandleLayoutChanged;
             this.TextView.TextBuffer.Changed += HandleBufferChanged;
+            ((FrameworkElement)textView).Loaded += TextView_Loaded;
             perSnapshotResults = new TextSnapshotValuesPerVersionCache<PooledStructEnumerable<ITagSpan<IntraTextAdornmentTag>>>(GetAdornmentTagsOnSnapshot);
         }
 
@@ -221,7 +223,7 @@ namespace VsTeXCommentsExtension.Integration.View
         // Produces tags on the snapshot that the tag consumer asked for.
         public IEnumerable<ITagSpan<IntraTextAdornmentTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
-            if (spans == null || spans.Count == 0) yield break;
+            if (!isEnabled || spans == null || spans.Count == 0) yield break;
 
             var requestedSnapshot = spans[0].Snapshot;
             var allTagSpans = perSnapshotResults.GetValue(Snapshot);
@@ -332,8 +334,16 @@ namespace VsTeXCommentsExtension.Integration.View
             return new PooledStructEnumerable<ITagSpan<IntraTextAdornmentTag>>(results, tagSpanListsPool);
         }
 
+
+        private void TextView_Loaded(object sender, RoutedEventArgs e)
+        {
+            isEnabled = true;
+        }
+
         public virtual void Dispose()
         {
+            ((FrameworkElement)TextView).Loaded -= TextView_Loaded;
+
             TextSnapshotTeXCommentBlocksProvider.Release(TextView.TextBuffer, TexCommentBlocks);
             perSnapshotResults.Dispose();
 
