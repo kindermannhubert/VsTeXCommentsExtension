@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.Text;
 using System;
+using System.Windows.Media;
 using VsTeXCommentsExtension.Integration.Data;
 
 namespace VsTeXCommentsExtension.Integration
@@ -38,6 +39,8 @@ namespace VsTeXCommentsExtension.Integration
 
         public int ZoomPercentage { get; }
 
+        public Color? ForegroundColor { get; }
+
         public string SyntaxErrors { get; }
 
         public TeXCommentBlockSpan(
@@ -48,6 +51,7 @@ namespace VsTeXCommentsExtension.Integration
             int propertiesSegmentLength,
             string lineBreakText,
             int zoomPercentage,
+            Color? foregroundColor,
             string syntaxErrors)
         {
             Span = span;
@@ -57,6 +61,7 @@ namespace VsTeXCommentsExtension.Integration
             PropertiesSegmentLength = propertiesSegmentLength;
             LineBreakText = lineBreakText;
             ZoomPercentage = zoomPercentage;
+            ForegroundColor = foregroundColor;
             SyntaxErrors = syntaxErrors;
         }
 

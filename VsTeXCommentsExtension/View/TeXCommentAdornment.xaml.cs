@@ -198,7 +198,7 @@ namespace VsTeXCommentsExtension.View
             var input = new HtmlRenderer.Input(
                 DataTag,
                 (0.01 * VsSettings.ZoomPercentage) * (0.01 * DataTag.TeXBlock.ZoomPercentage),
-                VsSettings.CommentsForeground.Color,
+                DataTag.TeXBlock.ForegroundColor.HasValue ? DataTag.TeXBlock.ForegroundColor.Value : VsSettings.CommentsForeground.Color,
                 VsSettings.CommentsBackground.Color,
                 VsSettings.CommentsFont,
                 textView,

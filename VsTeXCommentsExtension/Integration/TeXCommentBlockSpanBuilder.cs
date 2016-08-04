@@ -1,17 +1,20 @@
 ﻿using Microsoft.VisualStudio.Text;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Windows.Media;
 
 namespace VsTeXCommentsExtension.Integration
 {
     internal struct TeXCommentBlockSpanBuilder
     {
-        private static readonly Regex PropertiesSegmentsRegex = new Regex("^[ \t]*" + TextSnapshotTeXCommentBlocks.TeXCommentPrefix + @"(\[[a-zA-Z]+=[a-zA-Z0-9%]+\])+", RegexOptions.Compiled);
-        private static readonly Regex PropertyRegex = new Regex(@"(\[(?<name>[a-zA-Z]+)=(?<value>[a-zA-Z0-9%]+)\])+", RegexOptions.Compiled);
+        private static readonly Regex PropertiesSegmentsRegex = new Regex("^[ \t]*" + TextSnapshotTeXCommentBlocks.TeXCommentPrefix + @"(\[[a-zA-Z]+=[a-zA-Z0-9#%]+\])+", RegexOptions.Compiled);
+        private static readonly Regex PropertyRegex = new Regex(@"(\[(?<name>[a-zA-Z]+)=(?<value>[a-zA-Z0-9#%]+)\])+", RegexOptions.Compiled);
 
         private readonly string lineBreakText;
         private readonly int firstLineWhiteSpacesAtStart;
         private readonly int propertiesSegmentLength;
         private readonly int zoomPercentage;
+        private readonly Color? foregroundColor;
         private readonly string syntaxErrors;
 
         private Span span;
@@ -25,6 +28,7 @@ namespace VsTeXCommentsExtension.Integration
             lastLineWhiteSpacesAtStart = -1;
             zoomPercentage = 100;
             propertiesSegmentLength = 0;
+            foregroundColor = null;
             syntaxErrors = null;
 
             //search for properties (e.g., //tex:[zoom=120%])
@@ -41,10 +45,10 @@ namespace VsTeXCommentsExtension.Integration
                         match = PropertyRegex.Match(prop.Value);
                         if (match.Success)
                         {
+                            var valueText = match.Groups["value"].Value;
                             switch (match.Groups["name"].Value)
                             {
                                 case "zoom":
-                                    var valueText = match.Groups["value"].Value;
                                     if (valueText[valueText.Length - 1] != '%')
                                     {
                                         syntaxErrors = "Unable to parse value of 'zoom' property. Example of syntax is: '//tex:[zoom=120%]'.";
@@ -62,8 +66,17 @@ namespace VsTeXCommentsExtension.Integration
                                         return;
                                     }
                                     break;
-                                default:
+                                case "foreground":
+                                    foregroundColor = ParseColorFromString(valueText);
+                                    if (!foregroundColor.HasValue)
+                                    {
+                                        syntaxErrors = "Unable to parse value of 'foreground' property. Examples of syntax are: '//tex:[foreground=red]' or '//tex:[foreground=#FF0000]'.";
+                                        return;
+                                    }
                                     break;
+                                default:
+                                    syntaxErrors = $"Unknown property name '{match.Groups["name"].Value}' used.";
+                                    return;
                             }
                         }
                         else
@@ -104,7 +117,21 @@ namespace VsTeXCommentsExtension.Integration
                 propertiesSegmentLength,
                 lineBreakText,
                 zoomPercentage,
+                foregroundColor,
                 syntaxErrors);
+        }
+
+        [DebuggerNonUserCode]
+        private static Color? ParseColorFromString(string text)
+        {
+            try
+            {
+                return (Color?)ColorConverter.ConvertFromString(text);
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }
