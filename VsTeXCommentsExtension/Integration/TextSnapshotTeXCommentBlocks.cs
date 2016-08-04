@@ -76,6 +76,22 @@ namespace VsTeXCommentsExtension.Integration
             return new PooledStructEnumerable<TeXCommentBlockSpan>(texCommentBlocks, blockListsPool);
         }
 
+        public PooledStructEnumerable<TeXCommentBlockSpan> GetBlocksIntersectedBy(ITextSnapshot snapshot, Span span)
+        {
+            var blocks = GetTexCommentBlocks(snapshot);
+
+            var results = blockListsPool.Get();
+            foreach (var block in blocks)
+            {
+                if (block.Span.IntersectsWith(span))
+                {
+                    results.Add(block);
+                }
+            }
+
+            return new PooledStructEnumerable<TeXCommentBlockSpan>(results, blockListsPool);
+        }
+
         public PooledStructEnumerable<SnapshotSpan> GetBlockSpansIntersectedBy(ITextSnapshot snapshot, Span span)
         {
             var blocks = GetTexCommentBlocks(snapshot);

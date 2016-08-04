@@ -40,39 +40,46 @@ namespace VsTeXCommentsExtension.SyntaxHighlighting
         {
             var snapshot = span.Snapshot;
             var spans = new List<ClassificationSpan>();
-            using (var blocks = texCommentBlocks.GetBlockSpansIntersectedBy(span.Snapshot, span.Span))
+            using (var blocks = texCommentBlocks.GetBlocksIntersectedBy(span.Snapshot, span.Span))
             {
-                foreach (var blockSpan in blocks)
+                foreach (var block in blocks)
                 {
-                    var blockText = blockSpan.GetText();
+                    var blockText = snapshot.GetText(block.Span);
 
                     foreach (Match mathBlockMatch in MathBlockRegex.Matches(blockText))
                     {
                         //commands colorizing (="\someCommand")
                         foreach (Match commandMatch in CommandRegex.Matches(mathBlockMatch.Value))
                         {
-                            var commandSpan = new Span(blockSpan.Start + mathBlockMatch.Index + commandMatch.Index, commandMatch.Length);
+                            var commandSpan = new Span(block.Span.Start + mathBlockMatch.Index + commandMatch.Index, commandMatch.Length);
                             spans.Add(new ClassificationSpan(new SnapshotSpan(snapshot, commandSpan), commandClassificationType));
                         }
 
                         //math block borders colorizing (="$" or "$$")
                         var dollarStartIndex = mathBlockMatch.Index;
                         var doubleDollar = dollarStartIndex + 1 < blockText.Length && blockText[dollarStartIndex + 1] == '$';
-                        var dollarSpan = new Span(blockSpan.Start + dollarStartIndex, doubleDollar ? 2 : 1);
+                        var dollarSpan = new Span(block.Span.Start + dollarStartIndex, doubleDollar ? 2 : 1);
                         spans.Add(new ClassificationSpan(new SnapshotSpan(snapshot, dollarSpan), mathBlockClassificationType));
 
                         dollarStartIndex = mathBlockMatch.Index + mathBlockMatch.Length - 1;
                         doubleDollar = dollarStartIndex - 1 >= 0 && blockText[dollarStartIndex - 1] == '$';
-                        dollarSpan = new Span(blockSpan.Start + (doubleDollar ? dollarStartIndex - 1 : dollarStartIndex), doubleDollar ? 2 : 1);
+                        dollarSpan = new Span(block.Span.Start + (doubleDollar ? dollarStartIndex - 1 : dollarStartIndex), doubleDollar ? 2 : 1);
                         spans.Add(new ClassificationSpan(new SnapshotSpan(snapshot, dollarSpan), mathBlockClassificationType));
                     }
 
-                    //"tex:" prefix will be colorized too
+                    //colorization of "tex:" prefix
                     var prefixMatch = TexPrefixRegex.Match(blockText);
                     Debug.Assert(prefixMatch.Success && prefixMatch.Groups.Count == 2);
                     var prefixStart = prefixMatch.Groups[1].Index + TextSnapshotTeXCommentBlocks.CommentPrefix.Length;
                     var prefixLength = TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length - TextSnapshotTeXCommentBlocks.CommentPrefix.Length;
-                    spans.Add(new ClassificationSpan(new SnapshotSpan(snapshot, new Span(blockSpan.Start + prefixStart, prefixLength)), mathBlockClassificationType));
+                    var texPrefixSpan = new Span(block.Span.Start + prefixStart, prefixLength);
+                    spans.Add(new ClassificationSpan(new SnapshotSpan(snapshot, texPrefixSpan), mathBlockClassificationType));
+
+                    //colorization of property attributes
+                    if (block.PropertiesSegmentLength > 0)
+                    {
+                        spans.Add(new ClassificationSpan(new SnapshotSpan(snapshot, new Span(texPrefixSpan.End, block.PropertiesSegmentLength)), mathBlockClassificationType));
+                    }
                 }
             }
 
