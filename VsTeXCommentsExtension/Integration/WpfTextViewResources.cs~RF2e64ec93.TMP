@@ -141,10 +141,7 @@ namespace VsTeXCommentsExtension.Integration
 
             public T GetTexViewData<T>()
                 where T : class, IDisposable
-            {
-                IDisposable value;
-                return dataRegistrations.TryGetValue(typeof(T), out value) ? (T)value : null;
-            }
+                => (T)dataRegistrations[typeof(T)];
 
             public void Dispose()
             {
