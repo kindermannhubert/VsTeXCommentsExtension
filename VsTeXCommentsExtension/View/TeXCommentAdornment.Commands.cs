@@ -13,12 +13,22 @@ namespace VsTeXCommentsExtension.View
 {
     internal partial class TeXCommentAdornment
     {
-        public static ZoomMenuItem[] ZoomMenuItems { get; } = new[]
+        private static double lastCustomZoomScale;
+        public static ZoomMenuItem[] ZoomMenuItems = GetZoomMenuItems();
+
+        private static ZoomMenuItem[] GetZoomMenuItems()
         {
-            new ZoomMenuItem(0.5), new ZoomMenuItem(0.6), new ZoomMenuItem(0.7), new ZoomMenuItem(0.8), new ZoomMenuItem(0.9), new ZoomMenuItem(1, true),
-            new ZoomMenuItem(1.1), new ZoomMenuItem(1.2), new ZoomMenuItem(1.3), new ZoomMenuItem(1.4), new ZoomMenuItem(1.5), new ZoomMenuItem(1.6),
-            new ZoomMenuItem(1.7), new ZoomMenuItem(1.8), new ZoomMenuItem(1.9), new ZoomMenuItem(2)
-        };
+            ZoomMenuItems = new[]
+            {
+                new ZoomMenuItem(0.5), new ZoomMenuItem(0.6), new ZoomMenuItem(0.7), new ZoomMenuItem(0.8), new ZoomMenuItem(0.9), new ZoomMenuItem(1),
+                new ZoomMenuItem(1.1), new ZoomMenuItem(1.2), new ZoomMenuItem(1.3), new ZoomMenuItem(1.4), new ZoomMenuItem(1.5), new ZoomMenuItem(1.6),
+                new ZoomMenuItem(1.7), new ZoomMenuItem(1.8), new ZoomMenuItem(1.9), new ZoomMenuItem(2)
+            };
+
+            CustomZoomChanged(ExtensionSettings.Instance.CustomZoomScale);
+
+            return ZoomMenuItems;
+        }
 
         public static SnippetMenuItem[] Snippets_Fractions { get; } = LoadSnippets("Fractions");
         public static SnippetMenuItem[] Snippets_Scripts { get; } = LoadSnippets("Scripts");
@@ -57,12 +67,15 @@ namespace VsTeXCommentsExtension.View
             CurrentState = TeXCommentAdornmentState.Rendering;
         }
 
-        private void CustomZoomChanged(double zoomScale)
+        private static void CustomZoomChanged(double zoomScale)
         {
+            if (lastCustomZoomScale == zoomScale) return;
+
             foreach (var item in ZoomMenuItems)
             {
-                item.IsChecked = item.ZoomScale == zoomScale;
+                item.IsChecked = Math.Abs(item.ZoomScale - zoomScale) < 1e-6;
             }
+            lastCustomZoomScale = zoomScale;
         }
 
         private void MenuItem_EditAll_Click(object sender, RoutedEventArgs e)
