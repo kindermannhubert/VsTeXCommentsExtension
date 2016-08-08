@@ -50,6 +50,16 @@ namespace VsTeXCommentsExtension.View
             image.SetBinding(Image.WidthProperty, new Binding(nameof(TeXCommentAdornment.RenderedImageWidth)) { Source = adornedElement });
             image.SetBinding(Image.HeightProperty, new Binding(nameof(TeXCommentAdornment.RenderedImageHeight)) { Source = adornedElement });
 
+            //var style = new Style(typeof(Image));
+            //var grayscaleTrigger = new DataTrigger()
+            //{
+            //    Binding = new Binding(nameof(TeXCommentAdornment.CurrentState)) { Source = adornedElement },
+            //    Value = TeXCommentAdornmentState.EditingAndRenderingPreview
+            //};
+            //grayscaleTrigger.Setters.Add(new Setter(Image.EffectProperty, graycaleEffect));
+            //style.Triggers.Add(grayscaleTrigger);
+            //image.Style = style;
+
             var textBlock = new TextBlock() { Text = "Preview:", Margin = new Thickness(0, 0, 0, 2) };
             textBlock.SetBinding(TextBlock.ForegroundProperty, new Binding(nameof(IResourcesManager.ForegroundUI)) { Source = resourcesManager });
             panel.Children.Add(textBlock);
@@ -60,18 +70,8 @@ namespace VsTeXCommentsExtension.View
             border.SetBinding(Border.BackgroundProperty, new Binding(nameof(IVsSettings.CommentsBackground)) { Source = vsSettings });
             Child = border;
 
-            var style = new Style(typeof(Border));
-            var grayscaleTrigger = new DataTrigger()
-            {
-                Binding = new Binding(nameof(TeXCommentAdornment.CurrentState)) { Source = adornedElement },
-                Value = TeXCommentAdornmentState.EditingAndRenderingPreview
-            };
-            grayscaleTrigger.Setters.Add(new Setter(Border.EffectProperty, graycaleEffect));
-            style.Triggers.Add(grayscaleTrigger);
-            border.Style = style;
-
             //visibility setup
-            style = new Style(typeof(PreviewAdorner));
+            var style = new Style(typeof(PreviewAdorner));
             style.Setters.Add(new Setter(VisibilityProperty, Visibility.Collapsed));
 
             var visibilityTrigger = new MultiDataTrigger();
