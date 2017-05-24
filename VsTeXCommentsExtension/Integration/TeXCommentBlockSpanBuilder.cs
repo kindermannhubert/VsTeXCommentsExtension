@@ -7,7 +7,8 @@ namespace VsTeXCommentsExtension.Integration
 {
     internal struct TeXCommentBlockSpanBuilder
     {
-        private static readonly Regex PropertiesSegmentsRegex = new Regex("^[ \t]*" + TextSnapshotTeXCommentBlocks.TeXCommentPrefix + @"(\[[a-zA-Z]+=[a-zA-Z0-9#%]+\])+", RegexOptions.Compiled);
+        private static readonly Regex PropertiesSegmentsRegexCSharp = new Regex("^[ \t]*" + TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp + @"(\[[a-zA-Z]+=[a-zA-Z0-9#%]+\])+", RegexOptions.Compiled);
+        private static readonly Regex PropertiesSegmentsRegexBasic = new Regex("^[ \t]*" + TextSnapshotTeXCommentBlocks.TeXCommentPrefixBasic + @"(\[[a-zA-Z]+=[a-zA-Z0-9#%]+\])+", RegexOptions.Compiled);
         private static readonly Regex PropertyRegex = new Regex(@"(\[(?<name>[a-zA-Z]+)=(?<value>[a-zA-Z0-9#%]+)\])+", RegexOptions.Compiled);
 
         private readonly string lineBreakText;
@@ -20,7 +21,7 @@ namespace VsTeXCommentsExtension.Integration
         private Span span;
         private int lastLineWhiteSpacesAtStart;
 
-        public TeXCommentBlockSpanBuilder(Span firstLineSpanWithLineBreak, int firstLineWhiteSpacesAtStart, string firstLineText, string lineBreakText)
+        public TeXCommentBlockSpanBuilder(Span firstLineSpanWithLineBreak, int firstLineWhiteSpacesAtStart, string firstLineText, string lineBreakText, string contentType)
         {
             span = firstLineSpanWithLineBreak;
             this.firstLineWhiteSpacesAtStart = firstLineWhiteSpacesAtStart;
@@ -32,10 +33,18 @@ namespace VsTeXCommentsExtension.Integration
             syntaxErrors = null;
 
             //search for properties (e.g., //tex:[zoom=120%])
-            int propertiesIndex = firstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length;
+            int propertiesIndex = firstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp.Length;
+            if (contentType == "Basic")
+            {
+                propertiesIndex = firstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefixBasic.Length;
+            }
             if (propertiesIndex < firstLineText.Length && firstLineText[propertiesIndex] == '[')
             {
-                var match = PropertiesSegmentsRegex.Match(firstLineText);
+                var match = PropertiesSegmentsRegexCSharp.Match(firstLineText);
+                if (contentType == "Basic")
+                {
+                    match = PropertiesSegmentsRegexBasic.Match(firstLineText);
+                }
                 if (match.Success)
                 {
                     var propertiesSegmentGroup = match.Groups[1];

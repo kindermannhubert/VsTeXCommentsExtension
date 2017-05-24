@@ -59,7 +59,7 @@ namespace VsTeXCommentsExtension.Integration.View
             var oldLinePartWhichIsMovedToNewLine = e.Before.GetText(change.OldPosition, line.Extent.End.Position - change.OldPosition);
             if (oldLinePartWhichIsMovedToNewLine
                 .TrimStart(TextSnapshotTeXCommentBlocks.WhiteSpaces)
-                .StartsWith(TextSnapshotTeXCommentBlocks.CommentPrefix))
+                .StartsWith(TextSnapshotTeXCommentBlocks.CommentPrefixCSharp))
             {
                 //Enter has was pressed before '//'
                 TextView.TextBuffer.Insert(change.NewPosition, "//"); //whitespaces are inserted automatically by VS
@@ -69,6 +69,20 @@ namespace VsTeXCommentsExtension.Integration.View
                 //Enter has was pressed after '//'
                 var whitespaceCount = block.Value.GetMinNumberOfWhitespacesBeforeCommentPrefixes(e.Before);
                 TextView.TextBuffer.Insert(change.NewEnd, new string(' ', whitespaceCount) + "//");
+            }
+
+            if (oldLinePartWhichIsMovedToNewLine
+                .TrimStart(TextSnapshotTeXCommentBlocks.WhiteSpaces)
+                .StartsWith(TextSnapshotTeXCommentBlocks.CommentPrefixBasic))
+            {
+                //Enter has was pressed before '''
+                TextView.TextBuffer.Insert(change.NewPosition, "'"); //whitespaces are inserted automatically by VS
+            }
+            else
+            {
+                //Enter has was pressed after '''
+                var whitespaceCount = block.Value.GetMinNumberOfWhitespacesBeforeCommentPrefixes(e.Before);
+                TextView.TextBuffer.Insert(change.NewEnd, new string(' ', whitespaceCount) + "'");
             }
         }
 
@@ -192,7 +206,11 @@ namespace VsTeXCommentsExtension.Integration.View
                 },
                 (tag, attributeText) =>
                 {
-                    var pos = tag.Span.Start + tag.TeXBlock.FirstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length + tag.TeXBlock.PropertiesSegmentLength;
+                    var pos = tag.Span.Start + tag.TeXBlock.FirstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp.Length + tag.TeXBlock.PropertiesSegmentLength;
+                    if (snapshot.ContentType.TypeName == "Basic")
+                    {
+                        pos = tag.Span.Start + tag.TeXBlock.FirstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefixBasic.Length + tag.TeXBlock.PropertiesSegmentLength;
+                    }
                     Snapshot.TextBuffer.Insert(pos, $"[{attributeText}]");
                 },
                 renderingManager,

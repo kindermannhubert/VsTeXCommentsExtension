@@ -45,10 +45,26 @@ namespace VsTeXCommentsExtension.View
         {
             get
             {
+                
                 var spanWithLastLineBreak = DataTag.SpanWithLastLineBreak;
-                Debug.Assert(spanWithLastLineBreak.Length >= DataTag.TeXBlock.FirstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length);
-                spanWithLastLineBreak = spanWithLastLineBreak.TranslateStart(DataTag.TeXBlock.FirstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length);
-
+                if (DataTag.Text.Contains(TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp))
+                {
+                    Debug.Assert(spanWithLastLineBreak.Length >= DataTag.TeXBlock.FirstLineWhiteSpacesAtStart +
+                                 TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp.Length);
+                    spanWithLastLineBreak =
+                        spanWithLastLineBreak.TranslateStart(DataTag.TeXBlock.FirstLineWhiteSpacesAtStart +
+                                                             TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp
+                                                                 .Length);
+                }
+                else
+                {
+                    Debug.Assert(spanWithLastLineBreak.Length >= DataTag.TeXBlock.FirstLineWhiteSpacesAtStart +
+                                 TextSnapshotTeXCommentBlocks.TeXCommentPrefixBasic.Length);
+                    spanWithLastLineBreak =
+                        spanWithLastLineBreak.TranslateStart(DataTag.TeXBlock.FirstLineWhiteSpacesAtStart +
+                                                             TextSnapshotTeXCommentBlocks.TeXCommentPrefixBasic
+                                                                 .Length);
+                }
                 var caretPosition = textView.Caret.Position.BufferPosition;
                 if (DataTag.Span.Length == DataTag.SpanWithLastLineBreak.Length)
                 {

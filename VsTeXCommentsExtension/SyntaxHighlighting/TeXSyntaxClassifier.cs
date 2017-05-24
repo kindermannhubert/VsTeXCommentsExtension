@@ -12,7 +12,8 @@ namespace VsTeXCommentsExtension.SyntaxHighlighting
     {
         public static readonly Regex MathBlockRegex = new Regex(@"([\$]?\$)[^\$]+\$[\$]?", RegexOptions.Multiline | RegexOptions.Compiled);
         public static readonly Regex CommandRegex = new Regex(@"\\[^ {}_\^\$\r\n]+", RegexOptions.Multiline | RegexOptions.Compiled);
-        public static readonly Regex TexPrefixRegex = new Regex($@"^[ \t]*({TextSnapshotTeXCommentBlocks.TeXCommentPrefix})", RegexOptions.Compiled);
+        public static readonly Regex TexPrefixRegexCSharp = new Regex($@"^[ \t]*({TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp})", RegexOptions.Compiled);
+        public static readonly Regex TexPrefixRegexBasic = new Regex($@"^[ \t]*({TextSnapshotTeXCommentBlocks.TeXCommentPrefixBasic})", RegexOptions.Compiled);
 
         private readonly ITextBuffer buffer;
         private readonly TextSnapshotTeXCommentBlocks texCommentBlocks;
@@ -68,10 +69,17 @@ namespace VsTeXCommentsExtension.SyntaxHighlighting
                     }
 
                     //colorization of "tex:" prefix
-                    var prefixMatch = TexPrefixRegex.Match(blockText);
+                    var prefixMatch = TexPrefixRegexCSharp.Match(blockText);
+                    var prefixStart = prefixMatch.Groups[1].Index + TextSnapshotTeXCommentBlocks.CommentPrefixCSharp.Length;
+                    var prefixLength = TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp.Length - TextSnapshotTeXCommentBlocks.CommentPrefixCSharp.Length;
+
+                    if (snapshot.ContentType.TypeName == "Basic")
+                    {
+                        prefixMatch = TexPrefixRegexBasic.Match(blockText);
+                        prefixStart = prefixMatch.Groups[1].Index + TextSnapshotTeXCommentBlocks.CommentPrefixBasic.Length;
+                        prefixLength = TextSnapshotTeXCommentBlocks.TeXCommentPrefixBasic.Length - TextSnapshotTeXCommentBlocks.CommentPrefixBasic.Length;
+                    }
                     Debug.Assert(prefixMatch.Success && prefixMatch.Groups.Count == 2);
-                    var prefixStart = prefixMatch.Groups[1].Index + TextSnapshotTeXCommentBlocks.CommentPrefix.Length;
-                    var prefixLength = TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length - TextSnapshotTeXCommentBlocks.CommentPrefix.Length;
                     var texPrefixSpan = new Span(block.Span.Start + prefixStart, prefixLength);
                     spans.Add(new ClassificationSpan(new SnapshotSpan(snapshot, texPrefixSpan), mathBlockClassificationType));
 

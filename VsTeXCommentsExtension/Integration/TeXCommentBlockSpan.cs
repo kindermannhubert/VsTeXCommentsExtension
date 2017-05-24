@@ -69,7 +69,11 @@ namespace VsTeXCommentsExtension.Integration
 
         public bool IsPositionAfterTeXPrefix(ITextSnapshot snapshot, int position)
         {
-            return position - Span.Start - FirstLineWhiteSpacesAtStart >= TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length;
+            if (snapshot.ContentType.TypeName == "CSharp")
+            {
+                return position - Span.Start - FirstLineWhiteSpacesAtStart >= TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp.Length;
+            }
+            return position - Span.Start - FirstLineWhiteSpacesAtStart >= TextSnapshotTeXCommentBlocks.TeXCommentPrefixBasic.Length;
         }
 
         public int GetMinNumberOfWhitespacesBeforeCommentPrefixes(ITextSnapshot snapshot)

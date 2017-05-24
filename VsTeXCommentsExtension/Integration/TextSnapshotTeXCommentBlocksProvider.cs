@@ -15,6 +15,7 @@ namespace VsTeXCommentsExtension.Integration
                 CachedItem item;
                 if (!Cache.TryGetValue(textBuffer, out item))
                 {
+                    TextSnapshotTeXCommentBlocks tSTCB = new TextSnapshotTeXCommentBlocks();
                     item = new CachedItem(new TextSnapshotTeXCommentBlocks());
                     Cache.Add(textBuffer, item);
                     return item.Blocks;

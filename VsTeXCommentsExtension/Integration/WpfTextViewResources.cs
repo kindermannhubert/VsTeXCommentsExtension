@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
+using Microsoft.Build.Framework.XamlTypes;
 using VsTeXCommentsExtension.Integration.Data;
 using VsTeXCommentsExtension.Integration.View;
 using VsTeXCommentsExtension.SyntaxHighlighting;
@@ -16,7 +17,7 @@ namespace VsTeXCommentsExtension.Integration
 {
     [Export(typeof(IWpfTextViewConnectionListener))]
     [Export(typeof(WpfTextViewResources))]
-    [ContentType("CSharp")]
+    [ContentType("text")]
     [TextViewRole(PredefinedTextViewRoles.Interactive)]
     internal class WpfTextViewResources : IWpfTextViewConnectionListener
     {
@@ -54,7 +55,7 @@ namespace VsTeXCommentsExtension.Integration
         {
             lock (syncRoot)
             {
-                if (buffer.ContentType.TypeName != "CSharp") return null;
+                if (buffer.ContentType.TypeName != "Basic" && buffer.ContentType.TypeName != "CSharp") return null;
 
                 TextBufferData textBufferData;
                 if (!textBuffers.TryGetValue(buffer, out textBufferData))
@@ -73,7 +74,7 @@ namespace VsTeXCommentsExtension.Integration
         {
             lock (syncRoot)
             {
-                if (textView.TextBuffer.ContentType.TypeName != "CSharp") return null;
+                if (textView.TextBuffer.ContentType.TypeName != "Basic" && textView.TextBuffer.ContentType.TypeName != "CSharp") return null;
 
                 TextViewData textViewData;
                 if (!textViews.TryGetValue(textView, out textViewData))

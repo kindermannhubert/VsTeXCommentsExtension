@@ -10,7 +10,7 @@ using System.ComponentModel.Composition;
 namespace VsTeXCommentsExtension.Integration.View
 {
     [Export(typeof(IViewTaggerProvider))]
-    [ContentType("CSharp")]
+    [ContentType("text")]
     [TagType(typeof(IntraTextAdornmentTag))]
     internal sealed class TeXCommentAdornmentTaggerProvider : IViewTaggerProvider
     {
@@ -31,7 +31,6 @@ namespace VsTeXCommentsExtension.Integration.View
             if (textView == null) throw new ArgumentNullException(nameof(textView));
             if (buffer == null) throw new ArgumentNullException(nameof(buffer));
             if (buffer != textView.TextBuffer) return null;
-
             var wpfTextView = textView as IWpfTextView;
             if (wpfTextView == null) return null;
 

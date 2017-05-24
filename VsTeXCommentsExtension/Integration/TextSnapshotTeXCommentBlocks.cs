@@ -6,8 +6,11 @@ namespace VsTeXCommentsExtension.Integration
 {
     internal class TextSnapshotTeXCommentBlocks
     {
-        public const string CommentPrefix = "//";
-        public const string TeXCommentPrefix = "//tex:";
+        public const string CommentPrefixCSharp = "//"; 
+        public const string TeXCommentPrefixCSharp = "//tex:";
+        public const string CommentPrefixBasic = "'";
+        public const string TeXCommentPrefixBasic = "'tex:";
+
         public static readonly char[] WhiteSpaces = new char[] { ' ', '\t' };
 
         private readonly TextSnapshotValuesPerVersionCache<PooledStructEnumerable<TeXCommentBlockSpan>> blocksPerVersion;
@@ -15,15 +18,26 @@ namespace VsTeXCommentsExtension.Integration
         private readonly ObjectPool<List<TeXCommentBlockSpan>> blockListsPool = new ObjectPool<List<TeXCommentBlockSpan>>(() => new List<TeXCommentBlockSpan>());
         private readonly ObjectPool<List<SnapshotSpan>> snapshotSpansListsPool = new ObjectPool<List<SnapshotSpan>>(() => new List<SnapshotSpan>());
 
-        public TextSnapshotTeXCommentBlocks()
+        public TextSnapshotTeXCommentBlocks() 
         {
             blocksPerVersion = new TextSnapshotValuesPerVersionCache<PooledStructEnumerable<TeXCommentBlockSpan>>(GenerateTexCommentBlocks);
         }
+
+
 
         public StructEnumerable<TeXCommentBlockSpan> GetTexCommentBlocks(ITextSnapshot snapshot) => blocksPerVersion.GetValue(snapshot);
 
         private PooledStructEnumerable<TeXCommentBlockSpan> GenerateTexCommentBlocks(ITextSnapshot snapshot)
         {
+            string CommentPrefix = CommentPrefixCSharp;
+            string TeXCommentPrefix = TeXCommentPrefixCSharp;
+
+            if (snapshot.ContentType.TypeName == "Basic")
+            {
+                CommentPrefix = CommentPrefixBasic;
+                TeXCommentPrefix = TeXCommentPrefixBasic;
+            }
+
             var texCommentBlocks = blockListsPool.Get();
             Debug.Assert(texCommentBlocks.Count == 0);
 
@@ -42,7 +56,7 @@ namespace VsTeXCommentsExtension.Integration
                         texBlockSpanBuilder.EndBlock(lastBlockLine);
                         texCommentBlocks.Add(texBlockSpanBuilder.Build(snapshot)); //end of current block
 
-                        texBlockSpanBuilder = new TeXCommentBlockSpanBuilder(line.ExtentIncludingLineBreak, numberOfWhiteSpaceCharsOnStartOfLine, lineText, line.GetLineBreakText()); //start of new block
+                        texBlockSpanBuilder = new TeXCommentBlockSpanBuilder(line.ExtentIncludingLineBreak, numberOfWhiteSpaceCharsOnStartOfLine, lineText, line.GetLineBreakText(), snapshot.ContentType.TypeName); //start of new block
                         lastBlockLine = line;
                     }
                     else if (lineText.StartsWith(numberOfWhiteSpaceCharsOnStartOfLine, CommentPrefix))
@@ -63,7 +77,7 @@ namespace VsTeXCommentsExtension.Integration
                 {
                     //start of new block
                     atTexBlock = true;
-                    texBlockSpanBuilder = new TeXCommentBlockSpanBuilder(line.ExtentIncludingLineBreak, numberOfWhiteSpaceCharsOnStartOfLine, lineText, line.GetLineBreakText());
+                    texBlockSpanBuilder = new TeXCommentBlockSpanBuilder(line.ExtentIncludingLineBreak, numberOfWhiteSpaceCharsOnStartOfLine, lineText, line.GetLineBreakText(), snapshot.ContentType.TypeName);
                     lastBlockLine = line;
                 }
             }

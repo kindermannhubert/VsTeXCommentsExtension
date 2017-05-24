@@ -55,13 +55,21 @@ namespace VsTeXCommentsExtension.Integration.Data
                 foreach (var line in Text.Split(new[] { TeXBlock.LineBreakText }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     var trimmedLine = line.TrimStart(TextSnapshotTeXCommentBlocks.WhiteSpaces);
-                    if (trimmedLine.StartsWith(TextSnapshotTeXCommentBlocks.TeXCommentPrefix))
+                    if (trimmedLine.StartsWith(TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp))
                     {
-                        trimmedLine = trimmedLine.Substring(TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length + TeXBlock.PropertiesSegmentLength);
+                        trimmedLine = trimmedLine.Substring(TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp.Length + TeXBlock.PropertiesSegmentLength);
                     }
-                    else if (trimmedLine.StartsWith(TextSnapshotTeXCommentBlocks.CommentPrefix))
+                    else if (trimmedLine.StartsWith(TextSnapshotTeXCommentBlocks.CommentPrefixCSharp))
                     {
-                        trimmedLine = trimmedLine.Substring(TextSnapshotTeXCommentBlocks.CommentPrefix.Length);
+                        trimmedLine = trimmedLine.Substring(TextSnapshotTeXCommentBlocks.CommentPrefixCSharp.Length);
+                    }
+                    else if (trimmedLine.StartsWith(TextSnapshotTeXCommentBlocks.TeXCommentPrefixBasic))
+                    {
+                        trimmedLine = trimmedLine.Substring(TextSnapshotTeXCommentBlocks.TeXCommentPrefixBasic.Length + TeXBlock.PropertiesSegmentLength);
+                    }
+                    else if (trimmedLine.StartsWith(TextSnapshotTeXCommentBlocks.CommentPrefixBasic))
+                    {
+                        trimmedLine = trimmedLine.Substring(TextSnapshotTeXCommentBlocks.CommentPrefixBasic.Length);
                     }
 
                     sb.AppendLine(trimmedLine);
