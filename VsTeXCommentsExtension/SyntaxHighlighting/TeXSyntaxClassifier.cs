@@ -12,7 +12,7 @@ namespace VsTeXCommentsExtension.SyntaxHighlighting
     {
         public static readonly Regex MathBlockRegex = new Regex(@"([\$]?\$)[^\$]+\$[\$]?", RegexOptions.Multiline | RegexOptions.Compiled);
         public static readonly Regex CommandRegex = new Regex(@"\\[^ {}_\^\$\r\n]+", RegexOptions.Multiline | RegexOptions.Compiled);
-        public static readonly Regex TexPrefixRegexCSharp = new Regex($@"^[ \t]*({TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp})", RegexOptions.Compiled);
+        public static readonly Regex TexPrefixRegexCSharp = new Regex($@"^[ \t]*({TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharpAndFSharpAndCpp})", RegexOptions.Compiled);
         public static readonly Regex TexPrefixRegexBasic = new Regex($@"^[ \t]*({TextSnapshotTeXCommentBlocks.TeXCommentPrefixBasic})", RegexOptions.Compiled);
 
         private readonly ITextBuffer buffer;
@@ -71,7 +71,7 @@ namespace VsTeXCommentsExtension.SyntaxHighlighting
                     //colorization of "tex:" prefix
                     var prefixMatch = TexPrefixRegexCSharp.Match(blockText);
                     var prefixStart = prefixMatch.Groups[1].Index + TextSnapshotTeXCommentBlocks.CommentPrefixCSharp.Length;
-                    var prefixLength = TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp.Length - TextSnapshotTeXCommentBlocks.CommentPrefixCSharp.Length;
+                    var prefixLength = TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharpAndFSharpAndCpp.Length - TextSnapshotTeXCommentBlocks.CommentPrefixCSharp.Length;
 
                     if (snapshot.ContentType.TypeName == "Basic")
                     {

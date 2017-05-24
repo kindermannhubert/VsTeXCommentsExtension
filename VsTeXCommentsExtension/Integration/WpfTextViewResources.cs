@@ -55,7 +55,7 @@ namespace VsTeXCommentsExtension.Integration
         {
             lock (syncRoot)
             {
-                if (buffer.ContentType.TypeName != "Basic" && buffer.ContentType.TypeName != "CSharp") return null;
+                if (buffer.ContentType.TypeName != "Basic" && buffer.ContentType.TypeName != "CSharp" && buffer.ContentType.TypeName != "F#" && buffer.ContentType.TypeName != "C/C++") return null;
 
                 TextBufferData textBufferData;
                 if (!textBuffers.TryGetValue(buffer, out textBufferData))
@@ -74,7 +74,7 @@ namespace VsTeXCommentsExtension.Integration
         {
             lock (syncRoot)
             {
-                if (textView.TextBuffer.ContentType.TypeName != "Basic" && textView.TextBuffer.ContentType.TypeName != "CSharp") return null;
+                if (textView.TextBuffer.ContentType.TypeName != "Basic" && textView.TextBuffer.ContentType.TypeName != "CSharp" && textView.TextBuffer.ContentType.TypeName != "F#" && textView.TextBuffer.ContentType.TypeName != "C/C++") return null;
 
                 TextViewData textViewData;
                 if (!textViews.TryGetValue(textView, out textViewData))

@@ -55,9 +55,9 @@ namespace VsTeXCommentsExtension.Integration.Data
                 foreach (var line in Text.Split(new[] { TeXBlock.LineBreakText }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     var trimmedLine = line.TrimStart(TextSnapshotTeXCommentBlocks.WhiteSpaces);
-                    if (trimmedLine.StartsWith(TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp))
+                    if (trimmedLine.StartsWith(TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharpAndFSharpAndCpp))
                     {
-                        trimmedLine = trimmedLine.Substring(TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp.Length + TeXBlock.PropertiesSegmentLength);
+                        trimmedLine = trimmedLine.Substring(TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharpAndFSharpAndCpp.Length + TeXBlock.PropertiesSegmentLength);
                     }
                     else if (trimmedLine.StartsWith(TextSnapshotTeXCommentBlocks.CommentPrefixCSharp))
                     {

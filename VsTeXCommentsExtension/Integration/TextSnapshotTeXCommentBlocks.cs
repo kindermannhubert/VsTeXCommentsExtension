@@ -7,7 +7,7 @@ namespace VsTeXCommentsExtension.Integration
     internal class TextSnapshotTeXCommentBlocks
     {
         public const string CommentPrefixCSharp = "//"; 
-        public const string TeXCommentPrefixCSharp = "//tex:";
+        public const string TeXCommentPrefixCSharpAndFSharpAndCpp = "//tex:";
         public const string CommentPrefixBasic = "'";
         public const string TeXCommentPrefixBasic = "'tex:";
 
@@ -30,7 +30,7 @@ namespace VsTeXCommentsExtension.Integration
         private PooledStructEnumerable<TeXCommentBlockSpan> GenerateTexCommentBlocks(ITextSnapshot snapshot)
         {
             string CommentPrefix = CommentPrefixCSharp;
-            string TeXCommentPrefix = TeXCommentPrefixCSharp;
+            string TeXCommentPrefix = TeXCommentPrefixCSharpAndFSharpAndCpp;
 
             if (snapshot.ContentType.TypeName == "Basic")
             {

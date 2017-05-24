@@ -7,7 +7,7 @@ namespace VsTeXCommentsExtension.Integration
 {
     internal struct TeXCommentBlockSpanBuilder
     {
-        private static readonly Regex PropertiesSegmentsRegexCSharp = new Regex("^[ \t]*" + TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp + @"(\[[a-zA-Z]+=[a-zA-Z0-9#%]+\])+", RegexOptions.Compiled);
+        private static readonly Regex PropertiesSegmentsRegexCSharp = new Regex("^[ \t]*" + TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharpAndFSharpAndCpp + @"(\[[a-zA-Z]+=[a-zA-Z0-9#%]+\])+", RegexOptions.Compiled);
         private static readonly Regex PropertiesSegmentsRegexBasic = new Regex("^[ \t]*" + TextSnapshotTeXCommentBlocks.TeXCommentPrefixBasic + @"(\[[a-zA-Z]+=[a-zA-Z0-9#%]+\])+", RegexOptions.Compiled);
         private static readonly Regex PropertyRegex = new Regex(@"(\[(?<name>[a-zA-Z]+)=(?<value>[a-zA-Z0-9#%]+)\])+", RegexOptions.Compiled);
 
@@ -33,7 +33,7 @@ namespace VsTeXCommentsExtension.Integration
             syntaxErrors = null;
 
             //search for properties (e.g., //tex:[zoom=120%])
-            int propertiesIndex = firstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp.Length;
+            int propertiesIndex = firstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharpAndFSharpAndCpp.Length;
             if (contentType == "Basic")
             {
                 propertiesIndex = firstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefixBasic.Length;

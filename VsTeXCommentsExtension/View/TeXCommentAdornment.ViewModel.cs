@@ -47,13 +47,13 @@ namespace VsTeXCommentsExtension.View
             {
                 
                 var spanWithLastLineBreak = DataTag.SpanWithLastLineBreak;
-                if (DataTag.Text.Contains(TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp))
+                if (DataTag.Text.Contains(TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharpAndFSharpAndCpp))
                 {
                     Debug.Assert(spanWithLastLineBreak.Length >= DataTag.TeXBlock.FirstLineWhiteSpacesAtStart +
-                                 TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp.Length);
+                                 TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharpAndFSharpAndCpp.Length);
                     spanWithLastLineBreak =
                         spanWithLastLineBreak.TranslateStart(DataTag.TeXBlock.FirstLineWhiteSpacesAtStart +
-                                                             TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp
+                                                             TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharpAndFSharpAndCpp
                                                                  .Length);
                 }
                 else

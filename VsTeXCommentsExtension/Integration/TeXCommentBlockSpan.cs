@@ -71,7 +71,7 @@ namespace VsTeXCommentsExtension.Integration
         {
             if (snapshot.ContentType.TypeName == "CSharp")
             {
-                return position - Span.Start - FirstLineWhiteSpacesAtStart >= TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp.Length;
+                return position - Span.Start - FirstLineWhiteSpacesAtStart >= TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharpAndFSharpAndCpp.Length;
             }
             return position - Span.Start - FirstLineWhiteSpacesAtStart >= TextSnapshotTeXCommentBlocks.TeXCommentPrefixBasic.Length;
         }

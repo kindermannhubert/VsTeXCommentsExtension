@@ -206,7 +206,7 @@ namespace VsTeXCommentsExtension.Integration.View
                 },
                 (tag, attributeText) =>
                 {
-                    var pos = tag.Span.Start + tag.TeXBlock.FirstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharp.Length + tag.TeXBlock.PropertiesSegmentLength;
+                    var pos = tag.Span.Start + tag.TeXBlock.FirstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharpAndFSharpAndCpp.Length + tag.TeXBlock.PropertiesSegmentLength;
                     if (snapshot.ContentType.TypeName == "Basic")
                     {
                         pos = tag.Span.Start + tag.TeXBlock.FirstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefixBasic.Length + tag.TeXBlock.PropertiesSegmentLength;
