@@ -3,7 +3,7 @@
     "net461": {}
   },
   "dependencies": {
-    "Microsoft.VisualStudio.Text.UI.Wpf": "14.3.25407",
+    "Microsoft.VisualStudio.Text.UI.Wpf": "15.0.26606"
   },
   "runtimes": {
     "win": {}
