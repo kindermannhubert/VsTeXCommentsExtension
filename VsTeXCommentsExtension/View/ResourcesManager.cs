@@ -37,8 +37,7 @@ namespace VsTeXCommentsExtension.View
         {
             lock (Instances)
             {
-                ResourcesManager instance;
-                if (!Instances.TryGetValue(textView, out instance))
+                if (!Instances.TryGetValue(textView, out ResourcesManager instance))
                 {
                     instance = new ResourcesManager(textView);
                     Instances.Add(textView, instance);

@@ -1,8 +1,8 @@
-﻿using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Tagging;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Text;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Tagging;
 
 namespace VsTeXCommentsExtension.Integration.Data
 {
@@ -44,7 +44,7 @@ namespace VsTeXCommentsExtension.Integration.Data
             TeXBlock = span;
         }
 
-        //TODO - cacheing could not work well because this is struct
+        //TODO - caching could not work well because this is struct
         public string GetTextWithoutCommentMarks()
         {
             if (textTrimmed == null)
@@ -55,21 +55,13 @@ namespace VsTeXCommentsExtension.Integration.Data
                 foreach (var line in Text.Split(new[] { TeXBlock.LineBreakText }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     var trimmedLine = line.TrimStart(TextSnapshotTeXCommentBlocks.WhiteSpaces);
-                    if (trimmedLine.StartsWith(TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharpAndFSharpAndCpp))
+                    if (trimmedLine.StartsWith(TeXBlock.TeXCommentPrefix))
                     {
-                        trimmedLine = trimmedLine.Substring(TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharpAndFSharpAndCpp.Length + TeXBlock.PropertiesSegmentLength);
+                        trimmedLine = trimmedLine.Substring(TeXBlock.TeXCommentPrefix.Length + TeXBlock.PropertiesSegmentLength);
                     }
-                    else if (trimmedLine.StartsWith(TextSnapshotTeXCommentBlocks.CommentPrefixCSharp))
+                    else if (trimmedLine.StartsWith(TeXBlock.CommentPrefix))
                     {
-                        trimmedLine = trimmedLine.Substring(TextSnapshotTeXCommentBlocks.CommentPrefixCSharp.Length);
-                    }
-                    else if (trimmedLine.StartsWith(TextSnapshotTeXCommentBlocks.TeXCommentPrefixBasic))
-                    {
-                        trimmedLine = trimmedLine.Substring(TextSnapshotTeXCommentBlocks.TeXCommentPrefixBasic.Length + TeXBlock.PropertiesSegmentLength);
-                    }
-                    else if (trimmedLine.StartsWith(TextSnapshotTeXCommentBlocks.CommentPrefixBasic))
-                    {
-                        trimmedLine = trimmedLine.Substring(TextSnapshotTeXCommentBlocks.CommentPrefixBasic.Length);
+                        trimmedLine = trimmedLine.Substring(TeXBlock.CommentPrefix.Length);
                     }
 
                     sb.AppendLine(trimmedLine);

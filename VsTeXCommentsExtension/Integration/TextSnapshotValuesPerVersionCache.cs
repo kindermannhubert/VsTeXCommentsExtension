@@ -26,8 +26,7 @@ namespace VsTeXCommentsExtension.Integration
             {
                 var version = snapshot.Version.VersionNumber;
 
-                T value;
-                if (!valuesPerVersion.TryGetValue(version, out value))
+                if (!valuesPerVersion.TryGetValue(version, out T value))
                 {
                     value = getValueForSnapshot(snapshot);
                     valuesPerVersion.Add(version, value);

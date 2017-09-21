@@ -1,13 +1,12 @@
-﻿using Microsoft.VisualStudio.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel.Composition;
-using Microsoft.Build.Framework.XamlTypes;
 using VsTeXCommentsExtension.Integration.Data;
 using VsTeXCommentsExtension.Integration.View;
 using VsTeXCommentsExtension.SyntaxHighlighting;
@@ -55,10 +54,9 @@ namespace VsTeXCommentsExtension.Integration
         {
             lock (syncRoot)
             {
-                if (buffer.ContentType.TypeName != "Basic" && buffer.ContentType.TypeName != "CSharp" && buffer.ContentType.TypeName != "F#" && buffer.ContentType.TypeName != "C/C++") return null;
+                if (!TextSnapshotTeXCommentBlocks.SupportedContentTypes.Contains(buffer.ContentType.TypeName)) return null;
 
-                TextBufferData textBufferData;
-                if (!textBuffers.TryGetValue(buffer, out textBufferData))
+                if (!textBuffers.TryGetValue(buffer, out TextBufferData textBufferData))
                 {
                     textBufferData = new TextBufferData();
                     textBufferData.RegisterTextBufferData(new TeXCommentTagger(buffer));
@@ -74,10 +72,9 @@ namespace VsTeXCommentsExtension.Integration
         {
             lock (syncRoot)
             {
-                if (textView.TextBuffer.ContentType.TypeName != "Basic" && textView.TextBuffer.ContentType.TypeName != "CSharp" && textView.TextBuffer.ContentType.TypeName != "F#" && textView.TextBuffer.ContentType.TypeName != "C/C++") return null;
+                if (!TextSnapshotTeXCommentBlocks.SupportedContentTypes.Contains(textView.TextBuffer.ContentType.TypeName)) return null;
 
-                TextViewData textViewData;
-                if (!textViews.TryGetValue(textView, out textViewData))
+                if (!textViews.TryGetValue(textView, out TextViewData textViewData))
                 {
                     textView.Closed += TextView_Closed;
                     textViewData = new TextViewData();
@@ -109,8 +106,7 @@ namespace VsTeXCommentsExtension.Integration
             {
                 foreach (var buffer in subjectBuffers)
                 {
-                    TextBufferData textBufferData;
-                    if (textBuffers.TryGetValue(buffer, out textBufferData))
+                    if (textBuffers.TryGetValue(buffer, out TextBufferData textBufferData))
                     {
                         textBufferData.DisconnectFromTextView(textView);
                     }
@@ -143,8 +139,7 @@ namespace VsTeXCommentsExtension.Integration
             public T GetTexViewData<T>()
                 where T : class, IDisposable
             {
-                IDisposable value;
-                return dataRegistrations.TryGetValue(typeof(T), out value) ? (T)value : null;
+                return dataRegistrations.TryGetValue(typeof(T), out IDisposable value) ? (T)value : null;
             }
 
             public void Dispose()
@@ -190,8 +185,7 @@ namespace VsTeXCommentsExtension.Integration
             public T GetTextBufferData<T>()
                 where T : class, IDisposable
             {
-                IDisposable value;
-                return dataRegistrations.TryGetValue(typeof(T), out value) ? (T)value : null;
+                return dataRegistrations.TryGetValue(typeof(T), out IDisposable value) ? (T)value : null;
             }
         }
     }

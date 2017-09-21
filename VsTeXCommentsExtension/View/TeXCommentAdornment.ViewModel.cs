@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Windows.Media.Imaging;
-using VsTeXCommentsExtension.Integration;
 using VsTeXCommentsExtension.SyntaxHighlighting;
 
 namespace VsTeXCommentsExtension.View
@@ -45,26 +44,11 @@ namespace VsTeXCommentsExtension.View
         {
             get
             {
-                
                 var spanWithLastLineBreak = DataTag.SpanWithLastLineBreak;
-                if (DataTag.Text.Contains(TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharpAndFSharpAndCpp))
-                {
-                    Debug.Assert(spanWithLastLineBreak.Length >= DataTag.TeXBlock.FirstLineWhiteSpacesAtStart +
-                                 TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharpAndFSharpAndCpp.Length);
-                    spanWithLastLineBreak =
-                        spanWithLastLineBreak.TranslateStart(DataTag.TeXBlock.FirstLineWhiteSpacesAtStart +
-                                                             TextSnapshotTeXCommentBlocks.TeXCommentPrefixCSharpAndFSharpAndCpp
-                                                                 .Length);
-                }
-                else
-                {
-                    Debug.Assert(spanWithLastLineBreak.Length >= DataTag.TeXBlock.FirstLineWhiteSpacesAtStart +
-                                 TextSnapshotTeXCommentBlocks.TeXCommentPrefixBasic.Length);
-                    spanWithLastLineBreak =
-                        spanWithLastLineBreak.TranslateStart(DataTag.TeXBlock.FirstLineWhiteSpacesAtStart +
-                                                             TextSnapshotTeXCommentBlocks.TeXCommentPrefixBasic
-                                                                 .Length);
-                }
+                Debug.Assert(spanWithLastLineBreak.Length >= DataTag.TeXBlock.FirstLineWhiteSpacesAtStart + DataTag.TeXBlock.TeXCommentPrefix.Length);
+
+                spanWithLastLineBreak = spanWithLastLineBreak.TranslateStart(DataTag.TeXBlock.FirstLineWhiteSpacesAtStart + DataTag.TeXBlock.TeXCommentPrefix.Length);
+
                 var caretPosition = textView.Caret.Position.BufferPosition;
                 if (DataTag.Span.Length == DataTag.SpanWithLastLineBreak.Length)
                 {

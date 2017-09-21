@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio.Text;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.VisualStudio.Text;
 
 namespace VsTeXCommentsExtension.Integration
 {
@@ -12,10 +12,8 @@ namespace VsTeXCommentsExtension.Integration
         {
             lock (Cache)
             {
-                CachedItem item;
-                if (!Cache.TryGetValue(textBuffer, out item))
+                if (!Cache.TryGetValue(textBuffer, out CachedItem item))
                 {
-                    TextSnapshotTeXCommentBlocks tSTCB = new TextSnapshotTeXCommentBlocks();
                     item = new CachedItem(new TextSnapshotTeXCommentBlocks());
                     Cache.Add(textBuffer, item);
                     return item.Blocks;
@@ -30,8 +28,7 @@ namespace VsTeXCommentsExtension.Integration
         {
             lock (Cache)
             {
-                CachedItem item;
-                if (!Cache.TryGetValue(textBuffer, out item) || item.Blocks != blocks) throw new InvalidOperationException("Releasing of invalid blocks.");
+                if (!Cache.TryGetValue(textBuffer, out CachedItem item) || item.Blocks != blocks) throw new InvalidOperationException("Releasing of invalid blocks.");
 
                 if (--item.Counter == 0)
                 {

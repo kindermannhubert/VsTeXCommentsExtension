@@ -269,10 +269,9 @@ namespace VsTeXCommentsExtension.Integration.View
                 foreach (var tagData in GetAdornmentData(new NormalizedSnapshotSpanCollection(snapshot, new Span(0, snapshot.Length))))
                 {
                     // Look up the corresponding adornment or create one if it's new.
-                    TAdornment adornment;
                     AdornmentInfo adornmentInfo;
                     var key = new AdornmentCacheKey(tagData.Span);
-                    if (adornmentsCache.TryGetValue(key, out adornment))
+                    if (adornmentsCache.TryGetValue(key, out TAdornment adornment))
                     {
                         adornmentInfo = tagData.GetAdornmentInfo(adornment.DisplayMode);
                         UpdateAdornment(adornment, tagData.Tag, snapshot);
