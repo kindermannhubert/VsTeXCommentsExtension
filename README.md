@@ -2,6 +2,8 @@
 
 Intra-text adornment extension to the Visual Studio Editor for rendering TeX math comments inside editor.
 
+Supports C#, F#, C++/C and VB.NET.
+
 Extension is transforming all continuous code blocks where all lines starts with '//' (can be preceeded by white spaces) and the first line starts with '//tex:' prefix to rendered image where math is rendered by MathJax library. Math in this comments has to be surrounded by $ (for inline math) or $$ signs. Syntax of math is LaTex.
 
 Example:
