@@ -1,13 +1,18 @@
-﻿using Microsoft.VisualStudio.Text;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Media;
+using Microsoft.VisualStudio.Text;
 
 namespace VsTeXCommentsExtension.Integration
 {
     internal struct TeXCommentBlockSpanBuilder
     {
-        private static readonly Regex PropertiesSegmentsRegex = new Regex("^[ \t]*" + TextSnapshotTeXCommentBlocks.TeXCommentPrefix + @"(\[[a-zA-Z]+=[a-zA-Z0-9#%]+\])+", RegexOptions.Compiled);
+        private static readonly Dictionary<string, Regex> PropertiesSegmentsRegexPerContentType =
+            TextSnapshotTeXCommentBlocks.TeXCommentPrefixPerContentType
+                .ToDictionary(kv => kv.Key, kv => new Regex("^[ \t]*" + kv.Value + @"(\[[a-zA-Z]+=[a-zA-Z0-9#%]+\])+", RegexOptions.Compiled));
+
         private static readonly Regex PropertyRegex = new Regex(@"(\[(?<name>[a-zA-Z]+)=(?<value>[a-zA-Z0-9#%]+)\])+", RegexOptions.Compiled);
 
         private readonly string lineBreakText;
@@ -20,7 +25,7 @@ namespace VsTeXCommentsExtension.Integration
         private Span span;
         private int lastLineWhiteSpacesAtStart;
 
-        public TeXCommentBlockSpanBuilder(Span firstLineSpanWithLineBreak, int firstLineWhiteSpacesAtStart, string firstLineText, string lineBreakText)
+        public TeXCommentBlockSpanBuilder(Span firstLineSpanWithLineBreak, int firstLineWhiteSpacesAtStart, string firstLineText, string lineBreakText, string teXCommentPrefix, string documentContentType)
         {
             span = firstLineSpanWithLineBreak;
             this.firstLineWhiteSpacesAtStart = firstLineWhiteSpacesAtStart;
@@ -32,10 +37,11 @@ namespace VsTeXCommentsExtension.Integration
             syntaxErrors = null;
 
             //search for properties (e.g., //tex:[zoom=120%])
-            int propertiesIndex = firstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length;
+            int propertiesIndex = firstLineWhiteSpacesAtStart + teXCommentPrefix.Length;
             if (propertiesIndex < firstLineText.Length && firstLineText[propertiesIndex] == '[')
             {
-                var match = PropertiesSegmentsRegex.Match(firstLineText);
+                Debug.Assert(PropertiesSegmentsRegexPerContentType.ContainsKey(documentContentType));
+                var match = PropertiesSegmentsRegexPerContentType[documentContentType].Match(firstLineText);
                 if (match.Success)
                 {
                     var propertiesSegmentGroup = match.Groups[1];
@@ -118,7 +124,8 @@ namespace VsTeXCommentsExtension.Integration
                 lineBreakText,
                 zoomPercentage,
                 foregroundColor,
-                syntaxErrors);
+                syntaxErrors,
+                snapshot.ContentType.TypeName);
         }
 
         [DebuggerNonUserCode]

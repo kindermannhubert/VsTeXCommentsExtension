@@ -7,7 +7,7 @@ using System.ComponentModel.Composition;
 namespace VsTeXCommentsExtension.Integration.Data
 {
     [Export(typeof(ITaggerProvider))]
-    [ContentType("CSharp")]
+    [ContentType("text")]
     [TagType(typeof(TeXCommentTag))]
     internal sealed class TeXCommentTaggerProvider : ITaggerProvider
     {

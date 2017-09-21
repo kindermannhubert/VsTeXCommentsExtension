@@ -1,11 +1,11 @@
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Tagging;
 using VsTeXCommentsExtension.Integration.Data;
 using VsTeXCommentsExtension.View;
 
@@ -59,16 +59,16 @@ namespace VsTeXCommentsExtension.Integration.View
             var oldLinePartWhichIsMovedToNewLine = e.Before.GetText(change.OldPosition, line.Extent.End.Position - change.OldPosition);
             if (oldLinePartWhichIsMovedToNewLine
                 .TrimStart(TextSnapshotTeXCommentBlocks.WhiteSpaces)
-                .StartsWith(TextSnapshotTeXCommentBlocks.CommentPrefix))
+                .StartsWith(block.Value.CommentPrefix))
             {
-                //Enter has was pressed before '//'
-                TextView.TextBuffer.Insert(change.NewPosition, "//"); //whitespaces are inserted automatically by VS
+                //Enter has been pressed before '//'
+                TextView.TextBuffer.Insert(change.NewPosition, block.Value.CommentPrefix); //whitespaces are inserted automatically by VS
             }
             else
             {
-                //Enter has was pressed after '//'
+                //Enter has been pressed after '//'
                 var whitespaceCount = block.Value.GetMinNumberOfWhitespacesBeforeCommentPrefixes(e.Before);
-                TextView.TextBuffer.Insert(change.NewEnd, new string(' ', whitespaceCount) + "//");
+                TextView.TextBuffer.Insert(change.NewEnd, new string(' ', whitespaceCount) + block.Value.CommentPrefix);
             }
         }
 
@@ -192,7 +192,7 @@ namespace VsTeXCommentsExtension.Integration.View
                 },
                 (tag, attributeText) =>
                 {
-                    var pos = tag.Span.Start + tag.TeXBlock.FirstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length + tag.TeXBlock.PropertiesSegmentLength;
+                    var pos = tag.Span.Start + tag.TeXBlock.FirstLineWhiteSpacesAtStart + tag.TeXBlock.TeXCommentPrefix.Length + tag.TeXBlock.PropertiesSegmentLength;
                     Snapshot.TextBuffer.Insert(pos, $"[{attributeText}]");
                 },
                 renderingManager,

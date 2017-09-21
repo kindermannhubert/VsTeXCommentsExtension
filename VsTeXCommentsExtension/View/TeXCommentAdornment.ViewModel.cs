@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Windows.Media.Imaging;
-using VsTeXCommentsExtension.Integration;
 using VsTeXCommentsExtension.SyntaxHighlighting;
 
 namespace VsTeXCommentsExtension.View
@@ -46,8 +45,9 @@ namespace VsTeXCommentsExtension.View
             get
             {
                 var spanWithLastLineBreak = DataTag.SpanWithLastLineBreak;
-                Debug.Assert(spanWithLastLineBreak.Length >= DataTag.TeXBlock.FirstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length);
-                spanWithLastLineBreak = spanWithLastLineBreak.TranslateStart(DataTag.TeXBlock.FirstLineWhiteSpacesAtStart + TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length);
+                Debug.Assert(spanWithLastLineBreak.Length >= DataTag.TeXBlock.FirstLineWhiteSpacesAtStart + DataTag.TeXBlock.TeXCommentPrefix.Length);
+
+                spanWithLastLineBreak = spanWithLastLineBreak.TranslateStart(DataTag.TeXBlock.FirstLineWhiteSpacesAtStart + DataTag.TeXBlock.TeXCommentPrefix.Length);
 
                 var caretPosition = textView.Caret.Position.BufferPosition;
                 if (DataTag.Span.Length == DataTag.SpanWithLastLineBreak.Length)

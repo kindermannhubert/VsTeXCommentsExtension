@@ -60,8 +60,7 @@ namespace VsTeXCommentsExtension
         {
             lock (Instances)
             {
-                VsSettings settings;
-                if (!Instances.TryGetValue(textView, out settings))
+                if (!Instances.TryGetValue(textView, out VsSettings settings))
                 {
                     settings = new VsSettings(textView);
                     Instances.Add(textView, settings);

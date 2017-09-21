@@ -1,6 +1,7 @@
-﻿using Microsoft.VisualStudio.Text;
-using System;
+﻿using System;
+using System.Diagnostics;
 using System.Windows.Media;
+using Microsoft.VisualStudio.Text;
 using VsTeXCommentsExtension.Integration.Data;
 
 namespace VsTeXCommentsExtension.Integration
@@ -43,6 +44,10 @@ namespace VsTeXCommentsExtension.Integration
 
         public string SyntaxErrors { get; }
 
+        public string CommentPrefix { get; }
+
+        public string TeXCommentPrefix { get; }
+
         public TeXCommentBlockSpan(
             Span span,
             Span spanWithLastLineBreak,
@@ -52,7 +57,8 @@ namespace VsTeXCommentsExtension.Integration
             string lineBreakText,
             int zoomPercentage,
             Color? foregroundColor,
-            string syntaxErrors)
+            string syntaxErrors,
+            string documentContentType)
         {
             Span = span;
             SpanWithLastLineBreak = spanWithLastLineBreak;
@@ -63,13 +69,18 @@ namespace VsTeXCommentsExtension.Integration
             ZoomPercentage = zoomPercentage;
             ForegroundColor = foregroundColor;
             SyntaxErrors = syntaxErrors;
+
+            Debug.Assert(TextSnapshotTeXCommentBlocks.CommentPrefixPerContentType.ContainsKey(documentContentType));
+            Debug.Assert(TextSnapshotTeXCommentBlocks.TeXCommentPrefixPerContentType.ContainsKey(documentContentType));
+            CommentPrefix = TextSnapshotTeXCommentBlocks.CommentPrefixPerContentType[documentContentType];
+            TeXCommentPrefix = TextSnapshotTeXCommentBlocks.TeXCommentPrefixPerContentType[documentContentType];
         }
 
         public TeXCommentTag GetDataTag(ITextSnapshot snapshot) => new TeXCommentTag(snapshot.GetText(Span), this);
 
         public bool IsPositionAfterTeXPrefix(ITextSnapshot snapshot, int position)
         {
-            return position - Span.Start - FirstLineWhiteSpacesAtStart >= TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length;
+            return position - Span.Start - FirstLineWhiteSpacesAtStart >= TeXCommentPrefix.Length;
         }
 
         public int GetMinNumberOfWhitespacesBeforeCommentPrefixes(ITextSnapshot snapshot)

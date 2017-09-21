@@ -1,9 +1,10 @@
-﻿using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
 using VsTeXCommentsExtension.Integration;
 
 namespace VsTeXCommentsExtension.SyntaxHighlighting
@@ -11,8 +12,12 @@ namespace VsTeXCommentsExtension.SyntaxHighlighting
     public class TeXSyntaxClassifier : IClassifier, IDisposable
     {
         public static readonly Regex MathBlockRegex = new Regex(@"([\$]?\$)[^\$]+\$[\$]?", RegexOptions.Multiline | RegexOptions.Compiled);
-        public static readonly Regex CommandRegex = new Regex(@"\\[^ {}_\^\$\r\n]+", RegexOptions.Multiline | RegexOptions.Compiled);
-        public static readonly Regex TexPrefixRegex = new Regex($@"^[ \t]*({TextSnapshotTeXCommentBlocks.TeXCommentPrefix})", RegexOptions.Compiled);
+
+        private static readonly Regex CommandRegex = new Regex(@"\\[^ {}_\^\$\r\n]+", RegexOptions.Multiline | RegexOptions.Compiled);
+
+        private static readonly Dictionary<string, Regex> TexPrefixRegexPerContentType =
+            TextSnapshotTeXCommentBlocks.TeXCommentPrefixPerContentType
+                .ToDictionary(kv => kv.Key, kv => new Regex($@"^[ \t]*({kv.Value})", RegexOptions.Compiled));
 
         private readonly ITextBuffer buffer;
         private readonly TextSnapshotTeXCommentBlocks texCommentBlocks;
@@ -32,13 +37,22 @@ namespace VsTeXCommentsExtension.SyntaxHighlighting
             mathBlockClassificationType = classificationTypeRegistry.GetClassificationType("TeX.mathBlock");
         }
 
-#pragma warning disable 67
-        public event EventHandler<ClassificationChangedEventArgs> ClassificationChanged;
-#pragma warning restore 67
+        public event EventHandler<ClassificationChangedEventArgs> ClassificationChanged { add { } remove { } }
 
         public IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span)
         {
             var snapshot = span.Snapshot;
+            var contentType = snapshot.ContentType.TypeName;
+            if (!TexPrefixRegexPerContentType.TryGetValue(contentType, out var texPrefixRegex))
+            {
+                return Array.Empty<ClassificationSpan>();
+            }
+
+            Debug.Assert(TextSnapshotTeXCommentBlocks.CommentPrefixPerContentType.ContainsKey(contentType));
+            Debug.Assert(TextSnapshotTeXCommentBlocks.TeXCommentPrefixPerContentType.ContainsKey(contentType));
+            var commentPrefix = TextSnapshotTeXCommentBlocks.CommentPrefixPerContentType[contentType];
+            var teXCommentPrefix = TextSnapshotTeXCommentBlocks.TeXCommentPrefixPerContentType[contentType];
+
             var spans = new List<ClassificationSpan>();
             using (var blocks = texCommentBlocks.GetBlocksIntersectedBy(span.Snapshot, span.Span))
             {
@@ -68,10 +82,11 @@ namespace VsTeXCommentsExtension.SyntaxHighlighting
                     }
 
                     //colorization of "tex:" prefix
-                    var prefixMatch = TexPrefixRegex.Match(blockText);
+                    var prefixMatch = texPrefixRegex.Match(blockText);
+                    var prefixStart = prefixMatch.Groups[1].Index + commentPrefix.Length;
+                    var prefixLength = teXCommentPrefix.Length - commentPrefix.Length;
+
                     Debug.Assert(prefixMatch.Success && prefixMatch.Groups.Count == 2);
-                    var prefixStart = prefixMatch.Groups[1].Index + TextSnapshotTeXCommentBlocks.CommentPrefix.Length;
-                    var prefixLength = TextSnapshotTeXCommentBlocks.TeXCommentPrefix.Length - TextSnapshotTeXCommentBlocks.CommentPrefix.Length;
                     var texPrefixSpan = new Span(block.Span.Start + prefixStart, prefixLength);
                     spans.Add(new ClassificationSpan(new SnapshotSpan(snapshot, texPrefixSpan), mathBlockClassificationType));
 
