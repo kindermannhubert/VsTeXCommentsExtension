@@ -4,7 +4,7 @@ Intra-text adornment extension to the Visual Studio Editor for rendering TeX mat
 
 Supports C#, F#, C, C++, VB.NET, Python and R.
 
-Extension is transforming all continuous code blocks where all lines starts with '//' (can be preceeded by white spaces) and the first line starts with '//tex:' prefix to rendered image where math is rendered by MathJax library. Math in this comments has to be surrounded by $ (for inline math) or $$ signs. Syntax of math is LaTex.
+Extension is transforming all continuous code blocks where all lines starts with single line comment syntax (can be preceeded by white spaces) which for example in C# is '//' and the first line starts with '//tex:' prefix ('//' part is language dependent) to rendered image where math is rendered by MathJax library. Math in this comments has to be surrounded by $ (for inline math) or $$ signs. Syntax of math is LaTex.
 
 Examples:
 - C#, F#, C, C++:
