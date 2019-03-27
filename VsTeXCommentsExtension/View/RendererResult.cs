@@ -5,7 +5,7 @@ using System.Windows.Media.Imaging;
 
 namespace VsTeXCommentsExtension.View
 {
-    public struct RendererResult
+    public readonly struct RendererResult
     {
         public readonly BitmapSource Image;
 

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Media;
 using System.Xml.Linq;
-using VsTeXCommentsExtension.Integration;
 using VsTeXCommentsExtension.Integration.Data;
 using VsTeXCommentsExtension.View;
 
@@ -17,7 +16,7 @@ namespace SnippetThumbnailsGenerator
         private static HtmlRenderer renderer;
 
         [STAThread]
-        private static void Main(string[] args)
+        private static void Main()
         {
             new System.Windows.Application(); //needed for correct resource loading
 
@@ -47,8 +46,6 @@ namespace SnippetThumbnailsGenerator
         {
             var font = new System.Drawing.Font("Consolas", 12);
             var cfg = XElement.Load(@"..\..\Snippets.xml");
-
-
             var exportElement = new XElement("Snippets");
             int index = 0;
             foreach (var snippet in cfg.Elements("Snippet"))
@@ -58,7 +55,7 @@ namespace SnippetThumbnailsGenerator
 
                 var result = renderer.Render(
                       new HtmlRenderer.Input(
-                          new TeXCommentTag($"$${code}$$", default(TeXCommentBlockSpan)),
+                          new TeXCommentTag($"$${code}$$", default),
                           1.3,
                           Colors.Black,
                           Colors.White,

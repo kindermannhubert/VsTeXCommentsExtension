@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.Text;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Microsoft.VisualStudio.Text;
 
 namespace VsTeXCommentsExtension.Integration
 {

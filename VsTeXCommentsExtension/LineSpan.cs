@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace VsTeXCommentsExtension
 {
     [DebuggerDisplay("FirstLine: {FirstLine}, LastLine: {LastLine}")]
-    public struct LineSpan : IEquatable<LineSpan>
+    public readonly struct LineSpan : IEquatable<LineSpan>
     {
         public readonly int FirstLine;
         public readonly int LastLine;

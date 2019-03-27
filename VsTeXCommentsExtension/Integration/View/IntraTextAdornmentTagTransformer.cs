@@ -1,8 +1,8 @@
-﻿using Microsoft.VisualStudio.Text;
+﻿using System.Collections.Generic;
+using System.Windows;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
-using System.Collections.Generic;
-using System.Windows;
 
 namespace VsTeXCommentsExtension.Integration.View
 {

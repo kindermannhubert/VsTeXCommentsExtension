@@ -6,47 +6,47 @@ using VsTeXCommentsExtension.Integration.Data;
 
 namespace VsTeXCommentsExtension.Integration
 {
-    public struct TeXCommentBlockSpan
+    public readonly struct TeXCommentBlockSpan
     {
         /// <summary>
         /// Span of whole TeX comment block (without last line break).
         /// </summary>
-        public Span Span { get; }
+        public readonly Span Span;
 
         /// <summary>
         /// Span of whole TeX comment block.
         /// </summary>
-        public Span SpanWithLastLineBreak { get; }
+        public readonly Span SpanWithLastLineBreak;
 
         /// <summary>
         /// Number of white spaces on first line before '//tex:' prefix.
         /// </summary>
-        public int FirstLineWhiteSpacesAtStart { get; }
+        public readonly int FirstLineWhiteSpacesAtStart;
 
         /// <summary>
         /// Number of white spaces on last line before '//' prefix.
         /// </summary>
-        public int LastLineWhiteSpacesAtStart { get; }
+        public readonly int LastLineWhiteSpacesAtStart;
 
         /// <summary>
         /// Length of properties segment (e.g., "[zoom=120%]")
         /// </summary>
-        public int PropertiesSegmentLength { get; }
+        public readonly int PropertiesSegmentLength;
 
         /// <summary>
         /// Line break text used (should be "\r\n").
         /// </summary>
-        public string LineBreakText { get; }
+        public readonly string LineBreakText;
 
-        public int ZoomPercentage { get; }
+        public readonly int ZoomPercentage;
 
-        public Color? ForegroundColor { get; }
+        public readonly Color? ForegroundColor;
 
-        public string SyntaxErrors { get; }
+        public readonly string SyntaxErrors;
 
-        public string CommentPrefix { get; }
+        public readonly string CommentPrefix;
 
-        public string TeXCommentPrefix { get; }
+        public readonly string TeXCommentPrefix;
 
         public TeXCommentBlockSpan(
             Span span,
@@ -78,10 +78,7 @@ namespace VsTeXCommentsExtension.Integration
 
         public TeXCommentTag GetDataTag(ITextSnapshot snapshot) => new TeXCommentTag(snapshot.GetText(Span), this);
 
-        public bool IsPositionAfterTeXPrefix(ITextSnapshot snapshot, int position)
-        {
-            return position - Span.Start - FirstLineWhiteSpacesAtStart >= TeXCommentPrefix.Length;
-        }
+        public bool IsPositionAfterTeXPrefix(int position) => position - Span.Start - FirstLineWhiteSpacesAtStart >= TeXCommentPrefix.Length;
 
         public int GetMinNumberOfWhitespacesBeforeCommentPrefixes(ITextSnapshot snapshot)
         {

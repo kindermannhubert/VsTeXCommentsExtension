@@ -84,7 +84,6 @@
     <Compile Include="Integration\TextSnapshotValuesPerVersionCache.cs" />
     <Compile Include="ObjectPool.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="CountedRef.cs" />
     <Compile Include="Integration\ITagSpan.cs" />
     <Compile Include="Integration\TeXCommentBlockSpanBuilder.cs" />
     <Compile Include="Integration\TextSnapshotTeXCommentBlocksProvider.cs" />
@@ -92,7 +91,6 @@
     <Compile Include="IVsSettings.cs" />
     <Compile Include="LineSpan.cs" />
     <Compile Include="Integration\TeXCommentBlockSpan.cs" />
-    <Compile Include="ObjectEventHandlerTuple.cs" />
     <Compile Include="StructEnumerable.cs" />
     <Compile Include="PooledStructEnumerable.cs" />
     <Compile Include="SyntaxHighlighting\ClassificationDefinitions.cs" />

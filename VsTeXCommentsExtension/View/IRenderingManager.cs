@@ -1,5 +1,5 @@
-﻿using Microsoft.VisualStudio.Text.Editor;
-using System;
+﻿using System;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace VsTeXCommentsExtension.View
 {

@@ -53,7 +53,7 @@ namespace VsTeXCommentsExtension.Integration.View
             var block = TexCommentBlocks.GetBlockForPosition(e.Before, change.OldPosition);
             if (!block.HasValue) return;
 
-            if (!block.Value.IsPositionAfterTeXPrefix(e.Before, change.OldPosition)) return;
+            if (!block.Value.IsPositionAfterTeXPrefix(change.OldPosition)) return;
 
             var line = e.Before.GetLineFromPosition(change.OldPosition);
             var oldLinePartWhichIsMovedToNewLine = e.Before.GetText(change.OldPosition, line.Extent.End.Position - change.OldPosition);
