@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Media;
 using System.Xml.Linq;
+using Microsoft.VisualStudio.Text;
+using VsTeXCommentsExtension.Integration;
 using VsTeXCommentsExtension.Integration.Data;
 using VsTeXCommentsExtension.View;
 
@@ -53,9 +55,12 @@ namespace SnippetThumbnailsGenerator
                 var code = snippet.Element("Code").Value;
                 Console.WriteLine($"Rendering {code}");
 
+                var teXCommentText = $"$${code}$$";
+                var fullSpan = new Span(0, teXCommentText.Length);
+                var teXCommentBlockSpan = new TeXCommentBlockSpan(fullSpan, fullSpan, 0, 0, 0, "\r\n", 100, null, null, "CSharp");
                 var result = renderer.Render(
                       new HtmlRenderer.Input(
-                          new TeXCommentTag($"$${code}$$", default),
+                          new TeXCommentTag(teXCommentText, teXCommentBlockSpan),
                           1.3,
                           Colors.Black,
                           Colors.White,
