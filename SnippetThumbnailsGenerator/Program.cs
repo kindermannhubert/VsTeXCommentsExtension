@@ -47,7 +47,7 @@ namespace SnippetThumbnailsGenerator
         private static void GenerateSnippets()
         {
             var font = new System.Drawing.Font("Consolas", 12);
-            var cfg = XElement.Load(@"..\..\Snippets.xml");
+            var cfg = XElement.Load(@"..\..\..\Snippets.xml");
             var exportElement = new XElement("Snippets");
             int index = 0;
             foreach (var snippet in cfg.Elements("Snippet"))

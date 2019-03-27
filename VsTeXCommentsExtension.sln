@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28721.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VsTeXCommentsExtension", "VsTeXCommentsExtension\VsTeXCommentsExtension.csproj", "{5CD33552-9FE6-4C7A-8330-C7C14BAF38B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnippetThumbnailsGenerator", "SnippetThumbnailsGenerator\SnippetThumbnailsGenerator.csproj", "{D73D2CE2-F553-4247-B71A-8F53A12F578A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnippetThumbnailsGenerator", "SnippetThumbnailsGenerator\SnippetThumbnailsGenerator.csproj", "{847DE0BC-30F7-49EF-ACAD-E4BB46237535}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{5CD33552-9FE6-4C7A-8330-C7C14BAF38B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CD33552-9FE6-4C7A-8330-C7C14BAF38B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CD33552-9FE6-4C7A-8330-C7C14BAF38B9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D73D2CE2-F553-4247-B71A-8F53A12F578A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D73D2CE2-F553-4247-B71A-8F53A12F578A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D73D2CE2-F553-4247-B71A-8F53A12F578A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D73D2CE2-F553-4247-B71A-8F53A12F578A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{847DE0BC-30F7-49EF-ACAD-E4BB46237535}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{847DE0BC-30F7-49EF-ACAD-E4BB46237535}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{847DE0BC-30F7-49EF-ACAD-E4BB46237535}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{847DE0BC-30F7-49EF-ACAD-E4BB46237535}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
