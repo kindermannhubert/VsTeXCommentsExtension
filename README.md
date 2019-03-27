@@ -1,4 +1,4 @@
-# VsTeXCommentsExtension (Beta Version)
+# VsTeXCommentsExtension
 
 Intra-text adornment extension to the Visual Studio Editor for rendering TeX math comments inside editor.
 
