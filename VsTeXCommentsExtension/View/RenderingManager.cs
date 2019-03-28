@@ -1,8 +1,8 @@
-﻿using Microsoft.VisualStudio.Text.Editor;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace VsTeXCommentsExtension.View
 {
@@ -105,6 +105,7 @@ namespace VsTeXCommentsExtension.View
                     }
                 }
 
+                Debug.Assert(requests.Count == 0);
                 while (tempQueue.Count > 0)
                 {
                     requests.Enqueue(tempQueue.Dequeue());

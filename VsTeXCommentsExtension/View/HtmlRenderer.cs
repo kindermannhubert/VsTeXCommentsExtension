@@ -121,25 +121,10 @@ namespace VsTeXCommentsExtension.View
                 const PixelFormat pixelFormat = PixelFormat.Format32bppArgb;
                 using (var bitmap = new Bitmap(width, height, pixelFormat))
                 {
-                    var viewObject = webBrowser.Document.DomDocument as IViewObject;
-
-                    if (viewObject != null)
+                    if (webBrowser.Document.DomDocument is IViewObject viewObject)
                     {
-                        var webBrowserRectangle = new tagRECT
-                        {
-                            left = myDiv.OffsetRectangle.Left,
-                            top = myDiv.OffsetRectangle.Top,
-                            right = myDiv.OffsetRectangle.Right,
-                            bottom = myDiv.OffsetRectangle.Bottom
-                        };
-
-                        var bitmapRectangle = new tagRECT
-                        {
-                            left = 0,
-                            top = 0,
-                            right = width,
-                            bottom = height
-                        };
+                        var webBrowserRectangle = new TagRECT(myDiv.OffsetRectangle);
+                        var bitmapRectangle = new TagRECT(0, 0, width, height);
 
                         using (var gr = Graphics.FromImage(bitmap))
                         {
@@ -299,9 +284,9 @@ namespace VsTeXCommentsExtension.View
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 0)]
-        private struct BGRA
+        private readonly struct BGRA
         {
-            public byte B, G, R, A;
+            public readonly byte B, G, R, A;
 
             public static bool operator ==(BGRA a, BGRA b) => a.B == b.B && a.G == b.G && a.R == b.R && a.A == b.A;
             public static bool operator !=(BGRA a, BGRA b) => a.B != b.B || a.G != b.G || a.R != b.R || a.A != b.A;
@@ -340,18 +325,30 @@ namespace VsTeXCommentsExtension.View
                 IntPtr pvAspect,
                 [In] IntPtr ptd,
                 IntPtr hdcTargetDev, IntPtr hdcDraw,
-                [MarshalAs(UnmanagedType.Struct)] ref tagRECT lprcBounds,
-                [MarshalAs(UnmanagedType.Struct)] ref tagRECT lprcWBounds,
+                [MarshalAs(UnmanagedType.Struct)] ref TagRECT lprcBounds,
+                [MarshalAs(UnmanagedType.Struct)] ref TagRECT lprcWBounds,
                 IntPtr pfnContinue,
                 [MarshalAs(UnmanagedType.U4)] uint dwContinue);
         }
 
-        private struct tagRECT
+        private readonly struct TagRECT
         {
-            public int left;
-            public int top;
-            public int right;
-            public int bottom;
+            public readonly int Left;
+            public readonly int Top;
+            public readonly int Right;
+            public readonly int Bottom;
+
+            public TagRECT(int left, int top, int right, int bottom)
+            {
+                Left = left;
+                Top = top;
+                Right = right;
+                Bottom = bottom;
+            }
+
+            public TagRECT(Rectangle rectangle)
+                : this(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom)
+            { }
         }
 
         [ComVisible(true)]
@@ -379,7 +376,7 @@ namespace VsTeXCommentsExtension.View
             public IReadOnlyList<string> Errors => errors;
         }
 
-        public struct Input : IRendererInput
+        public readonly struct Input : IRendererInput
         {
             private readonly TeXCommentTag dataTag;
 

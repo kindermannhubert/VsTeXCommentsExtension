@@ -2,7 +2,7 @@
 
 namespace VsTeXCommentsExtension
 {
-    public struct StructEnumerable<T>
+    public readonly struct StructEnumerable<T>
     {
         private readonly List<T> list;
 
