@@ -173,9 +173,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\DropDown_Dark.png" />
-    <Content Include="GrayscaleEffect.dll">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="LICENSE.txt">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>

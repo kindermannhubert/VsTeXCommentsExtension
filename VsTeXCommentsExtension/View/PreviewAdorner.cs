@@ -10,8 +10,6 @@ namespace VsTeXCommentsExtension.View
 {
     public class PreviewAdorner : Adorner
     {
-        private readonly GrayscaleEffect.GrayscaleEffect graycaleEffect = new GrayscaleEffect.GrayscaleEffect();
-
         private FrameworkElement child;
         public FrameworkElement Child
         {
