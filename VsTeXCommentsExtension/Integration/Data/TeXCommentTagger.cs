@@ -15,7 +15,7 @@ namespace VsTeXCommentsExtension.Integration.Data
     /// The <see cref="TeXCommentAdornmentTagger"/> takes tags produced by this tagger and creates corresponding UI for this data.
     /// </para>
     /// </remarks>
-    internal sealed class TeXCommentTagger : ITagger<TeXCommentTag>, IDisposable
+    public sealed class TeXCommentTagger : ITagger<TeXCommentTag>, IDisposable
     {
         private readonly ObjectPool<List<bool>> boolListsPool = new ObjectPool<List<bool>>(() => new List<bool>());
         private readonly ObjectPool<List<ITagSpan<TeXCommentTag>>> tagSpanListsPool = new ObjectPool<List<ITagSpan<TeXCommentTag>>>(() => new List<ITagSpan<TeXCommentTag>>());
@@ -25,7 +25,7 @@ namespace VsTeXCommentsExtension.Integration.Data
 
         private bool isDisposed;
 
-        internal TeXCommentTagger(ITextBuffer buffer)
+        public TeXCommentTagger(ITextBuffer buffer)
         {
             this.buffer = buffer;
             tagsPerVersion = new TextSnapshotValuesPerVersionCache<PooledStructEnumerable<ITagSpan<TeXCommentTag>>>(GenerateAllTags);

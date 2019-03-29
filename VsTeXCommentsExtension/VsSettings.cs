@@ -1,14 +1,13 @@
-﻿using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.VisualStudio.Text.Editor;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Media;
-
+using Microsoft.VisualStudio.Editor;
+using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Text.Editor;
 using wpf = System.Windows.Media;
 
 namespace VsTeXCommentsExtension
@@ -24,7 +23,7 @@ namespace VsTeXCommentsExtension
         private static IVsFontsAndColorsInformationService vsFontsAndColorsInformationService;
 
         private readonly IWpfTextView textView;
-        private IEditorFormatMap editorFormatMap;
+        private readonly IEditorFormatMap editorFormatMap;
 
         public Font CommentsFont { get; }
 
