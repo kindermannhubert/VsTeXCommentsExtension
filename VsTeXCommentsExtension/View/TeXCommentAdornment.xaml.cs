@@ -206,22 +206,19 @@ namespace VsTeXCommentsExtension.View
                 VsSettings.CommentsFont,
                 textView,
                 this);
+
             renderingManager.RenderAsync(input, ImageIsReady);
         }
 
-        private void ImageIsReady(RendererResult result)
+#pragma warning disable VSTHRD100 // Avoid async void methods
+        private async void ImageIsReady(RendererResult result)
         {
-            if (!Dispatcher.CheckAccess())
-            {
-                Dispatcher.Invoke(new Action<RendererResult>(ImageIsReady), result);
-            }
-            else
-            {
-                RenderedResult = result;
-                if (CurrentState == TeXCommentAdornmentState.Rendering) CurrentState = TeXCommentAdornmentState.Rendered;
-                else if (CurrentState == TeXCommentAdornmentState.EditingAndRenderingPreview) CurrentState = TeXCommentAdornmentState.EditingWithPreview;
-            }
+            await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            RenderedResult = result;
+            if (CurrentState == TeXCommentAdornmentState.Rendering) CurrentState = TeXCommentAdornmentState.Rendered;
+            else if (CurrentState == TeXCommentAdornmentState.EditingAndRenderingPreview) CurrentState = TeXCommentAdornmentState.EditingWithPreview;
         }
+#pragma warning restore VSTHRD100 // Avoid async void methods
 
         private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
         {
