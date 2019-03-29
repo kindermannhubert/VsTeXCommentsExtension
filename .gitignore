@@ -3,12 +3,9 @@
 ################################################################################
 
 *.user
-/VsTeXCommentsExtension/bin
-/VsTeXCommentsExtension/obj
+*/project.lock.json
+*/bin
+*/obj
 /VsTeXCommentsExtension/VsTeXCommentsExtension.nuget.targets
 /VsTeXCommentsExtension/VsTeXCommentsExtension.nuget.props
 /.vs
-/VsTeXCommentsExtension/project.lock.json
-/SnippetThumbnailsGenerator/bin
-/SnippetThumbnailsGenerator/obj
-/SnippetThumbnailsGenerator/project.lock.json

@@ -12,19 +12,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="App.config" />
-    <None Remove="Snippets.xml" />
     <Compile Include="Program.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Snippets.xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="15.0.26606" />
-  </ItemGroup>
-  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="15.8.525" />
     <ProjectReference Include="..\VsTeXCommentsExtension\VsTeXCommentsExtension.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System.Windows.Forms" />
