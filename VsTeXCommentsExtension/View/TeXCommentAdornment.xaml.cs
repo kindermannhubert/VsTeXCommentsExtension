@@ -1,11 +1,11 @@
-﻿using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 using VsTeXCommentsExtension.Integration.Data;
 using VsTeXCommentsExtension.Integration.View;
 
@@ -201,7 +201,7 @@ namespace VsTeXCommentsExtension.View
             var input = new HtmlRenderer.Input(
                 DataTag,
                 (0.01 * VsSettings.ZoomPercentage) * (0.01 * DataTag.TeXBlock.ZoomPercentage),
-                DataTag.TeXBlock.ForegroundColor.HasValue ? DataTag.TeXBlock.ForegroundColor.Value : VsSettings.CommentsForeground.Color,
+                DataTag.TeXBlock.ForegroundColor ?? VsSettings.CommentsForeground.Color,
                 VsSettings.CommentsBackground.Color,
                 VsSettings.CommentsFont,
                 textView,

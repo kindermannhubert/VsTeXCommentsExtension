@@ -39,7 +39,9 @@ namespace SnippetThumbnailsGenerator
                 (s, e) =>
                 {
                     renderer = new HtmlRenderer();
+#pragma warning disable VSTHRD110
                     Task.Run(new Action(GenerateSnippets));
+#pragma warning restore VSTHRD110
                 };
             Application.Run(form); //we need message pump for web browser
         }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Microsoft.VisualStudio.Text;
@@ -108,7 +107,8 @@ namespace VsTeXCommentsExtension.Integration.View
         }
 
         private DateTime lastTimeZoomChanged;
-        private void ZoomChanged(IWpfTextView textView, double zoomPercentage)
+#pragma warning disable VSTHRD100 // Avoid async void methods
+        private async void ZoomChanged(IWpfTextView textView, double zoomPercentage)
         {
             //Zoom is changing continuously (while changing by mouse wheel).
             //We want to wait a moment before triggering invalidation (we hope that after moment changing is done).
@@ -116,20 +116,17 @@ namespace VsTeXCommentsExtension.Integration.View
             var now = DateTime.Now;
             if ((now - lastTimeZoomChanged).TotalMilliseconds > delayMs)
             {
-                Task.Run(
-                    () =>
+                lastTimeZoomChanged = now;
+                await Task.Run(
+                    async () =>
                     {
-                        while ((DateTime.Now - lastTimeZoomChanged).TotalMilliseconds < delayMs)
-                        {
-                            Thread.Sleep(delayMs / 10);
-                        }
-                        lastTimeZoomChanged = DateTime.Now;
-                        textView.VisualElement.Dispatcher.BeginInvoke(new Action(() => ForAllCurrentlyUsedAdornments(a => a.Invalidate(), false)));
+                        await Task.Delay(delayMs);
+                        await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                        ForAllCurrentlyUsedAdornments(a => a.Invalidate(), false);
                     });
             }
-
-            lastTimeZoomChanged = now;
         }
+#pragma warning restore VSTHRD100 // Avoid async void methods
 
         private void CustomZoomChanged(double zoomScale)
         {
