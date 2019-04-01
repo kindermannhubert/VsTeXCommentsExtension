@@ -49,6 +49,7 @@ namespace VsTeXCommentsExtension.Integration
         private unsafe PooledStructEnumerable<TeXCommentBlockSpan> GenerateTexCommentBlocks(ITextSnapshot snapshot)
         {
             var texCommentBlocks = blockListsPool.Get();
+            Debug.Assert(texCommentBlocks.Count == 0);
 
             var contentName = snapshot.ContentType.TypeName;
             if (!CommentPrefixPerContentType.TryGetValue(contentName, out var commentPrefix) ||
@@ -57,32 +58,34 @@ namespace VsTeXCommentsExtension.Integration
                 return new PooledStructEnumerable<TeXCommentBlockSpan>(texCommentBlocks, blockListsPool);
             }
 
-            Debug.Assert(texCommentBlocks.Count == 0);
+            Debug.Assert(teXCommentPrefix.Length > commentPrefix.Length);
+            Span<char> lineStartingCharactersBuffer = stackalloc char[teXCommentPrefix.Length];
 
             var atTexBlock = false;
             var texBlockSpanBuilder = default(TeXCommentBlockSpanBuilder);
             ITextSnapshotLine lastBlockLine = null;
             foreach (var line in snapshot.Lines)
             {
-                Span<char> lineStartingCharacters = stackalloc char[Math.Max(teXCommentPrefix.Length, commentPrefix.Length)];
-                var maxPos = Math.Min(lineStartingCharacters.Length, line.End.Position);
-                for (int pos = line.Start.Position; pos < maxPos; pos++)
-                {
-                    lineStartingCharacters[pos] = snapshot[line.Start.Position + pos];
-                }
+                var lineStartPos = line.Start.Position;
+                var numberOfWhiteSpaceCharsOnStartOfLine = snapshot.NumberOfWhiteSpaceCharsOnStartOfLine(lineStartPos, line.Length);
 
-                var numberOfWhiteSpaceCharsOnStartOfLine = lineStartingCharacters.NumberOfWhiteSpaceCharsOnStartOfLine();
+                lineStartPos += numberOfWhiteSpaceCharsOnStartOfLine;
+                var lineStartingCharacters = lineStartingCharactersBuffer.Slice(0, Math.Min(lineStartingCharactersBuffer.Length, line.End.Position - lineStartPos));  //line can be shorter than prefix that we are lookin for
+                for (int pos = 0; pos < lineStartingCharacters.Length; pos++)
+                {
+                    lineStartingCharacters[pos] = snapshot[lineStartPos + pos];
+                }
 
                 if (atTexBlock)
                 {
-                    if (lineStartingCharacters.StartsWith(numberOfWhiteSpaceCharsOnStartOfLine, teXCommentPrefix))
+                    if (lineStartingCharacters.StartsWith(teXCommentPrefix))
                     {
                         texBlockSpanBuilder.EndBlock(lastBlockLine);
                         texCommentBlocks.Add(texBlockSpanBuilder.Build(snapshot)); //end of current block
                         texBlockSpanBuilder = new TeXCommentBlockSpanBuilder(line.ExtentIncludingLineBreak, numberOfWhiteSpaceCharsOnStartOfLine, line, line.GetLineBreakText(), teXCommentPrefix, contentName); //start of new block
                         lastBlockLine = line;
                     }
-                    else if (lineStartingCharacters.StartsWith(numberOfWhiteSpaceCharsOnStartOfLine, commentPrefix))
+                    else if (lineStartingCharacters.StartsWith(commentPrefix))
                     {
                         //continuation of current block
                         texBlockSpanBuilder.Add(line.LengthIncludingLineBreak);
@@ -96,7 +99,7 @@ namespace VsTeXCommentsExtension.Integration
                         atTexBlock = false;
                     }
                 }
-                else if (lineStartingCharacters.StartsWith(numberOfWhiteSpaceCharsOnStartOfLine, teXCommentPrefix))
+                else if (lineStartingCharacters.StartsWith(teXCommentPrefix))
                 {
                     //start of new block
                     atTexBlock = true;

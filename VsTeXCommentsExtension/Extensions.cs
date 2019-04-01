@@ -33,22 +33,22 @@ namespace VsTeXCommentsExtension
             return 0;
         }
 
-        public static int NumberOfWhiteSpaceCharsOnStartOfLine(this Span<char> line)
+        public static int NumberOfWhiteSpaceCharsOnStartOfLine(this ITextSnapshot snapshot, int lineStartPosition, int lineLength)
         {
-            for (int i = 0; i < line.Length; i++)
+            for (int i = 0; i < lineLength; i++)
             {
-                var ch = line[i];
+                var ch = snapshot[lineStartPosition + i];
                 if (ch != ' ' && ch != '\t') return i;
             }
             return 0;
         }
 
-        public static bool StartsWith(this Span<char> text, int startIndex, string value)
+        public static bool StartsWith(this Span<char> text, string value)
         {
-            int endIndex = startIndex + value.Length - 1;
+            int endIndex = value.Length - 1;
             if (text.Length <= endIndex) return false;
 
-            for (int i = startIndex, j = 0; i <= endIndex; ++i, ++j)
+            for (int i = 0, j = 0; i <= endIndex; ++i, ++j)
             {
                 if (text[i] != value[j]) return false;
             }

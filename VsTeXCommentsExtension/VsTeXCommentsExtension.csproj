@@ -44,6 +44,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <CopyVsixExtensionFiles>False</CopyVsixExtensionFiles>
     <DeployExtension>True</DeployExtension>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -56,6 +57,7 @@
     <StartProgram>$(ProgramFiles)\Microsoft Visual Studio 14.0\Common7\IDE\devenv.exe</StartProgram>
     <StartArguments>/rootsuffix Exp</StartArguments>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.mshtml, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -456,23 +458,23 @@
     <Resource Include="Resources\Snippets\97.png" />
     <Resource Include="Resources\Snippets\98.png" />
     <Resource Include="Resources\Snippets\99.png" />
-    <Content Condition="Exists('bin\Release\System.Buffers.dll')" Include="bin\Release\System.Buffers.dll">
+    <Content Condition="Exists('bin\$(Configuration)\System.Buffers.dll')" Include="bin\$(Configuration)\System.Buffers.dll">
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>..\..</VSIXSubPath>
     </Content>
-    <Content Condition="Exists('bin\Release\System.Collections.Immutable.dll')" Include="bin\Release\System.Collections.Immutable.dll">
+    <Content Condition="Exists('bin\$(Configuration)\System.Collections.Immutable.dll')" Include="bin\$(Configuration)\System.Collections.Immutable.dll">
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>..\..</VSIXSubPath>
     </Content>
-    <Content Condition="Exists('bin\Release\System.Memory.dll')" Include="bin\Release\System.Memory.dll">
+    <Content Condition="Exists('bin\$(Configuration)\System.Memory.dll')" Include="bin\$(Configuration)\System.Memory.dll">
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>..\..</VSIXSubPath>
     </Content>
-    <Content Condition="Exists('bin\Release\System.Runtime.CompilerServices.Unsafe.dll')" Include="bin\Release\System.Runtime.CompilerServices.Unsafe.dll">
+    <Content Condition="Exists('bin\$(Configuration)\System.Runtime.CompilerServices.Unsafe.dll')" Include="bin\$(Configuration)\System.Runtime.CompilerServices.Unsafe.dll">
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>..\..</VSIXSubPath>
     </Content>
-    <Content Condition="Exists('bin\Release\System.ValueTuple.dll')" Include="bin\Release\System.ValueTuple.dll">
+    <Content Condition="Exists('bin\$(Configuration)\System.ValueTuple.dll')" Include="bin\$(Configuration)\System.ValueTuple.dll">
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>..\..</VSIXSubPath>
     </Content>
