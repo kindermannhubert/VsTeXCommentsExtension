@@ -456,6 +456,26 @@
     <Resource Include="Resources\Snippets\97.png" />
     <Resource Include="Resources\Snippets\98.png" />
     <Resource Include="Resources\Snippets\99.png" />
+    <Content Condition="Exists('bin\Release\System.Buffers.dll')" Include="bin\Release\System.Buffers.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <VSIXSubPath>..\..</VSIXSubPath>
+    </Content>
+    <Content Condition="Exists('bin\Release\System.Collections.Immutable.dll')" Include="bin\Release\System.Collections.Immutable.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <VSIXSubPath>..\..</VSIXSubPath>
+    </Content>
+    <Content Condition="Exists('bin\Release\System.Memory.dll')" Include="bin\Release\System.Memory.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <VSIXSubPath>..\..</VSIXSubPath>
+    </Content>
+    <Content Condition="Exists('bin\Release\System.Runtime.CompilerServices.Unsafe.dll')" Include="bin\Release\System.Runtime.CompilerServices.Unsafe.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <VSIXSubPath>..\..</VSIXSubPath>
+    </Content>
+    <Content Condition="Exists('bin\Release\System.ValueTuple.dll')" Include="bin\Release\System.ValueTuple.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <VSIXSubPath>..\..</VSIXSubPath>
+    </Content>
     <Content Include="View\TeXCommentHtmlTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>TeXCommentHtmlTemplate.cs</LastGenOutput>
