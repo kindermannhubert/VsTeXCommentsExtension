@@ -378,19 +378,17 @@ namespace VsTeXCommentsExtension.View
 
         public readonly struct Input : IRendererInput
         {
-            private readonly TeXCommentTag dataTag;
-
+            public readonly string Content;
             public readonly double ZoomScale;
             public readonly wpf.Color Foreground;
             public readonly wpf.Color Background;
             public readonly Font Font;
             public ITextView TextView { get; }
             public ITagAdornment TagAdornment { get; }
-            public string Content => dataTag.GetTextWithoutCommentMarks();
 
             public Input(TeXCommentTag dataTag, double zoomScale, wpf.Color foreground, wpf.Color background, Font font, ITextView textView, ITagAdornment tagAdornment)
             {
-                this.dataTag = dataTag;
+                Content = dataTag.GetTextWithoutCommentMarks();
                 ZoomScale = zoomScale;
                 Foreground = foreground;
                 Background = background;

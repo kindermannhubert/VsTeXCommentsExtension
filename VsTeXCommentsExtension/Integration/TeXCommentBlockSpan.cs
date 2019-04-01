@@ -89,6 +89,8 @@ namespace VsTeXCommentsExtension.Integration
             for (int lineIndex = firstLineIndex; lineIndex <= lastLineIndex; lineIndex++)
             {
                 var line = snapshot.GetLineFromLineNumber(lineIndex);
+
+                //TODO perf
                 int whitespaces = line.GetText().NumberOfWhiteSpaceCharsOnStartOfLine();
                 if (whitespaces < min) min = whitespaces;
             }
@@ -99,7 +101,6 @@ namespace VsTeXCommentsExtension.Integration
         public static int GetMinNumberOfWhitespacesBeforeCommentPrefixes(string teXBlock)
         {
             //TODO perf
-
             var lines = teXBlock.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
             int min = int.MaxValue;
             foreach (var line in lines)

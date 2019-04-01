@@ -1,5 +1,6 @@
-﻿using Microsoft.VisualStudio.Text;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.VisualStudio.Text;
 
 namespace VsTeXCommentsExtension
 {
@@ -32,7 +33,17 @@ namespace VsTeXCommentsExtension
             return 0;
         }
 
-        public static bool StartsWith(this string text, int startIndex, string value)
+        public static int NumberOfWhiteSpaceCharsOnStartOfLine(this Span<char> line)
+        {
+            for (int i = 0; i < line.Length; i++)
+            {
+                var ch = line[i];
+                if (ch != ' ' && ch != '\t') return i;
+            }
+            return 0;
+        }
+
+        public static bool StartsWith(this Span<char> text, int startIndex, string value)
         {
             int endIndex = startIndex + value.Length - 1;
             if (text.Length <= endIndex) return false;

@@ -25,7 +25,7 @@ namespace VsTeXCommentsExtension.Integration
         private Span span;
         private int lastLineWhiteSpacesAtStart;
 
-        public TeXCommentBlockSpanBuilder(Span firstLineSpanWithLineBreak, int firstLineWhiteSpacesAtStart, string firstLineText, string lineBreakText, string teXCommentPrefix, string documentContentType)
+        public TeXCommentBlockSpanBuilder(Span firstLineSpanWithLineBreak, int firstLineWhiteSpacesAtStart, ITextSnapshotLine firstLine, string lineBreakText, string teXCommentPrefix, string documentContentType)
         {
             span = firstLineSpanWithLineBreak;
             this.firstLineWhiteSpacesAtStart = firstLineWhiteSpacesAtStart;
@@ -38,10 +38,10 @@ namespace VsTeXCommentsExtension.Integration
 
             //search for properties (e.g., //tex:[zoom=120%])
             int propertiesIndex = firstLineWhiteSpacesAtStart + teXCommentPrefix.Length;
-            if (propertiesIndex < firstLineText.Length && firstLineText[propertiesIndex] == '[')
+            if (propertiesIndex < firstLine.Length && firstLine.Snapshot[firstLine.Start.Position + propertiesIndex] == '[')
             {
                 Debug.Assert(PropertiesSegmentsRegexPerContentType.ContainsKey(documentContentType));
-                var match = PropertiesSegmentsRegexPerContentType[documentContentType].Match(firstLineText);
+                var match = PropertiesSegmentsRegexPerContentType[documentContentType].Match(firstLine.GetText());
                 if (match.Success)
                 {
                     var propertiesSegmentGroup = match.Groups[1];
@@ -103,6 +103,8 @@ namespace VsTeXCommentsExtension.Integration
         public void EndBlock(ITextSnapshotLine lastBlockLine)
         {
             span = span.TranslateEnd(-lastBlockLine.LineBreakLength);
+
+            //TODO perf
             lastLineWhiteSpacesAtStart = lastBlockLine.GetText().NumberOfWhiteSpaceCharsOnStartOfLine();
         }
 

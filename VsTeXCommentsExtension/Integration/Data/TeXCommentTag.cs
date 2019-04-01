@@ -15,9 +15,8 @@ namespace VsTeXCommentsExtension.Integration.Data
     /// This separation provides the potential for other extensions to consume tags
     /// and provide alternative UI or other derived functionality over this data.
     /// </remarks>
-    public struct TeXCommentTag : ITag, ITagSpan
+    public readonly struct TeXCommentTag : ITag, ITagSpan
     {
-        private string textTrimmed;
         public readonly string Text;
         public readonly string TextWithWhitespacesAtStartOfFirstLine;
         public readonly TeXCommentBlockSpan TeXBlock;
@@ -38,39 +37,32 @@ namespace VsTeXCommentsExtension.Integration.Data
         {
             Debug.Assert(text != null);
 
-            textTrimmed = null;
             TextWithWhitespacesAtStartOfFirstLine = text;
             Text = text.TrimStart(TextSnapshotTeXCommentBlocks.WhiteSpaces);
             TeXBlock = span;
         }
 
-        //TODO - caching could not work well because this is struct
         public string GetTextWithoutCommentMarks()
         {
-            if (textTrimmed == null)
+            //TODO perf and allocations
+
+            var sb = new StringBuilder(Text.Length);
+            foreach (var line in Text.Split(new[] { TeXBlock.LineBreakText }, StringSplitOptions.RemoveEmptyEntries))
             {
-                //TODO perf and allocations
-
-                var sb = new StringBuilder(Text.Length);
-                foreach (var line in Text.Split(new[] { TeXBlock.LineBreakText }, StringSplitOptions.RemoveEmptyEntries))
+                var trimmedLine = line.TrimStart(TextSnapshotTeXCommentBlocks.WhiteSpaces);
+                if (trimmedLine.StartsWith(TeXBlock.TeXCommentPrefix))
                 {
-                    var trimmedLine = line.TrimStart(TextSnapshotTeXCommentBlocks.WhiteSpaces);
-                    if (trimmedLine.StartsWith(TeXBlock.TeXCommentPrefix))
-                    {
-                        trimmedLine = trimmedLine.Substring(TeXBlock.TeXCommentPrefix.Length + TeXBlock.PropertiesSegmentLength);
-                    }
-                    else if (trimmedLine.StartsWith(TeXBlock.CommentPrefix))
-                    {
-                        trimmedLine = trimmedLine.Substring(TeXBlock.CommentPrefix.Length);
-                    }
-
-                    sb.AppendLine(trimmedLine);
+                    trimmedLine = trimmedLine.Substring(TeXBlock.TeXCommentPrefix.Length + TeXBlock.PropertiesSegmentLength);
+                }
+                else if (trimmedLine.StartsWith(TeXBlock.CommentPrefix))
+                {
+                    trimmedLine = trimmedLine.Substring(TeXBlock.CommentPrefix.Length);
                 }
 
-                textTrimmed = sb.ToString();
+                sb.AppendLine(trimmedLine);
             }
 
-            return textTrimmed;
+            return sb.ToString();
         }
     }
 }
