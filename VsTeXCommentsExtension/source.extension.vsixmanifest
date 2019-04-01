@@ -2,7 +2,7 @@
 
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="D7EC21C7-846F-4E42-BFE8-E74CD47605F9" Version="0.6.0.2" Language="en-US" Publisher="Hubert Kindermann" />
+        <Identity Id="D7EC21C7-846F-4E42-BFE8-E74CD47605F9" Version="0.6.0.3" Language="en-US" Publisher="Hubert Kindermann" />
         <DisplayName>TeX Comments</DisplayName>
         <Description xml:space="preserve">Intra-text adornment extension to the Visual Studio Editor for rendering TeX math comments inside the editor.</Description>
         <MoreInfo>https://github.com/kindermannhubert/VsTeXCommentsExtension</MoreInfo>
@@ -23,6 +23,6 @@
         <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
     </Assets>
     <Prerequisites>
-        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0.26606.0,16.0)" DisplayName="Visual Studio core editor" />
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,)" DisplayName="Visual Studio core editor" />
     </Prerequisites>
 </PackageManifest>
