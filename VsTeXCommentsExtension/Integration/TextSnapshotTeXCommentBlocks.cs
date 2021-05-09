@@ -8,7 +8,15 @@ namespace VsTeXCommentsExtension.Integration
 {
     internal class TextSnapshotTeXCommentBlocks
     {
-        public static readonly HashSet<string> SupportedContentTypes = new HashSet<string>() { "CSharp", "F#", "C/C++", "Basic", "Python", "R" };
+        public static readonly HashSet<string> SupportedContentTypes = new HashSet<string>()
+        {
+            "CSharp",
+            "F#", "C/C++",
+            "Basic",
+            "Python",
+            "R",
+            "Fortran" ,
+        };
 
         public static readonly Dictionary<string, string> CommentPrefixPerContentType = new Dictionary<string, string>()
         {
@@ -18,6 +26,7 @@ namespace VsTeXCommentsExtension.Integration
             { "Basic", "'" },
             { "Python", "#" },
             { "R", "#" },
+            { "Fortran", "!" },
         };
 
         public static readonly Dictionary<string, string> TeXCommentPrefixPerContentType = new Dictionary<string, string>()
@@ -28,6 +37,7 @@ namespace VsTeXCommentsExtension.Integration
             { "Basic", "'tex:" },
             { "Python", "#tex:" },
             { "R", "#tex:" },
+            { "Fortran", "!tex:" },
         };
 
         public static readonly char[] WhiteSpaces = new char[] { ' ', '\t' };
