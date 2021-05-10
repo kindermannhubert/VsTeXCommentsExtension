@@ -15,7 +15,7 @@ namespace VsTeXCommentsExtension.Integration
             "Basic",
             "Python",
             "R",
-            "Fortran" ,
+            "Fortran",
         };
 
         public static readonly Dictionary<string, string> CommentPrefixPerContentType = new Dictionary<string, string>()
