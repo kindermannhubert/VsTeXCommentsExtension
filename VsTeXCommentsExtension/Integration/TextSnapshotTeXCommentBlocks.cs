@@ -16,6 +16,7 @@ namespace VsTeXCommentsExtension.Integration
             "Python",
             "R",
             "Fortran",
+            "d",
         };
 
         public static readonly Dictionary<string, string> CommentPrefixPerContentType = new Dictionary<string, string>()
@@ -27,6 +28,7 @@ namespace VsTeXCommentsExtension.Integration
             { "Python", "#" },
             { "R", "#" },
             { "Fortran", "!" },
+            { "d", "//" },
         };
 
         public static readonly Dictionary<string, string> TeXCommentPrefixPerContentType = new Dictionary<string, string>()
@@ -38,6 +40,7 @@ namespace VsTeXCommentsExtension.Integration
             { "Python", "#tex:" },
             { "R", "#tex:" },
             { "Fortran", "!tex:" },
+            { "d", "//tex:" },
         };
 
         public static readonly char[] WhiteSpaces = new char[] { ' ', '\t' };
