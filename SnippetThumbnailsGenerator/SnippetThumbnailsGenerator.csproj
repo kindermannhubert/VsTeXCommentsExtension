@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <LangVersion>7.3</LangVersion>
@@ -16,7 +16,7 @@
     <Content Include="Snippets.xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="15.8.525" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="17.0.487" />
     <ProjectReference Include="..\VsTeXCommentsExtension\VsTeXCommentsExtension.csproj" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
