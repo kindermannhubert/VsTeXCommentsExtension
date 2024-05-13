@@ -2,7 +2,7 @@
 
 Intra-text adornment extension to the Visual Studio Editor for rendering TeX math comments inside editor.
 
-Supports C#, F#, C, C++, VB.NET, Python, R, D and Fortran.
+Supports C#, F#, C, C++, VB.NET, MPL, Python, R, D and Fortran.
 
 Extension is transforming all continuous code blocks where all lines starts with single line comment syntax (can be preceeded by white spaces) which for example in C# is '//' and the first line starts with '//tex:' prefix ('//' part is language dependent) to rendered image where math is rendered by [MathJax](https://www.mathjax.org/). Math in this comments has to be surrounded by $ (for inline math) or $$ signs. Syntax of math is LaTex.
 
@@ -16,7 +16,7 @@ Examples:
   //Formula 2: $$a^2-b^2 = (a+b)(a-b)$$
 ```
 
-- Python, R:
+- MPL, Python, R:
 
 ```Python
   #tex:

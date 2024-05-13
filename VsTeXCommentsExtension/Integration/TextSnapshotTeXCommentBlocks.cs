@@ -10,36 +10,40 @@ namespace VsTeXCommentsExtension.Integration
     {
         public static readonly HashSet<string> SupportedContentTypes = new HashSet<string>()
         {
-            "CSharp",
-            "F#", "C/C++",
             "Basic",
+            "C/C++",
+            "CSharp",
+            "F#",
+            "Fortran",
+            "MPL",
             "Python",
             "R",
-            "Fortran",
             "d",
         };
 
         public static readonly Dictionary<string, string> CommentPrefixPerContentType = new Dictionary<string, string>()
         {
+            { "Basic", "'" },
+            { "C/C++", "//" },
             { "CSharp", "//" },
             { "F#", "//" },
-            { "C/C++", "//" },
-            { "Basic", "'" },
+            { "Fortran", "!" },
+            { "MPL", "#" },
             { "Python", "#" },
             { "R", "#" },
-            { "Fortran", "!" },
             { "d", "//" },
         };
 
         public static readonly Dictionary<string, string> TeXCommentPrefixPerContentType = new Dictionary<string, string>()
         {
+            { "Basic", "'tex:" },
+            { "C/C++", "//tex:" },
             { "CSharp", "//tex:" },
             { "F#", "//tex:" },
-            { "C/C++", "//tex:" },
-            { "Basic", "'tex:" },
+            { "Fortran", "!tex:" },
+            { "MPL", "#tex:" },
             { "Python", "#tex:" },
             { "R", "#tex:" },
-            { "Fortran", "!tex:" },
             { "d", "//tex:" },
         };
 
