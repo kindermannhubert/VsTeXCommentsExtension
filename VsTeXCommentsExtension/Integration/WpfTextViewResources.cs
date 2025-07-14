@@ -20,7 +20,10 @@ namespace VsTeXCommentsExtension.Integration
     [TextViewRole(PredefinedTextViewRoles.Interactive)]
     internal class WpfTextViewResources : IWpfTextViewConnectionListener
     {
-        private static IRenderingManager renderingManager;
+        private static readonly Lazy<IRenderingManager> LazyRenderingManager =
+            new Lazy<IRenderingManager>(() => new RenderingManager(new HtmlRenderer()));
+
+        private IRenderingManager RenderingManager => LazyRenderingManager.Value;
 
         private readonly object syncRoot = new object();
         private readonly Dictionary<IWpfTextView, TextViewData> textViews = new Dictionary<IWpfTextView, TextViewData>();
@@ -31,20 +34,6 @@ namespace VsTeXCommentsExtension.Integration
 
         [Import]
         private IClassificationTypeRegistryService ClassificationRegistry = null; //MEF
-
-        public WpfTextViewResources()
-        {
-            if (renderingManager == null)
-            {
-                lock (textViews)
-                {
-                    if (renderingManager == null)
-                    {
-                        renderingManager = new RenderingManager(new HtmlRenderer());
-                    }
-                }
-            }
-        }
 
         public TeXCommentAdornmentTagger GetTeXCommentAdornmentTagger(IWpfTextView textView) => GetOrAddTextViewData(textView)?.GetTexViewData<TeXCommentAdornmentTagger>();
         public TeXSyntaxClassifier GetTeXSyntaxClassifier(ITextBuffer buffer) => GetOrAddTextBufferData(buffer)?.GetTextBufferData<TeXSyntaxClassifier>();
@@ -78,7 +67,7 @@ namespace VsTeXCommentsExtension.Integration
                 {
                     textView.Closed += TextView_Closed;
                     textViewData = new TextViewData();
-                    textViewData.RegisterTextViewData(new TeXCommentAdornmentTagger(textView, renderingManager, BufferTagAggregatorFactoryService.CreateTagAggregator<TeXCommentTag>(textView.TextBuffer)));
+                    textViewData.RegisterTextViewData(new TeXCommentAdornmentTagger(textView, RenderingManager, BufferTagAggregatorFactoryService.CreateTagAggregator<TeXCommentTag>(textView.TextBuffer)));
 
                     textViews.Add(textView, textViewData);
                 }
@@ -121,7 +110,7 @@ namespace VsTeXCommentsExtension.Integration
                 var textView = (IWpfTextView)sender;
                 textView.Closed -= TextView_Closed;
                 textViews[textView].Dispose();
-                renderingManager.DiscartRenderingRequestsForTextView(textView);
+                RenderingManager.DiscartRenderingRequestsForTextView(textView);
                 textViews.Remove(textView);
             }
         }
