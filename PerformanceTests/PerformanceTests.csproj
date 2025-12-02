@@ -4,11 +4,11 @@
     <TargetFramework>net472</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>latest</LangVersion>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Authors>Hubert Kindermann</Authors>
-    <Copyright>Copyright © Hubert Kindermann 2019</Copyright>
+    <Copyright>Copyright © Hubert Kindermann 2025</Copyright>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
